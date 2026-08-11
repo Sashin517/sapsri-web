@@ -1,0 +1,144 @@
+/* Define custom color variables for easy theming */
+:root {
+    --brand-crimson: #A20A35;
+    --brand-orange: #f39c12;
+    --brand-dark: #343a40;
+    --card-bg-light-rose: #F1EBEE;
+    --card-bg-light-gray: #f8f9fa;
+}
+/* success story text truncate */
+.text-truncate-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+}
+.text-truncate-6 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+}
+main iframe{
+    filter: url(#blur-and-saturate); /* Apply the SVG filter */
+    border-radius: 10px;
+    width: 50vw;
+    height: 28.125vw;
+}
+
+.tx-theme-prime {
+    color: var(--brand-crimson);
+}
+
+.bg-theme-accent {
+    background-color: #F0A02F !important;
+}
+.bg-gold-yellow {
+    background-color: #F1BA0D !important;
+}
+
+.bg-fade-gold {
+    background-color: #F4F1B9 !important;
+}
+
+.bg-theme-saphere {
+    background-color: #EFE629 !important;
+}
+
+/* Custom styles for the carousel indicators */
+.carousel-indicators [data-bs-target] {
+    background-color: #c0c0c0; /* Color of inactive dots */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+}
+
+.carousel-indicators .active {
+    background-color: #212529; /* Color of the active dot */
+}
+.captured-photos div{
+        width: 50%!important;
+}
+
+/* --- Profile Card Styles --- */
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.profile-card .card-img-top {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+}
+
+.profile-card .card-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+.profile-card .card-deg {
+    font-weight: 100;
+    margin-bottom: 0.25rem;
+}        
+.profile-card .card-text {
+    /* font-weight: 500; */
+    color: #A20A35;
+    font-size: 0.9rem;
+}
+
+.profile-card .social-link {
+    font-size: 1.2rem;
+    color: #0e76a8; /* LinkedIn blue */
+}
+.leads-card{
+    background-color: var(--card-bg-light-rose);
+}
+/* Make gallery images look clickable */
+.gallery-img {
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.gallery-img:hover {
+    opacity: 0.8;
+}
+
+/* Style the modal's close button */
+.modal .btn-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    /* Style for better visibility on any background */
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    filter: invert(1) grayscale(100%); /* Makes the 'X' white */
+    padding: 0.5rem;
+}
+
+/* Ensure the modal image is centered and doesn't exceed screen size */
+#modalImage {
+    width: auto;
+    max-width: 90vw;
+    height: auto;
+    max-height: 90vh;
+    display: block;
+    margin: auto;
+}
+/* ↓ Below Bootstrap's "sm" (576px) */
+@media (max-width: 768.98px) {
+  .captured-photos div{
+        width: 94%!important;
+    }
+}
+

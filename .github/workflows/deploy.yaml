@@ -1,0 +1,29 @@
+name: Deploy website on push
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: Deploy to sapsri.lk/sldevs/project-sedna
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v4
+
+      - name: Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_PATH }}
+          protocol: ftps
+          port: 21
+          delete: false            # Explicitly ensures files are never deleted
+          exclude: |               # Tells the script to completely ignore this folder
+            assets/media/img/**
+            **/.git*
+            **/.git*/**

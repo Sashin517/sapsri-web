@@ -1,0 +1,37 @@
+# Options -Indexes
+
+# AddType application/javascript .mjs
+
+# RewriteEngine On
+
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_URI} ^([\/a-zA-Z0-9_-]+)$
+# RewriteCond %{DOCUMENT_ROOT}/pages%1.php -f
+# RewriteRule ^([\/a-zA-Z0-9_-]+)$ pages/$1.php [L]
+
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_URI} ^([\/a-zA-Z0-9_-]+)$
+# RewriteCond %{DOCUMENT_ROOT}/pages%1.html -f
+# RewriteRule ^([\/a-zA-Z0-9_-]+)$ pages/$1.html [L]
+
+Options -Indexes
+AddType application/javascript .mjs
+RewriteEngine On
+
+# 1. IMPORTANT: Set the base URL for this subfolder
+RewriteBase /sldevs/project-sedna/
+
+# --- PHP Handler ---
+RewriteCond %{REQUEST_FILENAME} !-f
+# Capture the "slug" from the full URL (ignoring the subfolder part)
+RewriteCond %{REQUEST_URI} ^/sldevs/project-sedna/([a-zA-Z0-9_-]+)/?$
+# Check if that file actually exists in the correct subfolder path
+RewriteCond %{DOCUMENT_ROOT}/sldevs/project-sedna/pages/%1.php -f
+# Rewrite the clean URL to the file inside /pages/
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ pages/$1.php [L]
+
+# --- HTML Handler ---
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/sldevs/project-sedna/([a-zA-Z0-9_-]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/sldevs/project-sedna/pages/%1.html -f
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ pages/$1.html [L]

@@ -1,0 +1,89 @@
+/* Define custom color variables for easy theming */
+:root {
+    --brand-orange: #f39c12;
+    --brand-dark: #343a40;
+    --card-bg-light-orange: #fff3e0;
+    --card-bg-light-gray: #f8f9fa;
+}
+.text-truncate-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+}
+.text-truncate-6 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+}
+main iframe{
+    filter: url(#blur-and-saturate); /* Apply the SVG filter */
+    border-radius: 10px;
+    width: 50vw;
+    height: 28.125vw;
+}
+.bg-theme-accent {
+    background-color: #F0A02F !important;
+}
+.bg-gold-yellow {
+    background-color: #F1BA0D !important;
+}
+
+.bg-fade-gold {
+    background-color: #F4F1B9 !important;
+}
+
+.bg-theme-saphere {
+    background-color: #EFE629 !important;
+}
+
+/* Custom styles for the carousel indicators */
+.carousel-indicators [data-bs-target] {
+    background-color: #c0c0c0; /* Color of inactive dots */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+}
+
+.carousel-indicators .active {
+    background-color: #212529; /* Color of the active dot */
+}
+.captured-photos div{
+        width: 50%!important;
+    }
+
+.story-image, .story-text{
+    width: 50%;
+}
+
+.story-image{
+    height: 100%;
+}
+.story-card{
+    height: 78vh;
+}
+
+
+/* ↓ Below Bootstrap'm "md" (576px) */
+@media (max-width: 768.98px) {
+    .story-image, .story-text{
+        width: 100%;
+    }
+    .story-image{
+        height: 52vh;
+    }
+    .story-card{
+        height: auto;
+    }
+    .story-image{
+        height: 52vh;
+    }
+    .captured-photos div{
+        width: 94%!important;
+    }
+}
+

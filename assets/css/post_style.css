@@ -1,0 +1,114 @@
+/* Add these styles to make the indicator visible */
+.tx-theme-prime {
+    color: #A20A35;
+}
+
+
+.bg-gold-yellow {
+    background-color: #F1BA0D !important;
+}
+
+.bg-fade-gold {
+    background-color: #F4F1B9 !important;
+}
+
+.bg-theme-saphere {
+    background-color: #EFE629 !important;
+}
+
+.btn-show-more {
+    background-color: var(--text-light-gray);
+    border-color: var(--text-light-gray);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+.btn-show-more:hover {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+/* --- Post Navigation Buttons --- */
+.btn-post-nav {
+    background-color: var(--brand-maroon);
+    border-color: var(--brand-maroon);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+.rel-img{
+    height: 20rem;
+}
+/* Make gallery images look clickable */
+.gallery-img {
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.gallery-img:hover {
+    opacity: 0.8;
+}
+
+/* Style the modal's close button */
+.modal .btn-close {
+    position: absolute;
+    top: 0;      /* Align to the top of the image */
+    right: -45px;    /* Align to the right of the image */
+    
+    /* This is the key: */
+    /* Move the button UP by its own full height */
+    transform: translateY(-100%); 
+    
+    /* Optional: Add a small gap so it's not touching */
+    margin-top: 0px; 
+
+    z-index: 10;
+    
+    /* Your styles for visibility */
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    filter: invert(1) grayscale(100%); 
+    padding: 0.5rem;
+}
+
+/* Image styles (centering is now handled by HTML) */
+#modalImage {
+    width: auto;
+    max-width: 90vw;
+    height: auto;
+    max-height: 90vh;
+}
+
+.btn-post-nav:hover {
+    background-color: #831e3c;
+    border-color: #831e3c;
+    color: #fff;
+}
+/* --- Post Navigation Buttons --- */
+.btn-prev-post-nav {
+    background-color: var(--text-light-gray);
+    border-color: var(--text-light-gray);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-prev-post-nav:hover {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+/* ↓ Below Bootstrap's "sm" (576px) */
+@media (max-width: 575.98px) {
+  .modal .btn-close {
+        right: 0px;    /* Adjust position for smaller screens */
+    }
+  .profile-img {
+    width: 9.88rem;   /* change to whatever you want */
+    height: 9.88rem;
+  }
+}
