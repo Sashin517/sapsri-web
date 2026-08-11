@@ -8,8 +8,8 @@ class Database {
 
         if(!isset(Database::$connection)) {
 
-            Database::$connection = new mysqli("localhost", "root", "", "sapsri_admin_core");
-            // Database::$connection = new mysqli("65.109.146.175", "sldevswe_admin", "k4&~zdngRO(dejof", "sldevswe_sapsri", 3306);
+            //Database::$connection = new mysqli("localhost", "root", "", "sapsri_admin_core");
+            Database::$connection = new mysqli("65.109.146.175", "sapsril_sldevs", "wveeaj+!eTIUNHLI", "sapsril_sapsri_admin_core", 3306);
             // Database::$connection = new mysqli("localhost", "sapsril_sldevs", "TsKEIHAJk}]1F@7g", "sapsril_sldevs_db");
 
             if (Database::$connection->connect_error) {

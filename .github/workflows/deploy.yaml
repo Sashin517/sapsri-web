@@ -23,7 +23,8 @@ jobs:
           protocol: ftps
           port: 21
           delete: false            # Explicitly ensures files are never deleted
-          exclude: |               # Tells the script to completely ignore this folder
-            assets/media/img/**
+          exclude: |
+            assets/media/**
+            repomix-output.xml
             **/.git*
             **/.git*/**
