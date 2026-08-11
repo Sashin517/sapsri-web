@@ -1,3 +1,12 @@
 .vscode/
 
-/assets/media/
+# Ignore all media assets (already covers videos, but keep explicit for clarity)
+assets/media/
+assets/media/**
+
+# Ignore repomix output
+repomix-output.xml
+
+*.mp4
+*.pdf
+*.zip
