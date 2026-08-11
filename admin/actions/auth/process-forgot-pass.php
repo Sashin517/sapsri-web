@@ -63,10 +63,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         Hello <strong>{$user['first_name']}</strong>,<br><br>
                         We received a request to reset the password for your SAPSRI Admin account. Enter this code to proceed:
                         </p>
+                        
                         <div style='background-color: #f4f5f6; border-radius: 8px; padding: 25px; margin-bottom: 25px;'>
                         <span style='font-family: monospace, sans-serif; font-size: 36px; font-weight: 700; color: #1a1a1a; letter-spacing: 8px;'>$otp_code</span>
                         </div>
+                        
+                        <p style='margin: 0; font-size: 13px; color: #888888; line-height: 1.5;'>
+                        If you did not request a password reset, please ignore this email. This code will remain active for 15 minutes.
+                        </p>
                     </td></tr>
+    
+                    <!-- Footer -->
+                    <tr>
+                    <td style='padding: 0 40px 30px 40px;'>
+                        <hr style='border: 0; border-top: 1px solid #eaeaea; margin: 0 0 20px 0;'>
+                        <p style='margin: 0 0 10px 0; font-size: 12px; color: #888888; text-align: center;'>
+                        SAPSRI Admin Portal - Secure Content Management
+                        </p>
+                        <p style='margin: 0; font-size: 12px; color: #b0b0b0; text-align: center;'>
+                        &copy; 2026 SL Devs. All rights reserved.
+                        </p>
+                    </td>
+                    </tr>
                 </table>
             </td></tr>
             </table>";

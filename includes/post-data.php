@@ -25,7 +25,14 @@ try {
 
     $posts_data = [];
 
-    $post_result = Database::search("SELECT * FROM post");
+    // Main query: Only fetch 'published' posts, joined with users for the author name
+    $post_result = Database::search("
+        SELECT p.id, p.title, p.cover_image, p.content, p.publish_date, p.created_at, u.first_name, u.last_name
+        FROM posts p
+        LEFT JOIN users u ON p.created_by = u.id
+        WHERE p.status = 'published'
+        ORDER BY p.publish_date DESC, p.created_at DESC
+    ");
 
     if ($post_result === false) {
         throw new Exception('Database query failed');
@@ -34,46 +41,43 @@ try {
     if (mysqli_num_rows($post_result) > 0) {
         while ($row = mysqli_fetch_assoc($post_result)) {
 
-            $post_id = intval($row['post_id']);
+            $post_id = intval($row['id']);
 
             $posts_data[$post_id] = [
-                'id'   => $post_id,
-                'title' => $row['post_name'] ?? '',
-                'content' => $row['post_description'] ?? '',
-                'copy_info' => $row['post_copy'] ?? '',
-                'published_date' => $row['post_date'] ?? '',
-                'type_id' => isset($row['post_type_id']) ? (int)$row['post_type_id'] : 0,
-                'status_id' => isset($row['post_status_id']) ? (int)$row['post_status_id'] : 0,
-                'impact_areas' => [],
-                'post_media' => []
+                'id'             => $post_id,
+                'title'          => $row['title'] ?? '',
+                'content'        => $row['content'] ?? '',
+                'cover_image'    => $row['cover_image'] ?? '',
+                'published_date' => $row['publish_date'] ?? $row['created_at'],
+                'author_name'    => trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
+                'impact_areas'   => [],
+                'post_media'     => []
             ];
 
-            // IMPACT AREAS
-            $impact_res = Database::search("SELECT impact_area_id FROM post_has_impact_area WHERE post_id = " . $post_id);
+            // IMPACT AREAS: Join post_impact_areas directly to impact_areas
+            $impact_res = Database::search("
+                SELECT ia.name 
+                FROM post_impact_areas pia 
+                JOIN impact_areas ia ON pia.impact_area_id = ia.id 
+                WHERE pia.post_id = " . $post_id
+            );
+            
             if ($impact_res && mysqli_num_rows($impact_res) > 0) {
                 while ($impact_row = mysqli_fetch_assoc($impact_res)) {
-                    $impact_id = intval($impact_row['impact_area_id']);
-                    $impact_name_res = Database::search("SELECT impact_area_name FROM impact_area WHERE impact_area_id = " . $impact_id);
-                    if ($impact_name_res && mysqli_num_rows($impact_name_res) > 0) {
-                        $impact_name = mysqli_fetch_assoc($impact_name_res);
-                        $posts_data[$post_id]['impact_areas'][] = $impact_name['impact_area_name'] ?? '';
-                    }
+                    $posts_data[$post_id]['impact_areas'][] = $impact_row['name'] ?? '';
                 }
             }
 
-            // MEDIA
-            $media_res = Database::search("SELECT * FROM post_media WHERE post_id = " . $post_id);
+            // MEDIA: Pull from post_media using the ENUM media_type
+            $media_res = Database::search("SELECT media_type, media_url, thumbnail_url FROM post_media WHERE post_id = " . $post_id);
+            
             if ($media_res && mysqli_num_rows($media_res) > 0) {
                 while ($media_row = mysqli_fetch_assoc($media_res)) {
-                    $type_id = intval($media_row['post_media_type_id']);
-                    $type_res = Database::search("SELECT post_media_type_name FROM post_media_type WHERE post_media_type_id = " . $type_id);
-                    if ($type_res && mysqli_num_rows($type_res) > 0) {
-                        $type_row = mysqli_fetch_assoc($type_res);
-                        $posts_data[$post_id]['post_media'][] = [
-                            'type' => $type_row['post_media_type_name'] ?? '',
-                            'url' => $media_row['post_media_url'] ?? ''
-                        ];
-                    }
+                    $posts_data[$post_id]['post_media'][] = [
+                        'type'          => $media_row['media_type'] ?? '',
+                        'url'           => $media_row['media_url'] ?? '',
+                        'thumbnail_url' => $media_row['thumbnail_url'] ?? ''
+                    ];
                 }
             }
         }
@@ -84,13 +88,13 @@ try {
 
     // Encode with UTF-8 safety flags
     $json = json_encode(
-        (object)$posts_data, 
+        array_values($posts_data), // Reset array keys to ensure it outputs as a JSON Array [ {...}, {...} ]
         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR
     );
     
     if ($json === false) {
         // Fallback: try with simpler encoding
-        $json = json_encode((object)$posts_data);
+        $json = json_encode(array_values($posts_data));
     }
 
     echo $json;

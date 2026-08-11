@@ -8,9 +8,9 @@ class Database {
 
         if(!isset(Database::$connection)) {
 
-            //Database::$connection = new mysqli("localhost", "root", "", "sapsri_admin_core");
-            Database::$connection = new mysqli("localhost", "sapsril_sldevs", "wveeaj+!eTIUNHLI", "sapsril_sapsri_admin_core");
-            // Database::$connection = new mysqli("localhost", "sapsril_sldevs", "TsKEIHAJk}]1F@7g", "sapsril_sldevs_db");
+            Database::$connection = new mysqli("localhost", "root", "", "sapsri_admin_core");
+            //Database::$connection = new mysqli("localhost", "sapsril_sldevs", "wveeaj+!eTIUNHLI", "sapsril_sapsri_admin_core");
+    
 
             if (Database::$connection->connect_error) {
                 error_log("DB CONNECTION FAILED: " . Database::$connection->connect_error);
