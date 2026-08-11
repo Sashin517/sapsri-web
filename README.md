@@ -2,7 +2,7 @@
 
 ## Overview
 
-The official website for **[NGO Name]**, built to showcase the organization's mission, programs, and impact, while giving the team an easy way to manage content — news, events, and media — through a custom admin panel. Built with plain PHP and MySQL for lightweight, low-maintenance hosting.
+The official website for **[SAPSRI]**, built to showcase the organization's mission, programs, and impact, while giving the team an easy way to manage content — news, events, and media — through a custom admin panel. Built with plain PHP and MySQL for lightweight, low-maintenance hosting.
 
 ## Project Architecture
 
@@ -110,5 +110,5 @@ This project deploys automatically on every push to `main` via GitHub Actions (`
 
 ## Notes
 
-- Replace `[NGO Name]` throughout this file with the organization's actual name.
+- Replace `[SAPSRI]` throughout this file with the organization's actual name.
 - `assets/media/` files are intentionally excluded from version control (see `.gitignore`) since they're large binary/user-uploaded content — manage them directly on the server instead.
