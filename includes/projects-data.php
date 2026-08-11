@@ -25,7 +25,17 @@ try {
 
     $projects_data = [];
 
-    $project_result = Database::search("SELECT * FROM project");
+    // Main Query: Fetch only 'published' projects and join user for creator name
+    $query = "
+        SELECT p.id, p.title, p.cover_image, p.full_description, p.project_phase, 
+               p.start_date, p.end_date, p.created_at, u.first_name, u.last_name 
+        FROM projects p
+        LEFT JOIN users u ON p.created_by = u.id
+        WHERE p.status = 'published'
+        ORDER BY p.created_at DESC
+    ";
+    
+    $project_result = Database::search($query);
 
     if ($project_result === false) {
         throw new Exception('Database query failed');
@@ -37,105 +47,81 @@ try {
             $project_id = intval($row['id']);
 
             $projects_data[$project_id] = [
-                'id'          => $project_id,
-                'name'        => $row['project_name'] ?? '',
-                'description' => $row['project_description'] ?? '',
-                'copy_info'   => $row['project_copy'] ?? '',
-                'start_date'  => $row['project_start_date'] ?? '',
-                'end_date'    => $row['project_end_date'] ?? '',
-                'entry_date'  => $row['project_entry_date'] ?? '',
-                'status_id'   => isset($row['project_status_id']) ? (int)$row['project_status_id'] : 0,
-                'impact_areas' => [],
-                'project_media' => [],
-                'entities'    => [],
-                'locations'   => []
+                'id'               => $project_id,
+                'title'            => $row['title'] ?? '',
+                'cover_image'      => $row['cover_image'] ?? '',
+                'description'      => $row['full_description'] ?? '',
+                'phase'            => $row['project_phase'] ?? '',
+                'start_date'       => $row['start_date'] ?? '',
+                'end_date'         => $row['end_date'] ?? '',
+                'created_at'       => $row['created_at'] ?? '',
+                'creator_name'     => trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
+                'impact_areas'     => [],
+                'metrics'          => [],
+                'success_stories'  => [],
+                'leads'            => [],
+                'media'            => []
             ];
 
-            // IMPACT AREAS
-            $impact_res = Database::search("SELECT impact_area_id FROM project_has_impact_area WHERE project_id = " . $project_id);
+            // 1. IMPACT AREAS
+            $impact_res = Database::search("
+                SELECT ia.name 
+                FROM project_impact_areas pia 
+                JOIN impact_areas ia ON pia.impact_area_id = ia.id 
+                WHERE pia.project_id = " . $project_id
+            );
             if ($impact_res && mysqli_num_rows($impact_res) > 0) {
                 while ($impact_row = mysqli_fetch_assoc($impact_res)) {
-                    $impact_id = intval($impact_row['impact_area_id']);
-                    $impact_name_res = Database::search("SELECT name FROM impact_area WHERE id = " . $impact_id);
-                    if ($impact_name_res && mysqli_num_rows($impact_name_res) > 0) {
-                        $impact_name = mysqli_fetch_assoc($impact_name_res);
-                        $projects_data[$project_id]['impact_areas'][] = $impact_name['name'] ?? '';
-                    }
+                    $projects_data[$project_id]['impact_areas'][] = $impact_row['name'] ?? '';
                 }
             }
 
-            // MEDIA
-            $media_res = Database::search("SELECT * FROM project_media WHERE project_id = " . $project_id);
-            if ($media_res && mysqli_num_rows($media_res) > 0) {
-                while ($media_row = mysqli_fetch_assoc($media_res)) {
-                    $type_id = intval($media_row['project_media_type_id']);
-                    $type_res = Database::search("SELECT project_media_type_name FROM project_media_type WHERE project_media_type_id = " . $type_id);
-                    $type_name = '';
-                    if ($type_res && mysqli_num_rows($type_res) > 0) {
-                        $type_row = mysqli_fetch_assoc($type_res);
-                        $type_name = $type_row['project_media_type_name'] ?? '';
-                    }
-                    $projects_data[$project_id]['project_media'][] = [
-                        'type' => $type_name,
-                        'url'  => $media_row['project_media_url'] ?? ''
+            // 2. METRICS
+            $metrics_res = Database::search("SELECT * FROM project_metrics WHERE project_id = " . $project_id . " ORDER BY section_number ASC");
+            if ($metrics_res && mysqli_num_rows($metrics_res) > 0) {
+                while ($metric_row = mysqli_fetch_assoc($metrics_res)) {
+                    $projects_data[$project_id]['metrics'][] = [
+                        'section'       => $metric_row['section_number'] ?? '',
+                        'section_image' => $metric_row['section_image'] ?? '',
+                        'icon_image'    => $metric_row['icon_image'] ?? '',
+                        'value'         => $metric_row['metric_value'] ?? '',
+                        'label'         => $metric_row['metric_label'] ?? ''
                     ];
                 }
             }
 
-            // ENTITIES
-            $entity_res = Database::search("SELECT project_entity_id FROM project_has_entity WHERE project_id = " . $project_id);
-            if ($entity_res && mysqli_num_rows($entity_res) > 0) {
-                while ($entity_row = mysqli_fetch_assoc($entity_res)) {
-                    $entity_id = intval($entity_row['project_entity_id']);
-                    $entity_detail_res = Database::search("SELECT * FROM project_entity WHERE project_entity_id = " . $entity_id);
-                    if ($entity_detail_res && mysqli_num_rows($entity_detail_res) > 0) {
-                        $entity_detail = mysqli_fetch_assoc($entity_detail_res);
-
-                        $entity_type_id = intval($entity_detail['project_entity_type_id']);
-                        $entity_type_name = '';
-                        $entity_type_res = Database::search("SELECT project_entity_type_name FROM project_entity_type WHERE project_entity_type_id = " . $entity_type_id);
-                        if ($entity_type_res && mysqli_num_rows($entity_type_res) > 0) {
-                            $entity_type_row = mysqli_fetch_assoc($entity_type_res);
-                            $entity_type_name = $entity_type_row['project_entity_type_name'] ?? '';
-                        }
-
-                        $projects_data[$project_id]['entities'][] = [
-                            'name'  => $entity_detail['project_entity_name'] ?? '',
-                            'title' => $entity_detail['project_entity_title'] ?? '',
-                            'type'  => $entity_type_name
-                        ];
-                    }
+            // 3. SUCCESS STORIES
+            $stories_res = Database::search("SELECT * FROM project_success_stories WHERE project_id = " . $project_id);
+            if ($stories_res && mysqli_num_rows($stories_res) > 0) {
+                while ($story_row = mysqli_fetch_assoc($stories_res)) {
+                    $projects_data[$project_id]['success_stories'][] = [
+                        'name'        => $story_row['subject_name'] ?? '',
+                        'image'       => $story_row['subject_image'] ?? '',
+                        'description' => $story_row['subject_description'] ?? ''
+                    ];
                 }
             }
 
-            // LOCATIONS
-            $location_res = Database::search("SELECT * FROM project_location WHERE project_id = " . $project_id);
-            if ($location_res && mysqli_num_rows($location_res) > 0) {
-                while ($location_row = mysqli_fetch_assoc($location_res)) {
+            // 4. PROJECT LEADS
+            $leads_res = Database::search("SELECT * FROM project_leads WHERE project_id = " . $project_id);
+            if ($leads_res && mysqli_num_rows($leads_res) > 0) {
+                while ($lead_row = mysqli_fetch_assoc($leads_res)) {
+                    $projects_data[$project_id]['leads'][] = [
+                        'name'     => $lead_row['name'] ?? '',
+                        'role'     => $lead_row['role_designation'] ?? '',
+                        'photo'    => $lead_row['profile_photo'] ?? '',
+                        'linkedin' => $lead_row['linkedin_profile'] ?? ''
+                    ];
+                }
+            }
 
-                    $district_id = intval($location_row['project_location_district_id']);
-                    $district_name = '';
-                    $district_res = Database::search("SELECT project_location_district_name FROM project_location_district WHERE project_location_district_id = " . $district_id);
-                    if ($district_res && mysqli_num_rows($district_res) > 0) {
-                        $district_row = mysqli_fetch_assoc($district_res);
-                        $district_name = $district_row['project_location_district_name'] ?? '';
-                    }
-
-                    $location_type_id = intval($location_row['project_location_type_id']);
-                    $location_type_name = '';
-                    $location_type_res = Database::search("SELECT project_location_type_name FROM project_location_type WHERE project_location_type_id = " . $location_type_id);
-                    if ($location_type_res && mysqli_num_rows($location_type_res) > 0) {
-                        $location_type_row = mysqli_fetch_assoc($location_type_res);
-                        $location_type_name = $location_type_row['project_location_type_name'] ?? '';
-                    }
-
-                    $projects_data[$project_id]['locations'][] = [
-                        'name'      => $location_row['project_location_name'] ?? '',
-                        'address'   => $location_row['project_location_address'] ?? '',
-                        'latitude'  => $location_row['project_location_latitude'] ?? '',
-                        'longitude' => $location_row['project_location_longitude'] ?? '',
-                        'district'  => $district_name,
-                        'type'      => $location_type_name
+            // 5. MEDIA GALLERY
+            $media_res = Database::search("SELECT media_type, media_url FROM project_media WHERE project_id = " . $project_id);
+            if ($media_res && mysqli_num_rows($media_res) > 0) {
+                while ($media_row = mysqli_fetch_assoc($media_res)) {
+                    $projects_data[$project_id]['media'][] = [
+                        'type' => $media_row['media_type'] ?? '',
+                        'url'  => $media_row['media_url'] ?? ''
                     ];
                 }
             }
@@ -145,15 +131,14 @@ try {
     // Clean UTF-8 issues
     $projects_data = utf8_clean($projects_data);
 
-    // Encode with UTF-8 safety flags
+    // Output as a clean JSON Array
     $json = json_encode(
-        (object)$projects_data,
+        array_values($projects_data),
         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR
     );
 
     if ($json === false) {
-        // Fallback: try with simpler encoding
-        $json = json_encode((object)$projects_data);
+        $json = json_encode(array_values($projects_data));
     }
 
     echo $json;
