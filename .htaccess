@@ -1,37 +1,31 @@
-# Options -Indexes
-
-# AddType application/javascript .mjs
-
-# RewriteEngine On
-
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_URI} ^([\/a-zA-Z0-9_-]+)$
-# RewriteCond %{DOCUMENT_ROOT}/pages%1.php -f
-# RewriteRule ^([\/a-zA-Z0-9_-]+)$ pages/$1.php [L]
-
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_URI} ^([\/a-zA-Z0-9_-]+)$
-# RewriteCond %{DOCUMENT_ROOT}/pages%1.html -f
-# RewriteRule ^([\/a-zA-Z0-9_-]+)$ pages/$1.html [L]
-
 Options -Indexes
 AddType application/javascript .mjs
 RewriteEngine On
 
-# 1. IMPORTANT: Set the base URL for this subfolder
-RewriteBase /sldevs/project-sedna/
+# 1. Base URL for this folder
+RewriteBase /project-sedna/
+
+# ---------------------------------------------------------
+# THE ZERO-CONFLICT SHIELD
+# ---------------------------------------------------------
+# If the request matches a real file (-f) OR a real directory (-d),
+# stop right here and serve it directly. Do not rewrite.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Explicitly protect specific core folders from ever being routed to /pages/
+RewriteCond %{REQUEST_URI} ^/project-sedna/(admin|assets|includes|config|media)/ [NC]
+RewriteRule ^ - [L]
+# ---------------------------------------------------------
+
 
 # --- PHP Handler ---
-RewriteCond %{REQUEST_FILENAME} !-f
-# Capture the "slug" from the full URL (ignoring the subfolder part)
-RewriteCond %{REQUEST_URI} ^/sldevs/project-sedna/([a-zA-Z0-9_-]+)/?$
-# Check if that file actually exists in the correct subfolder path
-RewriteCond %{DOCUMENT_ROOT}/sldevs/project-sedna/pages/%1.php -f
-# Rewrite the clean URL to the file inside /pages/
+RewriteCond %{REQUEST_URI} ^/project-sedna/([a-zA-Z0-9_-]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/project-sedna/pages/%1.php -f
 RewriteRule ^([a-zA-Z0-9_-]+)/?$ pages/$1.php [L]
 
 # --- HTML Handler ---
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} ^/sldevs/project-sedna/([a-zA-Z0-9_-]+)/?$
-RewriteCond %{DOCUMENT_ROOT}/sldevs/project-sedna/pages/%1.html -f
+RewriteCond %{REQUEST_URI} ^/project-sedna/([a-zA-Z0-9_-]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/project-sedna/pages/%1.html -f
 RewriteRule ^([a-zA-Z0-9_-]+)/?$ pages/$1.html [L]
