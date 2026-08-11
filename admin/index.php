@@ -2233,8 +2233,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2">Suspended</span>`
                 : `<span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2">Active</span>`;
             
-            const actionBtn = isSuspended
-                ? `<button class="btn btn-sm btn-light text-success border-0 me-1 shadow-sm" title="Remove Suspension"><i data-lucide="user-check" style="width: 16px;"></i></button>`
+            const actionBtn = isSuspended 
+                ? `<button class="btn btn-sm btn-light text-success border-0 me-1 shadow-sm" onclick="handleUserSuspendAction(${user.id}, 'activate')" title="Remove Suspension"><i data-lucide="user-check" style="width: 16px;"></i></button>`
                 : `<button class="btn btn-sm btn-light text-danger border-0 me-1 shadow-sm" onclick="openSuspendModal(${user.id}, '${fullName.replace(/'/g, "\\'")}')" title="Suspend"><i data-lucide="user-minus" style="width: 16px;"></i></button>`;
 
             tbody.insertAdjacentHTML('beforeend', `
@@ -2361,7 +2361,130 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           const suspendModal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
           suspendModal.show();
         };
+          
+          // 6. Handle Suspend / Activate Action
+        window.handleUserSuspendAction = async function(userId, action, duration = '') {
+          if (action === 'activate' && !confirm("Are you sure you want to remove the suspension for this user?")) return;
+
+          const formData = new FormData();
+          formData.append('user_id', userId);
+          formData.append('action', action);
+          if (action === 'suspend') formData.append('duration', duration);
+
+          try {
+            const response = await fetch('actions/users/suspend-user.php', {
+              method: 'POST',
+              body: formData
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+              alert(result.message);
+              fetchUserManagementData(); // Instantly refresh the table to swap the icons
+            } else {
+              alert('Error: ' + result.message);
+            }
+          } catch (error) {
+            console.error(error);
+            alert('A network error occurred.');
+          }
+        };
+
+        // 7. Wire up the Modal Confirm Button
+        const confirmSuspendBtn = document.getElementById('confirmSuspendBtn');
+        if (confirmSuspendBtn) {
+          // Clone and replace to prevent multiple event listeners stacking up if you change tabs
+          const newConfirmBtn = confirmSuspendBtn.cloneNode(true);
+          confirmSuspendBtn.parentNode.replaceChild(newConfirmBtn, confirmSuspendBtn);
+          
+          newConfirmBtn.addEventListener('click', function() {
+            const userId = this.getAttribute('data-target-user');
+            const duration = document.getElementById('suspendDuration').value;
+            
+            if (!duration) {
+              alert('Please select a suspension duration.');
+              return;
+            }
+
+            // Hide the Bootstrap modal cleanly
+            const modalEl = document.getElementById('suspendUserModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            // Trigger the backend process
+            handleUserSuspendAction(userId, 'suspend', duration);
+            
+            // Reset the dropdown for next time
+            document.getElementById('suspendDuration').value = '';
+          });
+        }
+        // ==========================================
+        // 8. Create New Role Modal Logic (Bulletproof)
+        // ==========================================
+
+        // Expose function globally so the HTML button can trigger it
+        window.openCreateRoleModal = function() {
+            document.getElementById('createRoleForm').reset();
+            const roleModal = new bootstrap.Modal(document.getElementById('createRoleModal'));
+            roleModal.show();
+        };
+
+        // Listen globally for ANY form submission, and intercept if it's our Role Form
+        document.addEventListener('submit', async function(e) {
+            if (e.target && e.target.id === 'createRoleForm') {
+                e.preventDefault(); // Stop the page from reloading!
+
+                const submitBtn = document.getElementById('saveRoleBtn');
+                const originalText = submitBtn.innerText;
+                submitBtn.innerText = 'Saving...';
+                submitBtn.disabled = true;
+
+                try {
+                    const formData = new FormData(e.target);
+                    const response = await fetch('actions/roles/create-role.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    // 🚨 Crucial Fix: Read as text first to catch any hidden PHP/SQL errors that break JSON
+                    const rawText = await response.text(); 
+                    
+                    try {
+                        const result = JSON.parse(rawText);
+                        
+                        if (result.success) {
+                            alert(result.message);
+                            
+                            // Hide modal cleanly
+                            const modalEl = document.getElementById('createRoleModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                            modalInstance.hide();
+                            
+                            // Refresh the tables/UI instantly
+                            if (typeof fetchUserManagementData === 'function') {
+                                fetchUserManagementData(); 
+                            }
+                        } else {
+                            alert('Database Error: ' + result.message);
+                        }
+                    } catch (parseError) {
+                        // If the response wasn't valid JSON, it means PHP threw a fatal SQL error.
+                        console.error("PHP/SQL Error Output:", rawText);
+                        alert("The server encountered an SQL error. Please press F12 and check the Console for the exact database error.");
+                    }
+                } catch (error) {
+                    console.error('Role Creation Error:', error);
+                    alert('A network error occurred while saving the role.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.innerText = originalText;
+                        submitBtn.disabled = false;
+                    }
+                }
+            }
+        });
       }
+      
     });
   </script>
 

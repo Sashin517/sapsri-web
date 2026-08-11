@@ -15,7 +15,7 @@
     <h1 class="mb-1 fw-bold fs-3">User Management</h1>
     <p class="mb-0 text-muted" style="font-size: 0.95rem;">Manage admins, roles, and access requests</p>
   </div>
-  <button class="btn btn-create-project d-flex align-items-center gap-2">
+  <button class="btn btn-create-project d-flex align-items-center gap-2" onclick="openCreateRoleModal()">
     <i data-lucide="user-plus" style="width: 18px;"></i> Create New Role
   </button>
 </div>
@@ -127,6 +127,108 @@
         <button type="button" class="btn flex-grow-1 text-white" id="confirmSuspendBtn" style="background-color: #E31837; border-radius: 8px; font-weight: 500; padding: 0.7rem;">Suspend</button>
       </div>
       
+    </div>
+  </div>
+</div>
+
+<!-- Custom CSS for the Role Modal (Can be moved to your main stylesheet later) -->
+<style>
+    .sapsri-checkbox:checked {
+        background-color: var(--sapsri-red, #A20A35) !important;
+        border-color: var(--sapsri-red, #A20A35) !important;
+    }
+    .permission-matrix-table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .permission-matrix-table th {
+        background-color: #f4f5f6;
+        color: #4a4a4a;
+        font-weight: 600;
+        text-align: center;
+        padding: 1rem;
+    }
+    .permission-matrix-table td {
+        vertical-align: middle;
+        padding: 1rem;
+    }
+    .permission-matrix-table td:first-child, 
+    .permission-matrix-table th:first-child {
+        text-align: left;
+    }
+    .modal-xl-custom {
+        max-width: 800px;
+    }
+</style>
+
+<!-- Create Role Modal -->
+<div class="modal fade" id="createRoleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl-custom">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+        <h5 class="modal-title fw-bold fs-4">Create New Role</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form id="createRoleForm">
+        <!-- Modal Body -->
+        <div class="modal-body px-4 pt-4 pb-2">
+            
+            <div class="mb-4">
+                <label class="form-label fw-medium text-dark">Role Name</label>
+                <input type="text" name="role_name" class="form-control form-control-lg fs-6" placeholder="Administrative Lead" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-medium text-dark">Role Description</label>
+                <textarea name="role_description" class="form-control" rows="3" placeholder="Provide a brief description..."></textarea>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label fw-medium text-dark mb-3">Permission Matrix</label>
+                <div class="border permission-matrix-table">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>View</th>
+                                <th>Create</th>
+                                <th>Edit</th>
+                                <th>Delete/Suspend</th>
+                                <th>Publish</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Matrix Rows injected via PHP/HTML -->
+                            <?php 
+                            $modules = ['Dashboard', 'Projects', 'Posts', 'Publications', 'Users'];
+                            foreach($modules as $module): 
+                                $mod_key = strtolower($module);
+                            ?>
+                            <tr>
+                                <td class="fw-medium text-secondary"><?= $module ?></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][view]" value="1"></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][create]" value="1"></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][edit]" value="1"></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][delete]" value="1"></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][publish]" value="1"></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer border-top px-4 py-3 bg-white" style="border-radius: 0 0 12px 12px;">
+            <button type="button" class="btn btn-light border px-4 py-2 fw-medium" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn px-4 py-2 text-white fw-medium shadow-sm" style="background-color: var(--sapsri-red, #A20A35);" id="saveRoleBtn">Save Role</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
