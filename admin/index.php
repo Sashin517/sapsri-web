@@ -608,6 +608,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
     /* --- Quick Actions --- */
     .quick-action-card {
+      cursor: pointer;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1.25rem;
@@ -2711,6 +2712,34 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       }
 
     });
+  </script>
+
+  <!-- Handle quick actions -->
+  <script>
+    function handleQuickAction(action) {
+
+      switch (action) {
+        case 'create-new-project':
+          document.querySelector("[data-view='projects']").click();
+          loadView('create-project', 'Create New Project');
+          break;
+
+        case 'create-new-post':
+          document.querySelector("[data-view='posts']").click();
+          loadView('create-post', 'Create New Post');
+          break;
+
+        case 'add-new-publication':
+          document.querySelector("[data-view='publications']").click();
+          loadView('create-publication', 'Create Publication');
+          break;
+
+        default:
+          alert("Something went wrong.");
+          break;
+      }
+
+    }
   </script>
 
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
