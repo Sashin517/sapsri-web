@@ -552,7 +552,7 @@
 
     <!-- footer -->
     <?php include "../includes/footer.php"; ?>
-
+    <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/script.js"></script>
     <script>

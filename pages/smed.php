@@ -472,6 +472,7 @@
         </div>
     </div>
     <!-- relavant image full screen show end-->
+     <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/script.js"></script>
     <script src="./assets/js/past_project.js"></script>
