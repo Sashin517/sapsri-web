@@ -1146,6 +1146,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
             fetchDashboardStats('custom', startDate, endDate);
           });
+
+          $(customDateBtn).on('show.daterangepicker', function(ev, picker) {
+            picker.container.find('.drp-calendar').on('click', function(e) {
+              e.stopPropagation();
+            });
+          });
         });
 
         // 7. Initial Data Load for Dashboard
