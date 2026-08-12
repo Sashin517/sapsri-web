@@ -24,10 +24,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> -->
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/project-sedna/vendor/bootstrap/bootstrap-custom.css">
   <link rel="stylesheet" href="/project-sedna/vendor/daterangepicker/daterangepicker-bs5.css">
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -840,7 +840,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         <!-- User Profile Dropdown -->
         <div class="dropdown">
           <div class="user-profile-btn shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-            <img src="https://i.pravatar.cc/150?img=44" alt="<?php echo htmlspecialchars($adminName); ?>" class="user-avatar">
+            <img src="/project-sedna/admin/assets/img/default-user-avatar.svg" alt="<?php echo htmlspecialchars($adminName); ?>" class="user-avatar">
             <div class="d-flex flex-column text-start">
               <span style="font-size: 0.85rem; font-weight: 600; line-height: 1;"><?php echo htmlspecialchars($adminName); ?></span>
               <span style="font-size: 0.75rem; color: var(--text-muted);"><?php echo htmlspecialchars($adminRole); ?></span>

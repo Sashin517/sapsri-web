@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Bootstrap 5.3 Primary Color Override Theme
+   Base Primary Color: #a20a35
+   ========================================================================== */
+
+:root,
+[data-bs-theme="light"] {
+  /* Core Brand Colors */
+  --bs-primary: #a20a35;
+  --bs-primary-rgb: 162, 10, 53;
+
+  /* Hover / Active State Shades */
+  --bs-primary-hover: #82082a;
+  --bs-primary-active: #670621;
+
+  /* Subtitle & Background Shades (Light Mode) */
+  --bs-primary-bg-subtle: #fbe6eb;
+  --bs-primary-border-subtle: #f4b3c4;
+  --bs-primary-text-emphasis: #670621;
+}
+
+[data-bs-theme="dark"] {
+  /* Core Brand Color in Dark Mode */
+  --bs-primary: #f26288;
+  --bs-primary-rgb: 242, 98, 136;
+
+  /* Hover / Active State Shades */
+  --bs-primary-hover: #f583a0;
+  --bs-primary-active: #f8a3b8;
+
+  /* Subtitle & Background Shades (Dark Mode) */
+  --bs-primary-bg-subtle: #410415;
+  --bs-primary-border-subtle: #670621;
+  --bs-primary-text-emphasis: #f8a3b8;
+}
+
+/* ==========================================================================
+   Solid Primary Button (.btn-primary)
+   ========================================================================== */
+.btn-primary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: #a20a35;
+  --bs-btn-border-color: #a20a35;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #82082a;
+  --bs-btn-hover-border-color: #790727;
+  --bs-btn-focus-shadow-rgb: 175, 43, 80;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #670621;
+  --bs-btn-active-border-color: #61061f;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #ffffff;
+  --bs-btn-disabled-bg: #a20a35;
+  --bs-btn-disabled-border-color: #a20a35;
+}
+
+/* ==========================================================================
+   Outline Primary Button (.btn-outline-primary)
+   ========================================================================== */
+.btn-outline-primary {
+  --bs-btn-color: #a20a35;
+  --bs-btn-border-color: #a20a35;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #a20a35;
+  --bs-btn-hover-border-color: #a20a35;
+  --bs-btn-focus-shadow-rgb: 162, 10, 53;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #a20a35;
+  --bs-btn-active-border-color: #a20a35;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #a20a35;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-btn-border-color: #a20a35;
+}
+
+/* ==========================================================================
+   Alerts, Badges, Links & Form Focus Elements
+   ========================================================================== */
+
+/* Active Nav Links, Badges, and Background Utilities */
+.bg-primary {
+  background-color: #a20a35 !important;
+}
+
+.text-primary {
+  color: #a20a35 !important;
+}
+
+.border-primary {
+  border-color: #a20a35 !important;
+}
+
+/* Form Inputs Focus Ring Override */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #f4b3c4;
+  box-shadow: 0 0 0 0.25rem rgba(162, 10, 53, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: #a20a35;
+  border-color: #a20a35;
+}
+
+/* Active Pagination & List Groups */
+.page-item.active .page-link,
+.list-group-item.active {
+  background-color: #a20a35;
+  border-color: #a20a35;
+}
+
+.page-link {
+  color: #a20a35;
+}
+
+.page-link:hover {
+  color: #82082a;
+}
