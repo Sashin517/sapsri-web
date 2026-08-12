@@ -3,8 +3,8 @@ session_start();
 
 // Redirect to login if the session is not set
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
-    exit();
+  header("Location: login.php");
+  exit();
 }
 
 // Assign session variables for use in the HTML below
@@ -14,13 +14,21 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SAPSRI Admin | Dashboard</title>
 
+  <!-- Date Range Picker -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> -->
+
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/project-sedna/vendor/daterangepicker/daterangepicker-bs5.css">
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
@@ -92,7 +100,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       top: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255, 255, 255, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -137,7 +145,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       margin-bottom: 0.5rem;
     }
 
-    .nav-link i, .nav-link svg {
+    .nav-link i,
+    .nav-link svg {
       min-width: 20px;
       margin-right: 0.75rem;
       transition: margin 0.3s ease;
@@ -162,23 +171,29 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     .sidebar.collapsed {
       width: var(--sidebar-collapsed-width);
     }
+
     .sidebar.collapsed .nav-link-text {
       display: none;
     }
+
     .sidebar.collapsed .nav-link {
       justify-content: center;
       padding: 0.75rem 0;
     }
+
     .sidebar.collapsed .nav-link i,
     .sidebar.collapsed .nav-link svg {
       margin-right: 0;
     }
+
     .sidebar.collapsed .sidebar-header {
       justify-content: center;
       padding: 1.5rem 0;
     }
+
     .sidebar.collapsed .toggle-sidebar-btn {
-      display: none; /* Hide standard toggle when collapsed, rely on logo hover */
+      display: none;
+      /* Hide standard toggle when collapsed, rely on logo hover */
     }
 
     /* --- Main Content Area --- */
@@ -189,6 +204,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       flex-direction: column;
       transition: margin-left 0.3s ease;
     }
+
     .main-content.expanded {
       margin-left: var(--sidebar-collapsed-width);
     }
@@ -300,9 +316,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       width: 200px;
       padding: 0.5rem 0;
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       border: none;
     }
+
     .date-dropdown-item {
       padding: 0.75rem 1.5rem;
       color: var(--text-dark);
@@ -312,6 +329,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       justify-content: space-between;
       align-items: center;
     }
+
     .date-dropdown-item:hover {
       background-color: #f1f5f9;
     }
@@ -325,14 +343,17 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       margin-top: 10px;
       background: #F4F5F7;
       border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
       padding: 1.5rem;
       z-index: 1060;
-      width: 650px; /* Dual calendar width */
+      width: 650px;
+      /* Dual calendar width */
     }
+
     .calendar-popover.show {
       display: block;
     }
+
     .cal-header-row {
       display: flex;
       justify-content: space-between;
@@ -340,6 +361,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       margin-bottom: 1rem;
       font-weight: 600;
     }
+
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -347,11 +369,13 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       gap: 4px;
       font-size: 0.9rem;
     }
+
     .cal-day-name {
       color: var(--text-muted);
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
+
     .cal-day {
       width: 36px;
       height: 36px;
@@ -362,19 +386,36 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       cursor: pointer;
       margin: auto;
     }
-    .cal-day.muted { color: #ADB5BD; }
+
+    .cal-day.muted {
+      color: #ADB5BD;
+    }
 
     /* Range Selection Styles */
-    .cal-range-bg { background-color: var(--cal-selected-bg); border-radius: 0; width: 100%; }
+    .cal-range-bg {
+      background-color: var(--cal-selected-bg);
+      border-radius: 0;
+      width: 100%;
+    }
+
     .cal-range-start {
       background-color: var(--cal-active-bg);
       color: white;
       border-radius: 50%;
       position: relative;
     }
+
     .cal-range-start::after {
-      content: ''; position: absolute; right: -4px; top: 0; width: 50%; height: 100%; background: var(--cal-selected-bg); z-index: -1;
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: var(--cal-selected-bg);
+      z-index: -1;
     }
+
     .cal-range-end {
       background-color: #ffffff;
       color: var(--text-dark);
@@ -382,8 +423,16 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       border-radius: 50%;
       position: relative;
     }
+
     .cal-range-end::before {
-      content: ''; position: absolute; left: -4px; top: -2px; width: 50%; height: calc(100% + 4px); background: var(--cal-selected-bg); z-index: -1;
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: -2px;
+      width: 50%;
+      height: calc(100% + 4px);
+      background: var(--cal-selected-bg);
+      z-index: -1;
     }
 
     /* --- Dashboard Cards (from content build) --- */
@@ -441,8 +490,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     }
 
     .kpi-value .spinner-border {
-        font-size: 0.75rem;
-        vertical-align: middle;
+      font-size: 0.75rem;
+      vertical-align: middle;
     }
 
     .badge-trend {
@@ -478,17 +527,25 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     }
 
     .table th {
-        background-color: #EFEFEF;
-        color: var(--text-dark);
-        font-weight: 600;
-        font-size: 0.9rem;
-        padding: 1rem;
-        border-bottom: none;
-        vertical-align: middle;   /* add this line */
+      background-color: #EFEFEF;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 1rem;
+      border-bottom: none;
+      vertical-align: middle;
+      /* add this line */
     }
 
-    .table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-    .table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+    .table th:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    .table th:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
 
     .table td {
       padding: 1rem;
@@ -564,7 +621,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     }
 
     .quick-action-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .quick-action-icon {
@@ -620,7 +677,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       font-weight: 500;
       transition: all 0.2s ease;
     }
-    
+
     .btn-create-project:hover {
       background-color: var(--bg-light-gray);
     }
@@ -630,17 +687,19 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       padding: 0 !important;
       overflow: hidden;
     }
-    
+
     .card-edge-table .table th {
-      border-radius: 0 !important; /* Removes the rounded corners from the dashboard table headers */
-      background-color: #E2E2E2; /* Slightly darker gray to match the mockup */
+      border-radius: 0 !important;
+      /* Removes the rounded corners from the dashboard table headers */
+      background-color: #E2E2E2;
+      /* Slightly darker gray to match the mockup */
       padding: 1rem 1.5rem;
     }
 
     .card-edge-table .table td {
       padding: 1rem 1.5rem;
     }
-    
+
     .projects-filter-bar {
       padding: 1.5rem;
       border-bottom: 1px solid var(--border-color);
@@ -649,37 +708,49 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     /* --- Responsive Queries --- */
     @media (max-width: 991px) {
       .sidebar {
-        transform: translateX(-100%); /* Hide completely off-screen on mobile */
+        transform: translateX(-100%);
+        /* Hide completely off-screen on mobile */
         width: var(--sidebar-width);
       }
+
       .sidebar.mobile-open {
         transform: translateX(0);
       }
-      .main-content, .main-content.expanded {
+
+      .main-content,
+      .main-content.expanded {
         margin-left: 0;
       }
+
       .mobile-menu-btn {
         display: block;
       }
+
       .calendar-popover {
-        width: 320px; /* Single column on mobile */
+        width: 320px;
+        /* Single column on mobile */
         right: -50px;
       }
+
       .dual-cal-wrapper {
         flex-direction: column;
         gap: 1.5rem;
       }
+
       .hero-banner {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
       }
+
       .dashboard-container {
         padding: 0 1rem 1.5rem 1rem;
       }
+
       .top-navbar {
         padding: 0 1rem;
       }
+
       .hero-banner {
         margin: 0 1rem 1.5rem 1rem;
       }
@@ -689,12 +760,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       .content-card {
         padding: 1rem;
       }
+
       .table-responsive {
         font-size: 0.85rem;
       }
     }
   </style>
+
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -751,17 +825,17 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     <!-- Top Navbar -->
     <header class="top-navbar">
       <h2 class="page-title">Dashboard</h2>
-      
+
       <div class="d-flex align-items-center gap-3">
         <div class="search-bar">
           <i data-lucide="search"></i>
           <input type="text" class="search-input" placeholder="Search...">
         </div>
-        
+
         <button class="notification-btn border-0 shadow-sm">
           <i data-lucide="bell"></i>
         </button>
-        
+
         <!-- User Profile Dropdown -->
         <div class="dropdown">
           <div class="user-profile-btn shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
@@ -772,7 +846,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             </div>
             <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
           </div>
-          
+
           <!-- Dropdown Menu -->
           <ul class="dropdown-menu date-dropdown-menu dropdown-menu-end mt-2 border-0 shadow">
             <li>
@@ -780,7 +854,9 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 <i data-lucide="settings" style="width: 18px; height: 18px;"></i> Account Settings
               </a>
             </li>
-            <li><hr class="dropdown-divider"></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
             <li>
               <a class="dropdown-item date-dropdown-item d-flex justify-content-start align-items-center gap-2 text-danger" href="actions/auth/logout.php">
                 <i data-lucide="log-out" style="width: 18px; height: 18px;"></i> Log Out
@@ -793,9 +869,9 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
     <!-- MAIN SPA INJECTION CONTAINER -->
     <div id="app-content">
-    <!-- Views will be loaded here dynamically -->
+      <!-- Views will be loaded here dynamically -->
 
-      </div>
+    </div>
     </div>
     <!-- End Dashboard Content -->
 
@@ -848,19 +924,19 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-      
+
       const appContent = document.getElementById('app-content');
-      const pageTitle = document.getElementById('page-title'); 
+      const pageTitle = document.getElementById('page-title');
 
       // --- SPA ROUTER FUNCTION ---
       async function loadView(viewName, title) {
         // Show loader
         appContent.innerHTML = '<div class="d-flex justify-content-center mt-5"><div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div></div>';
-        
+
         try {
           const response = await fetch(`views/${viewName}.php`);
           if (!response.ok) throw new Error('View not found');
-          
+
           const html = await response.text();
           appContent.innerHTML = html;
 
@@ -871,14 +947,14 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           if (viewName === 'dashboard') {
             initDashboardScript();
           } else if (viewName === 'projects') {
-            initProjectsScript(); 
+            initProjectsScript();
           } else if (viewName === 'posts') {
             initPostsScript();
           } else if (viewName === 'publications') {
             initPublicationsScript();
           } else if (viewName === 'users') {
             initUsersScript();
-          }else if (viewName === 'create-project') {
+          } else if (viewName === 'create-project') {
             initCreateProjectScript();
           } else if (viewName === 'create-post') {
             initCreatePostScript();
@@ -896,11 +972,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
       // --- SIDEBAR NAVIGATION HANDLER ---
       const navLinks = document.querySelectorAll('.spa-link');
-      
+
       navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
-          
+
           // Manage Active States
           navLinks.forEach(l => l.classList.remove('active-primary'));
           e.currentTarget.classList.add('active-primary');
@@ -908,7 +984,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           // Get routing data from the clicked link
           const targetView = e.currentTarget.getAttribute('data-view');
           const targetTitle = e.currentTarget.getAttribute('data-title');
-          
+
           // Load the view
           loadView(targetView, targetTitle);
 
@@ -927,45 +1003,52 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       // --- VIEW: DASHBOARD LOGIC ---
       // ==========================================
       function initDashboardScript() {
-        
+
         // 1. Set dynamic user name
         const nameEl = document.getElementById('dyn-user-name');
         if (nameEl) nameEl.innerText = sessionData.userName;
 
         // 2. Calendar Popover Logic
-        const customDateBtn = document.getElementById('customDateBtn');
-        const calendarPopover = document.getElementById('calendarPopover');
-        
-        if (customDateBtn && calendarPopover) {
-          customDateBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            calendarPopover.classList.toggle('show');
-          });
+        // const customDateBtn = document.getElementById('customDateBtn');
+        // const calendarPopover = document.getElementById('calendarPopover');
 
-          document.addEventListener('click', function(event) {
-            if (!calendarPopover.contains(event.target) && event.target !== customDateBtn) {
-              calendarPopover.classList.remove('show');
-            }
-          });
-        }
+
+        // if (customDateBtn && calendarPopover) {
+        //   customDateBtn.addEventListener('click', (event) => {
+        //     event.stopPropagation();
+        //     calendarPopover.classList.toggle('show');
+        //   });
+
+        //   document.addEventListener('click', function(event) {
+        //     if (!calendarPopover.contains(event.target) && event.target !== customDateBtn) {
+        //       calendarPopover.classList.remove('show');
+        //     }
+        //   });
+        // }
 
         // 3. KPI Fetcher
-        function fetchDashboardStats(range = 'today') {
+        function fetchDashboardStats(range = 'today', start = '', end = '') {
           const modules = ['projects', 'publications', 'users', 'posts'];
-          
+
+          const params = new URLSearchParams({
+            range: range,
+            start: start,
+            end: end
+          });
+
           // Set loading state
           modules.forEach(mod => {
-            if(document.getElementById(`val-${mod}`)) {
+            if (document.getElementById(`val-${mod}`)) {
               document.getElementById(`val-${mod}`).innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
             }
           });
 
-          fetch(`actions/dashboard/fetch-stats.php?range=${range}`)
+          fetch(`actions/dashboard/fetch-stats.php?${params.toString()}`)
             .then(res => res.json())
             .then(result => {
               if (result.status === 'success') {
                 modules.forEach(mod => {
-                  if(document.getElementById(`val-${mod}`)) {
+                  if (document.getElementById(`val-${mod}`)) {
                     document.getElementById(`val-${mod}`).innerText = result.data[mod].count;
                     document.getElementById(`trend-${mod}`).innerText = result.data[mod].trend;
                     document.getElementById(`trend-${mod}`).className = `badge-trend status-pill ${result.data[mod].trend_class}`;
@@ -977,12 +1060,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         }
 
         // 4. Recent Content Table Fetcher
-        window.loadRecentContent = function(page = 1) { 
+        window.loadRecentContent = function(page = 1) {
           const tbody = document.getElementById('recent-content-tbody');
           if (!tbody) return;
-          
+
           tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading content...</td></tr>';
-          
+
           fetch(`actions/dashboard/fetch-recent-content.php?page=${page}`)
             .then(res => res.json())
             .then(result => {
@@ -1007,9 +1090,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           const pDiv = document.getElementById('recent-content-pagination');
           if (!pDiv) return;
           pDiv.innerHTML = '';
-          
-          const { current_page, total_pages } = pagination;
-          if (total_pages <= 1) return; 
+
+          const {
+            current_page,
+            total_pages
+          } = pagination;
+          if (total_pages <= 1) return;
 
           const prevDisabled = current_page === 1 ? 'disabled' : '';
           pDiv.innerHTML += `<a href="#" class="page-btn ${prevDisabled}" onclick="event.preventDefault(); loadRecentContent(1)"><i data-lucide="chevrons-left" style="width:16px;"></i> First</a>`;
@@ -1038,13 +1124,43 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             const range = e.target.getAttribute('data-range');
             dpBtn.innerHTML = `${e.target.innerText} <i data-lucide="chevron-down" style="width: 16px;"></i>`;
             lucide.createIcons();
+            resetDateRangePicker();
             fetchDashboardStats(range);
+          });
+        });
+
+        const customDateBtn = document.getElementById('customDateBtn');
+        customDateBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+        });
+
+        $(function() {
+          $(customDateBtn).daterangepicker({
+            opens: 'left'
+          }, function(start, end) {
+            const startDate = start.format('YYYY-MM-DD');
+            const endDate = end.format('YYYY-MM-DD');
+
+            dpBtn.innerHTML = `${startDate} - ${endDate} <i data-lucide="chevron-down" style="width: 16px;"></i>`;
+            lucide.createIcons();
+
+            fetchDashboardStats('custom', startDate, endDate);
           });
         });
 
         // 7. Initial Data Load for Dashboard
         fetchDashboardStats('today');
         loadRecentContent(1);
+
+        function resetDateRangePicker() {
+          const today = moment();
+          const $button = $(customDateBtn);
+          const picker = $button.data('daterangepicker');
+          if (picker) {
+            picker.setStartDate(today);
+            picker.setEndDate(today);
+          }
+        }
       }
       // ---> Notice the Dashboard function cleanly ends here now! <---
 
@@ -1056,15 +1172,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         window.loadProjects = function() {
           const tbody = document.getElementById('projects-tbody');
           if (!tbody) return;
-          
+
           tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading projects...</td></tr>';
-          
+
           fetch('actions/projects/fetch-projects.php')
             .then(res => res.json())
             .then(data => {
               const projects = Array.isArray(data) ? data : Object.values(data);
               tbody.innerHTML = '';
-              
+
               if (projects.length === 0 || projects[0].error) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No projects found.</td></tr>';
                 return;
@@ -1073,10 +1189,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               projects.forEach(item => {
                 let pillClass = (item.status || '').toLowerCase() === 'published' ? 'status-published' : 'status-draft';
                 let createdDate = item.created_date ? item.created_date.split(' ')[0] : 'N/A';
-                
+
                 // Format the phase visually
                 let phaseText = item.project_phase === 'past' ? '<span class="text-secondary fw-medium">Past</span>' : '<span class="text-success fw-medium">Ongoing</span>';
-                
+
                 const row = `
                   <tr>
                     <td class="fw-medium">${item.title}</td>
@@ -1106,7 +1222,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       // --- VIEW: CREATE PROJECT LOGIC ---
       // ==========================================
       function initCreateProjectScript() {
-        
+
         // Note for backend integration:
         // Final form submission will route files to:
         // Images -> ../../assets/media/img/projects
@@ -1117,13 +1233,13 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         const phaseLabel = document.getElementById('phaseLabel');
         const startDateContainer = document.getElementById('startDateContainer');
         const endDateContainer = document.getElementById('endDateContainer');
-        
-        if(phaseToggle) {
+
+        if (phaseToggle) {
           phaseToggle.addEventListener('change', (e) => {
             // Update Label text and color
             phaseLabel.innerText = e.target.checked ? 'Ongoing' : 'Past';
             phaseLabel.className = e.target.checked ? 'form-check-label fw-medium ms-2 text-success' : 'form-check-label fw-medium ms-2 text-secondary';
-            
+
             // Handle Grid Widths and Visibility
             if (endDateContainer && startDateContainer) {
               if (e.target.checked) {
@@ -1131,7 +1247,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 startDateContainer.classList.remove('col-md-6');
                 startDateContainer.classList.add('col-md-12');
                 endDateContainer.style.display = 'none';
-                
+
                 // Clear the end date just in case
                 document.getElementById('projectEndDate').value = '';
               } else {
@@ -1145,8 +1261,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         }
 
         // 2. Initialize Quill Rich Text Editor
-        if(document.getElementById('editor')) {
-          
+        if (document.getElementById('editor')) {
+
           // Import and map the icons BEFORE initializing Quill
           const Icons = Quill.import('ui/icons');
           Icons.undo = '<svg viewbox="0 0 18 18"><polyline class="ql-stroke" points="6 10 4 12 2 10"></polyline><path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path></svg>';
@@ -1164,16 +1280,34 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               toolbar: {
                 container: [
                   ['undo', 'redo'],
-                  [{ 'size': ['small', false, 'large', 'huge'] }],
+                  [{
+                    'size': ['small', false, 'large', 'huge']
+                  }],
                   ['bold', 'italic', 'underline', 'strike'],
-                  [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }, { 'align': 'justify' }],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{
+                    'align': ''
+                  }, {
+                    'align': 'center'
+                  }, {
+                    'align': 'right'
+                  }, {
+                    'align': 'justify'
+                  }],
+                  [{
+                    'list': 'ordered'
+                  }, {
+                    'list': 'bullet'
+                  }],
                   ['link']
                 ],
                 // Explicitly tell the toolbar what 'undo' and 'redo' should do
                 handlers: {
-                  'undo': function() { this.quill.history.undo(); },
-                  'redo': function() { this.quill.history.redo(); }
+                  'undo': function() {
+                    this.quill.history.undo();
+                  },
+                  'redo': function() {
+                    this.quill.history.redo();
+                  }
                 }
               }
             }
@@ -1186,8 +1320,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           const progressDiv = document.getElementById(idPrefix + 'Progress');
           const progressBar = document.getElementById(idPrefix + 'ProgressBar');
           const progressText = document.getElementById(idPrefix + 'ProgressText');
-          
-          if(!contentDiv || !progressDiv) { callback(); return; } // Fallback if HTML wrapper missing
+
+          if (!contentDiv || !progressDiv) {
+            callback();
+            return;
+          } // Fallback if HTML wrapper missing
 
           // State 1: Uploading
           contentDiv.style.display = 'none';
@@ -1195,12 +1332,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           progressBar.className = 'progress-fill';
           progressBar.style.width = '0%';
           progressText.className = 'upload-status-text';
-          
+
           let progress = 0;
           const interval = setInterval(() => {
             progress += Math.random() * 20;
             if (progress >= 100) progress = 100;
-            
+
             progressBar.style.width = progress + '%';
             progressText.innerText = `Uploading... ${Math.round(progress)}%`;
 
@@ -1211,7 +1348,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               progressText.classList.add('success');
               progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Upload Complete!';
               lucide.createIcons();
-              
+
               // State 3: Show Preview after delay
               setTimeout(() => {
                 progressDiv.style.display = 'none';
@@ -1244,14 +1381,17 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         };
 
         // 5. Dynamic Metrics Logic (Drag & Drop + Icon Preview)
-        let metricsCount = { 1: 0, 2: 0 };
-        
+        let metricsCount = {
+          1: 0,
+          2: 0
+        };
+
         window.addMetricRow = function(sectionId) {
           if (metricsCount[sectionId] >= 3) return;
           metricsCount[sectionId]++;
           const container = document.getElementById(`metricsContainerSec${sectionId}`);
           const rowId = `sec${sectionId}_metric${metricsCount[sectionId]}`;
-          
+
           const rowHTML = `
             <div class="metric-row" id="row_${rowId}" draggable="true">
               <div class="drag-handle"><i data-lucide="grip-vertical" class="text-muted"></i></div>
@@ -1275,7 +1415,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           container.insertAdjacentHTML('beforeend', rowHTML);
           lucide.createIcons();
           initDragAndDrop(container);
-          
+
           if (metricsCount[sectionId] >= 3) {
             document.getElementById(`addMetricSec${sectionId}Btn`).disabled = true;
           }
@@ -1289,7 +1429,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
         window.handleMetricIconUpload = function(input, rowId) {
           if (input.files && input.files[0]) {
-            if(input.files[0].type !== 'image/png') { alert("Only PNG images are allowed for icons."); return; }
+            if (input.files[0].type !== 'image/png') {
+              alert("Only PNG images are allowed for icons.");
+              return;
+            }
             const reader = new FileReader();
             reader.onload = function(e) {
               document.getElementById('icon_ph_' + rowId).style.display = 'none';
@@ -1312,11 +1455,18 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
         // Initialize Native Drag & Drop
         let draggedRow = null;
+
         function initDragAndDrop(container) {
           const rows = container.querySelectorAll('.metric-row');
           rows.forEach(row => {
-            row.addEventListener('dragstart', () => { draggedRow = row; setTimeout(() => row.classList.add('dragging'), 0); });
-            row.addEventListener('dragend', () => { row.classList.remove('dragging'); draggedRow = null; });
+            row.addEventListener('dragstart', () => {
+              draggedRow = row;
+              setTimeout(() => row.classList.add('dragging'), 0);
+            });
+            row.addEventListener('dragend', () => {
+              row.classList.remove('dragging');
+              draggedRow = null;
+            });
           });
 
           container.addEventListener('dragover', e => {
@@ -1334,12 +1484,21 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           return draggableElements.reduce((closest, child) => {
             const box = child.getBoundingClientRect();
             const offset = y - box.top - box.height / 2;
-            if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
-            else { return closest; }
-          }, { offset: Number.NEGATIVE_INFINITY }).element;
+            if (offset < 0 && offset > closest.offset) {
+              return {
+                offset: offset,
+                element: child
+              };
+            } else {
+              return closest;
+            }
+          }, {
+            offset: Number.NEGATIVE_INFINITY
+          }).element;
         }
 
-        addMetricRow(1); addMetricRow(2);
+        addMetricRow(1);
+        addMetricRow(2);
 
 
         // 6. Success Stories Logic
@@ -1348,7 +1507,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           storyCount++;
           const container = document.getElementById('storiesWrapper');
           const storyId = `story${storyCount}`;
-          
+
           const storyHTML = `
             <div class="section-card position-relative" id="container_${storyId}">
               <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1383,8 +1542,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           lucide.createIcons();
         };
 
-        window.removeStory = function(containerId) { document.getElementById(containerId).remove(); };
-        
+        window.removeStory = function(containerId) {
+          document.getElementById(containerId).remove();
+        };
+
         window.handleStoryUpload = function(input, storyId) {
           if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -1403,7 +1564,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         // 7. Media Gallery Multi-Upload (With Video Thumbnailing)
         window.handleGalleryUpload = function(input) {
           const container = document.getElementById('galleryPreviewContainer');
-          
+
           if (input.files) {
             Array.from(input.files).forEach(file => {
               const uniqueId = 'gal_' + Math.random().toString(36).substr(2, 9);
@@ -1431,10 +1592,13 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 const video = document.createElement('video');
                 video.preload = 'metadata';
                 video.src = URL.createObjectURL(file);
-                video.onloadeddata = () => { video.currentTime = 1; }; // Seek to 1 second to avoid black frames
+                video.onloadeddata = () => {
+                  video.currentTime = 1;
+                }; // Seek to 1 second to avoid black frames
                 video.onseeked = () => {
                   const canvas = document.createElement('canvas');
-                  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
                   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                   injectHTML(canvas.toDataURL('image/jpeg'), true);
                 };
@@ -1447,7 +1611,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             });
           }
         };
-          // --- GLOBAL ARRAYS FOR FILES ---
+        // --- GLOBAL ARRAYS FOR FILES ---
         window.galleryFilesArray = [];
 
         // Update the Gallery Upload to store actual files
@@ -1456,7 +1620,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           if (input.files) {
             Array.from(input.files).forEach(file => {
               const uniqueId = 'gal_' + Math.random().toString(36).substr(2, 9);
-              window.galleryFilesArray.push({ id: uniqueId, file: file }); // Store for submission
+              window.galleryFilesArray.push({
+                id: uniqueId,
+                file: file
+              }); // Store for submission
 
               const isVideo = file.type.startsWith('video/');
               const injectHTML = (src, showPlayBtn) => {
@@ -1478,11 +1645,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
               if (isVideo) {
                 const video = document.createElement('video');
-                video.preload = 'metadata'; video.src = URL.createObjectURL(file);
-                video.onloadeddata = () => { video.currentTime = 1; }; 
+                video.preload = 'metadata';
+                video.src = URL.createObjectURL(file);
+                video.onloadeddata = () => {
+                  video.currentTime = 1;
+                };
                 video.onseeked = () => {
                   const canvas = document.createElement('canvas');
-                  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
                   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                   injectHTML(canvas.toDataURL('image/jpeg'), true);
                 };
@@ -1504,17 +1675,17 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         // --- THE MASSIVE FORM SUBMIT HANDLER ---
         document.getElementById('createProjectForm').addEventListener('submit', async function(e) {
           e.preventDefault();
-          
+
           // Use e.submitter to grab the exact button clicked
           const activeBtn = e.submitter;
-          
+
           // DIAGNOSIS FIX: Simply assign 'draft' or 'published' based on the button clicked!
           const projectSubmitStatus = (activeBtn && activeBtn.id === 'draftBtn') ? 'draft' : 'published';
-          
+
           // Handle UI Loading State
           const originalBtnText = activeBtn.innerHTML;
           activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
-          
+
           // Safely disable buttons to prevent double-clicks
           const dBtn = document.getElementById('draftBtn');
           const pBtn = document.getElementById('publishBtn');
@@ -1522,40 +1693,40 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           if (pBtn) pBtn.disabled = true;
 
           const formData = new FormData();
-          
+
           // 1. Basic Details
           formData.append('title', document.getElementById('projectTitle').value);
           formData.append('phase', document.getElementById('projectPhaseToggle').checked ? 'ongoing' : 'past');
           formData.append('impact_area', document.getElementById('projectImpactArea').value);
           formData.append('start_date', document.getElementById('projectStartDate').value);
           formData.append('end_date', document.getElementById('projectEndDate').value);
-          formData.append('full_description', quill.root.innerHTML); 
-          
+          formData.append('full_description', quill.root.innerHTML);
+
           // NEW: Append the exact status (draft or published)
           formData.append('status', projectSubmitStatus);
-          
+
           // Cover Image
           const coverInput = document.getElementById('coverInput');
-          if(coverInput.files[0]) formData.append('cover_image', coverInput.files[0]);
+          if (coverInput.files[0]) formData.append('cover_image', coverInput.files[0]);
 
           // 2. Metrics Section 1
           const sec1Img = document.getElementById('sec1Input');
-          if(sec1Img.files[0]) formData.append('sec1_image', sec1Img.files[0]);
+          if (sec1Img.files[0]) formData.append('sec1_image', sec1Img.files[0]);
           document.querySelectorAll('#metricsContainerSec1 .metric-row').forEach((row, index) => {
             const iconInput = row.querySelector('input[type="file"]');
             const inputs = row.querySelectorAll('input[type="text"]');
-            if(iconInput.files[0]) formData.append(`sec1_metrics[${index}][icon]`, iconInput.files[0]);
+            if (iconInput.files[0]) formData.append(`sec1_metrics[${index}][icon]`, iconInput.files[0]);
             formData.append(`sec1_metrics[${index}][value]`, inputs[0].value);
             formData.append(`sec1_metrics[${index}][label]`, inputs[1].value);
           });
 
           // 3. Metrics Section 2
           const sec2Img = document.getElementById('sec2Input');
-          if(sec2Img.files[0]) formData.append('sec2_image', sec2Img.files[0]);
+          if (sec2Img.files[0]) formData.append('sec2_image', sec2Img.files[0]);
           document.querySelectorAll('#metricsContainerSec2 .metric-row').forEach((row, index) => {
             const iconInput = row.querySelector('input[type="file"]');
             const inputs = row.querySelectorAll('input[type="text"]');
-            if(iconInput.files[0]) formData.append(`sec2_metrics[${index}][icon]`, iconInput.files[0]);
+            if (iconInput.files[0]) formData.append(`sec2_metrics[${index}][icon]`, iconInput.files[0]);
             formData.append(`sec2_metrics[${index}][value]`, inputs[0].value);
             formData.append(`sec2_metrics[${index}][label]`, inputs[1].value);
           });
@@ -1565,14 +1736,14 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             const fileInput = card.querySelector('input[type="file"]');
             const desc = card.querySelector('textarea').value;
             const name = card.querySelector('input[type="text"]').value;
-            if(fileInput.files[0]) formData.append(`stories[${index}][image]`, fileInput.files[0]);
+            if (fileInput.files[0]) formData.append(`stories[${index}][image]`, fileInput.files[0]);
             formData.append(`stories[${index}][description]`, desc);
             formData.append(`stories[${index}][name]`, name);
           });
 
           // 5. Project Leads
           const leadImg = document.getElementById('leadInput');
-          if(leadImg.files[0]) formData.append('lead_image', leadImg.files[0]);
+          if (leadImg.files[0]) formData.append('lead_image', leadImg.files[0]);
           formData.append('lead_name', document.getElementById('leadName').value);
           formData.append('lead_role', document.getElementById('leadRole').value);
           formData.append('lead_linkedin', document.getElementById('leadLinkedin').value);
@@ -1589,8 +1760,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               body: formData
             });
             const result = await response.json();
-            
-            if(result.success) {
+
+            if (result.success) {
               alert('Project Published Successfully!');
               loadView('projects', 'Projects Management'); // Go back to list
             } else {
@@ -1598,7 +1769,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               publishBtn.innerHTML = originalBtnText;
               publishBtn.disabled = false;
             }
-          } catch(err) {
+          } catch (err) {
             console.error(err);
             alert('A network error occurred. Please try again.');
             publishBtn.innerHTML = originalBtnText;
@@ -1613,15 +1784,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         window.loadPosts = function() {
           const tbody = document.getElementById('posts-tbody');
           if (!tbody) return;
-          
+
           tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading posts...</td></tr>';
-          
+
           fetch('actions/posts/fetch-posts.php')
             .then(res => res.json())
             .then(data => {
               const posts = Array.isArray(data) ? data : Object.values(data);
               tbody.innerHTML = '';
-              
+
               if (posts.length === 0 || posts[0].error) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No posts found.</td></tr>';
                 return;
@@ -1630,7 +1801,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               posts.forEach(item => {
                 let pillClass = (item.status || '').toLowerCase() === 'published' ? 'status-published' : 'status-draft';
                 let pubDate = item.publish_date ? item.publish_date.split(' ')[0] : (item.created_at ? item.created_at.split(' ')[0] : 'N/A');
-                
+
                 const row = `
                   <tr>
                     <td class="fw-medium">${item.title}</td>
@@ -1665,26 +1836,29 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
         // --- 1. UPLOAD PREVIEW & PROGRESS FUNCTIONS ---
         // (Included here so they work even if you haven't visited Projects first)
-        
+
         function simulateUpload(idPrefix, callback) {
           const contentDiv = document.getElementById(idPrefix + 'Content');
           const progressDiv = document.getElementById(idPrefix + 'Progress');
           const progressBar = document.getElementById(idPrefix + 'ProgressBar');
           const progressText = document.getElementById(idPrefix + 'ProgressText');
-          
-          if(!contentDiv || !progressDiv) { callback(); return; } 
+
+          if (!contentDiv || !progressDiv) {
+            callback();
+            return;
+          }
 
           contentDiv.style.display = 'none';
           progressDiv.style.display = 'block';
           progressBar.className = 'progress-fill';
           progressBar.style.width = '0%';
           progressText.className = 'upload-status-text';
-          
+
           let progress = 0;
           const interval = setInterval(() => {
             progress += Math.random() * 20;
             if (progress >= 100) progress = 100;
-            
+
             progressBar.style.width = progress + '%';
             progressText.innerText = `Uploading... ${Math.round(progress)}%`;
 
@@ -1694,7 +1868,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               progressText.classList.add('success');
               progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Upload Complete!';
               lucide.createIcons();
-              
+
               setTimeout(() => {
                 progressDiv.style.display = 'none';
                 callback();
@@ -1729,7 +1903,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           if (input.files) {
             Array.from(input.files).forEach(file => {
               const uniqueId = 'gal_' + Math.random().toString(36).substr(2, 9);
-              window.galleryFilesArray.push({ id: uniqueId, file: file }); 
+              window.galleryFilesArray.push({
+                id: uniqueId,
+                file: file
+              });
 
               const isVideo = file.type.startsWith('video/');
               const injectHTML = (src, showPlayBtn) => {
@@ -1751,11 +1928,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
               if (isVideo) {
                 const video = document.createElement('video');
-                video.preload = 'metadata'; video.src = URL.createObjectURL(file);
-                video.onloadeddata = () => { video.currentTime = 1; }; 
+                video.preload = 'metadata';
+                video.src = URL.createObjectURL(file);
+                video.onloadeddata = () => {
+                  video.currentTime = 1;
+                };
                 video.onseeked = () => {
                   const canvas = document.createElement('canvas');
-                  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
                   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                   injectHTML(canvas.toDataURL('image/jpeg'), true);
                 };
@@ -1766,7 +1947,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               }
             });
           }
-          input.value = ""; 
+          input.value = "";
         };
 
         window.removeGalleryItem = function(id) {
@@ -1776,7 +1957,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
 
         // --- 2. QUILL EDITOR INITIALIZATION ---
-        if(document.getElementById('editor')) {
+        if (document.getElementById('editor')) {
           const Icons = Quill.import('ui/icons');
           Icons.undo = '<svg viewbox="0 0 18 18"><polyline class="ql-stroke" points="6 10 4 12 2 10"></polyline><path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path></svg>';
           Icons.redo = '<svg viewbox="0 0 18 18"><polyline class="ql-stroke" points="12 10 14 12 16 10"></polyline><path class="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"></path></svg>';
@@ -1784,19 +1965,41 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           var quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
-              history: { delay: 1000, maxStack: 100, userOnly: true },
+              history: {
+                delay: 1000,
+                maxStack: 100,
+                userOnly: true
+              },
               toolbar: {
                 container: [
                   ['undo', 'redo'],
-                  [{ 'size': ['small', false, 'large', 'huge'] }],
+                  [{
+                    'size': ['small', false, 'large', 'huge']
+                  }],
                   ['bold', 'italic', 'underline', 'strike'],
-                  [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }, { 'align': 'justify' }],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{
+                    'align': ''
+                  }, {
+                    'align': 'center'
+                  }, {
+                    'align': 'right'
+                  }, {
+                    'align': 'justify'
+                  }],
+                  [{
+                    'list': 'ordered'
+                  }, {
+                    'list': 'bullet'
+                  }],
                   ['link']
                 ],
                 handlers: {
-                  'undo': function() { this.quill.history.undo(); },
-                  'redo': function() { this.quill.history.redo(); }
+                  'undo': function() {
+                    this.quill.history.undo();
+                  },
+                  'redo': function() {
+                    this.quill.history.redo();
+                  }
                 }
               }
             }
@@ -1807,28 +2010,28 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         // --- 3. FORM SUBMIT HANDLER ---
         document.getElementById('createPostForm').addEventListener('submit', async function(e) {
           e.preventDefault();
-          
+
           const activeBtn = e.submitter;
           const postSubmitStatus = (activeBtn && activeBtn.id === 'draftBtn') ? 'draft' : 'published';
-          
+
           const originalBtnText = activeBtn.innerHTML;
           activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
-          
+
           const dBtn = document.getElementById('draftBtn');
           const pBtn = document.getElementById('publishBtn');
           if (dBtn) dBtn.disabled = true;
           if (pBtn) pBtn.disabled = true;
 
           const formData = new FormData();
-          
+
           formData.append('title', document.getElementById('postTitle').value);
           formData.append('impact_area', document.getElementById('postImpactArea').value);
-          formData.append('content', quill.root.innerHTML); 
+          formData.append('content', quill.root.innerHTML);
           formData.append('status', postSubmitStatus);
-          
+
           // Cover Image
           const coverInput = document.getElementById('coverInput');
-          if(coverInput.files[0]) formData.append('cover_image', coverInput.files[0]);
+          if (coverInput.files[0]) formData.append('cover_image', coverInput.files[0]);
 
           // Media Gallery
           window.galleryFilesArray.forEach((item) => {
@@ -1840,11 +2043,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               method: 'POST',
               body: formData
             });
-            const rawText = await response.text(); 
-            
+            const rawText = await response.text();
+
             try {
               const result = JSON.parse(rawText);
-              if(result.success) {
+              if (result.success) {
                 alert('Post Saved Successfully!');
                 loadView('posts', 'Posts Management');
               } else {
@@ -1853,14 +2056,14 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 if (dBtn) dBtn.disabled = false;
                 activeBtn.innerHTML = originalBtnText;
               }
-            } catch(e) {
+            } catch (e) {
               console.error("Server Error: ", rawText);
               alert("A server error occurred. Check console for details.");
               if (pBtn) pBtn.disabled = false;
               if (dBtn) dBtn.disabled = false;
               activeBtn.innerHTML = originalBtnText;
             }
-          } catch(err) {
+          } catch (err) {
             console.error(err);
             alert('A network error occurred. Please try again.');
             if (pBtn) pBtn.disabled = false;
@@ -1877,15 +2080,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         window.loadPublications = function() {
           const tbody = document.getElementById('publications-tbody');
           if (!tbody) return;
-          
+
           tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading publications...</td></tr>';
-          
+
           fetch('actions/publications/fetch-publications.php')
             .then(res => res.json())
             .then(data => {
               const pubs = Array.isArray(data) ? data : Object.values(data);
               tbody.innerHTML = '';
-              
+
               if (pubs.length === 0 || pubs[0].error) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No publications found.</td></tr>';
                 return;
@@ -1893,7 +2096,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
               pubs.forEach(item => {
                 let pillClass = (item.status || '').toLowerCase() === 'published' ? 'status-published' : 'status-draft';
-                
+
                 const row = `
                   <tr>
                     <td class="fw-medium">${item.title}</td>
@@ -1923,7 +2126,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       // --- VIEW: CREATE PUBLICATION LOGIC ---
       // ==========================================
       function initCreatePublicationScript() {
-        
+
         let extractedPdfCoverBlob = null; // Store the auto-generated image
 
         // --- 1. TOGGLE LOGIC ---
@@ -1941,7 +2144,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             customSection.style.display = 'block';
           }
         }
-        if(radioAuto && radioCustom) {
+        if (radioAuto && radioCustom) {
           radioAuto.addEventListener('change', updateCoverUI);
           radioCustom.addEventListener('change', updateCoverUI);
         }
@@ -1954,8 +2157,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             const progressDiv = document.getElementById(idPrefix + 'Progress');
             const progressBar = document.getElementById(idPrefix + 'ProgressBar');
             const progressText = document.getElementById(idPrefix + 'ProgressText');
-            
-            if(!contentDiv || !progressDiv) { resolve(); return; } 
+
+            if (!contentDiv || !progressDiv) {
+              resolve();
+              return;
+            }
 
             // State 1: Uploading
             contentDiv.style.display = 'none';
@@ -1963,12 +2169,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             progressBar.className = 'progress-fill';
             progressBar.style.width = '0%';
             progressText.className = 'upload-status-text';
-            
+
             let progress = 0;
             const interval = setInterval(() => {
               progress += Math.random() * 25; // Speed up slightly for PDFs
               if (progress >= 100) progress = 100;
-              
+
               progressBar.style.width = progress + '%';
               progressText.innerText = `Uploading & Processing... ${Math.round(progress)}%`;
 
@@ -1979,7 +2185,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 progressText.classList.add('success');
                 progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Processing Complete!';
                 if (window.lucide) lucide.createIcons();
-                
+
                 // State 3: Resolve promise to trigger preview
                 setTimeout(() => {
                   progressDiv.style.display = 'none';
@@ -1994,11 +2200,14 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         window.handlePdfUpload = async function(input) {
           if (input.files && input.files[0]) {
             const file = input.files[0];
-            if (file.type !== 'application/pdf') { alert("Please upload a valid PDF file."); return; }
-            
+            if (file.type !== 'application/pdf') {
+              alert("Please upload a valid PDF file.");
+              return;
+            }
+
             // 1. Wait for the visual upload progress to finish first
             await simulateUploadAsync('pdf');
-            
+
             // 2. Show the PDF Document Preview Box
             document.getElementById('pdfPreviewWrapper').style.display = 'block';
             document.getElementById('pdfFileNameDisplay').innerText = file.name;
@@ -2006,26 +2215,31 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             // 3. Extract PDF Cover using pdf.js
             try {
               // Failsafe to ensure worker is loaded
-              if(!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+              if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
               }
 
               const fileURL = URL.createObjectURL(file);
               const pdf = await pdfjsLib.getDocument(fileURL).promise;
               const page = await pdf.getPage(1);
-              
-              const viewport = page.getViewport({ scale: 1.5 }); // High resolution
+
+              const viewport = page.getViewport({
+                scale: 1.5
+              }); // High resolution
               const canvas = document.createElement('canvas');
               const ctx = canvas.getContext('2d');
               canvas.height = viewport.height;
               canvas.width = viewport.width;
-              
-              await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-              
+
+              await page.render({
+                canvasContext: ctx,
+                viewport: viewport
+              }).promise;
+
               // Convert Canvas to Blob for form submission
               canvas.toBlob((blob) => {
                 extractedPdfCoverBlob = blob; // Save it to memory
-                
+
                 // Show preview in the UI Auto section
                 const imgUrl = URL.createObjectURL(blob);
                 document.getElementById('autoCoverPlaceholder').style.display = 'none';
@@ -2044,7 +2258,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         // --- DRAG AND DROP FILE UPLOAD INTERCEPTOR ---
         function setupFileUploadDragAndDrop() {
           const uploadAreas = document.querySelectorAll('.upload-area');
-          
+
           uploadAreas.forEach(area => {
             // 1. Prevent default browser file opening
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -2073,23 +2287,25 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             // 4. Handle the actual file drop
             area.addEventListener('drop', (e) => {
               const files = e.dataTransfer.files;
-              
+
               if (files && files.length > 0) {
                 // Find the hidden input inside this specific upload area
                 const fileInput = area.querySelector('input[type="file"]');
-                
+
                 if (fileInput) {
                   // Assign the dropped files to the input
                   fileInput.files = files;
-                  
+
                   // Manually trigger the 'change' event so your existing preview functions run!
-                  fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                  fileInput.dispatchEvent(new Event('change', {
+                    bubbles: true
+                  }));
                 }
               }
             }, false);
           });
         }
-        
+
         // Initialize the drag-and-drop logic immediately
         setupFileUploadDragAndDrop();
 
@@ -2098,7 +2314,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           document.getElementById('pdfInput').value = "";
           document.getElementById('pdfPreviewWrapper').style.display = 'none';
           document.getElementById('pdfContent').style.display = 'block';
-          
+
           // Reset extracted cover
           extractedPdfCoverBlob = null;
           document.getElementById('autoCoverImg').style.display = 'none';
@@ -2131,10 +2347,10 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         // --- 5. FORM SUBMIT HANDLER ---
         document.getElementById('createPublicationForm').addEventListener('submit', async function(e) {
           e.preventDefault();
-          
+
           const activeBtn = e.submitter;
           const status = (activeBtn && activeBtn.id === 'draftBtn') ? 'draft' : 'published';
-          
+
           const originalBtnText = activeBtn.innerHTML;
           activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
           document.getElementById('draftBtn').disabled = true;
@@ -2145,7 +2361,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           formData.append('category_id', document.getElementById('pubCategory').value);
           formData.append('description', document.getElementById('pubDescription').value);
           formData.append('status', status);
-          
+
           const isCustom = document.getElementById('coverCustom').checked;
           formData.append('is_custom_cover', isCustom ? 1 : 0);
 
@@ -2165,22 +2381,25 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           }
 
           try {
-            const response = await fetch('actions/publications/create-publication.php', { method: 'POST', body: formData });
-            const rawText = await response.text(); 
-            
+            const response = await fetch('actions/publications/create-publication.php', {
+              method: 'POST',
+              body: formData
+            });
+            const rawText = await response.text();
+
             try {
               const result = JSON.parse(rawText);
-              if(result.success) {
+              if (result.success) {
                 alert('Publication Saved Successfully!');
                 loadView('publications', 'Publications');
               } else {
                 alert('Error: ' + result.message);
               }
-            } catch(e) {
+            } catch (e) {
               console.error("Server Error: ", rawText);
               alert("A server error occurred. Check console for details.");
             }
-          } catch(err) {
+          } catch (err) {
             console.error(err);
             alert('A network error occurred. Check the server response.');
           } finally {
@@ -2202,7 +2421,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           try {
             const response = await fetch('actions/users/fetch-users.php');
             const data = await response.json();
-            
+
             if (data.success) {
               renderActiveUsers(data.active_users);
               renderPendingUsers(data.pending_users, data.roles);
@@ -2220,7 +2439,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         function renderActiveUsers(users) {
           const tbody = document.getElementById('active-users-tbody');
           tbody.innerHTML = '';
-          
+
           if (users.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No users found.</td></tr>';
             return;
@@ -2229,13 +2448,13 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           users.forEach(user => {
             const fullName = `${user.first_name} ${user.last_name}`;
             const isSuspended = user.status === 'suspended';
-            const statusPill = isSuspended 
-                ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2">Suspended</span>`
-                : `<span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2">Active</span>`;
-            
-            const actionBtn = isSuspended 
-                ? `<button class="btn btn-sm btn-light text-success border-0 me-1 shadow-sm" onclick="handleUserSuspendAction(${user.id}, 'activate')" title="Remove Suspension"><i data-lucide="user-check" style="width: 16px;"></i></button>`
-                : `<button class="btn btn-sm btn-light text-danger border-0 me-1 shadow-sm" onclick="openSuspendModal(${user.id}, '${fullName.replace(/'/g, "\\'")}')" title="Suspend"><i data-lucide="user-minus" style="width: 16px;"></i></button>`;
+            const statusPill = isSuspended ?
+              `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2">Suspended</span>` :
+              `<span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2">Active</span>`;
+
+            const actionBtn = isSuspended ?
+              `<button class="btn btn-sm btn-light text-success border-0 me-1 shadow-sm" onclick="handleUserSuspendAction(${user.id}, 'activate')" title="Remove Suspension"><i data-lucide="user-check" style="width: 16px;"></i></button>` :
+              `<button class="btn btn-sm btn-light text-danger border-0 me-1 shadow-sm" onclick="openSuspendModal(${user.id}, '${fullName.replace(/'/g, "\\'")}')" title="Suspend"><i data-lucide="user-minus" style="width: 16px;"></i></button>`;
 
             tbody.insertAdjacentHTML('beforeend', `
               <tr>
@@ -2253,7 +2472,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         function renderPendingUsers(users, roles) {
           const tbody = document.getElementById('pending-users-tbody');
           tbody.innerHTML = '';
-          
+
           if (users.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No pending requests.</td></tr>';
             return;
@@ -2291,7 +2510,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         function renderRoles(roles) {
           const tbody = document.getElementById('roles-tbody');
           tbody.innerHTML = '';
-          
+
           if (roles.length === 0) {
             tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No roles found.</td></tr>';
             return;
@@ -2333,13 +2552,13 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               body: formData
             });
             const result = await response.json();
-            
+
             if (result.success) {
               alert(result.message);
               // Remove the row visually without reloading the whole page
               const row = document.getElementById(`pending-row-${userId}`);
               if (row) row.remove();
-              
+
               // If accepted, refresh the whole data set so they appear in Active Users
               if (action === 'accept') {
                 fetchUserManagementData();
@@ -2357,12 +2576,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         window.openSuspendModal = function(userId, userName) {
           document.getElementById('suspendUserNameText').innerText = `Are You Sure Want to Suspend This User "${userName}"?`;
           document.getElementById('confirmSuspendBtn').setAttribute('data-target-user', userId);
-          
+
           const suspendModal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
           suspendModal.show();
         };
-          
-          // 6. Handle Suspend / Activate Action
+
+        // 6. Handle Suspend / Activate Action
         window.handleUserSuspendAction = async function(userId, action, duration = '') {
           if (action === 'activate' && !confirm("Are you sure you want to remove the suspension for this user?")) return;
 
@@ -2377,7 +2596,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
               body: formData
             });
             const result = await response.json();
-            
+
             if (result.success) {
               alert(result.message);
               fetchUserManagementData(); // Instantly refresh the table to swap the icons
@@ -2396,11 +2615,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           // Clone and replace to prevent multiple event listeners stacking up if you change tabs
           const newConfirmBtn = confirmSuspendBtn.cloneNode(true);
           confirmSuspendBtn.parentNode.replaceChild(newConfirmBtn, confirmSuspendBtn);
-          
+
           newConfirmBtn.addEventListener('click', function() {
             const userId = this.getAttribute('data-target-user');
             const duration = document.getElementById('suspendDuration').value;
-            
+
             if (!duration) {
               alert('Please select a suspension duration.');
               return;
@@ -2413,7 +2632,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
             // Trigger the backend process
             handleUserSuspendAction(userId, 'suspend', duration);
-            
+
             // Reset the dropdown for next time
             document.getElementById('suspendDuration').value = '';
           });
@@ -2424,71 +2643,72 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
         // Expose function globally so the HTML button can trigger it
         window.openCreateRoleModal = function() {
-            document.getElementById('createRoleForm').reset();
-            const roleModal = new bootstrap.Modal(document.getElementById('createRoleModal'));
-            roleModal.show();
+          document.getElementById('createRoleForm').reset();
+          const roleModal = new bootstrap.Modal(document.getElementById('createRoleModal'));
+          roleModal.show();
         };
 
         // Listen globally for ANY form submission, and intercept if it's our Role Form
         document.addEventListener('submit', async function(e) {
-            if (e.target && e.target.id === 'createRoleForm') {
-                e.preventDefault(); // Stop the page from reloading!
+          if (e.target && e.target.id === 'createRoleForm') {
+            e.preventDefault(); // Stop the page from reloading!
 
-                const submitBtn = document.getElementById('saveRoleBtn');
-                const originalText = submitBtn.innerText;
-                submitBtn.innerText = 'Saving...';
-                submitBtn.disabled = true;
+            const submitBtn = document.getElementById('saveRoleBtn');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Saving...';
+            submitBtn.disabled = true;
 
-                try {
-                    const formData = new FormData(e.target);
-                    const response = await fetch('actions/roles/create-role.php', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    // 🚨 Crucial Fix: Read as text first to catch any hidden PHP/SQL errors that break JSON
-                    const rawText = await response.text(); 
-                    
-                    try {
-                        const result = JSON.parse(rawText);
-                        
-                        if (result.success) {
-                            alert(result.message);
-                            
-                            // Hide modal cleanly
-                            const modalEl = document.getElementById('createRoleModal');
-                            const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                            modalInstance.hide();
-                            
-                            // Refresh the tables/UI instantly
-                            if (typeof fetchUserManagementData === 'function') {
-                                fetchUserManagementData(); 
-                            }
-                        } else {
-                            alert('Database Error: ' + result.message);
-                        }
-                    } catch (parseError) {
-                        // If the response wasn't valid JSON, it means PHP threw a fatal SQL error.
-                        console.error("PHP/SQL Error Output:", rawText);
-                        alert("The server encountered an SQL error. Please press F12 and check the Console for the exact database error.");
-                    }
-                } catch (error) {
-                    console.error('Role Creation Error:', error);
-                    alert('A network error occurred while saving the role.');
-                } finally {
-                    if (submitBtn) {
-                        submitBtn.innerText = originalText;
-                        submitBtn.disabled = false;
-                    }
+            try {
+              const formData = new FormData(e.target);
+              const response = await fetch('actions/roles/create-role.php', {
+                method: 'POST',
+                body: formData
+              });
+
+              // 🚨 Crucial Fix: Read as text first to catch any hidden PHP/SQL errors that break JSON
+              const rawText = await response.text();
+
+              try {
+                const result = JSON.parse(rawText);
+
+                if (result.success) {
+                  alert(result.message);
+
+                  // Hide modal cleanly
+                  const modalEl = document.getElementById('createRoleModal');
+                  const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                  modalInstance.hide();
+
+                  // Refresh the tables/UI instantly
+                  if (typeof fetchUserManagementData === 'function') {
+                    fetchUserManagementData();
+                  }
+                } else {
+                  alert('Database Error: ' + result.message);
                 }
+              } catch (parseError) {
+                // If the response wasn't valid JSON, it means PHP threw a fatal SQL error.
+                console.error("PHP/SQL Error Output:", rawText);
+                alert("The server encountered an SQL error. Please press F12 and check the Console for the exact database error.");
+              }
+            } catch (error) {
+              console.error('Role Creation Error:', error);
+              alert('A network error occurred while saving the role.');
+            } finally {
+              if (submitBtn) {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+              }
             }
+          }
         });
       }
-      
+
     });
   </script>
 
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-  
+
 </body>
+
 </html>

@@ -28,8 +28,18 @@ try {
     $prevEnd = clone $now;
     $periodText = "vs yesterday";
 
+    $isAllTime = false;
+
     // 1. Date Math Logic
     switch ($range) {
+        case 'all-time':
+            $isAllTime = true;
+            $periodText = "Overall Total";
+            $cStart = null;
+            $cEnd = null;
+            $pStart = null;
+            $pEnd = null;
+            break;
         case 'week':
             $currentStart->modify('-7 days');
             $prevEnd = clone $currentStart;
@@ -53,7 +63,7 @@ try {
                 $currentStart = new DateTime($customStart);
                 $currentEnd = new DateTime($customEnd);
                 $diff = $currentStart->diff($currentEnd)->days + 1;
-                
+
                 $prevEnd = clone $currentStart;
                 $prevEnd->modify('-1 day');
                 $prevStart = clone $prevEnd;
@@ -75,18 +85,28 @@ try {
             $periodText = "vs yesterday";
             break;
     }
-
-    // Formatting for SQL
-    $cStart = $currentStart->format('Y-m-d 00:00:00');
-    $cEnd = $currentEnd->format('Y-m-d 23:59:59');
-    $pStart = $prevStart->format('Y-m-d 00:00:00');
-    $pEnd = $prevEnd->format('Y-m-d 23:59:59');
+    // Formatting for SQL (only if not 'all-the-time')
+    $cStart = $cEnd = $pStart = $pEnd = null;
+    if (!$isAllTime) {
+        $cStart = $currentStart->format('Y-m-d 00:00:00');
+        $cEnd = $currentEnd->format('Y-m-d 23:59:59');
+        $pStart = $prevStart->format('Y-m-d 00:00:00');
+        $pEnd = $prevEnd->format('Y-m-d 23:59:59');
+    }
 
     // FIX 2: Re-written to use your custom Database::search() method safely
-    function getStat($table, $dateCol, $start, $end) {
-        $query = "SELECT COUNT(*) as count FROM {$table} WHERE {$dateCol} BETWEEN '{$start}' AND '{$end}'";
+    function getStat($table, $dateCol, $start, $end)
+    {
+
+        if ($start !== null && $end !== null) {
+            $query = "SELECT COUNT(*) as count FROM {$table} WHERE {$dateCol} BETWEEN '{$start}' AND '{$end}'";
+        } else {
+            // All time query (no date constraint)
+            $query = "SELECT COUNT(*) as count FROM {$table}";
+        }
+
         $result = Database::search($query);
-        
+
         if ($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
             return (int)$row['count'];
@@ -95,7 +115,8 @@ try {
     }
 
     // 3. Helper function to calculate trend
-    function calculateTrend($current, $previous) {
+    function calculateTrend($current, $previous)
+    {
         if ($previous == 0) return $current > 0 ? 100 : 0;
         return round((($current - $previous) / $previous) * 100);
     }
@@ -134,9 +155,7 @@ try {
     }
 
     echo json_encode($response);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
-?>

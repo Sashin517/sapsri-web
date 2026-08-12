@@ -348,7 +348,7 @@
   </div>
 
   <!-- JavaScript for Password Toggle Visibility -->
-  <script>
+  <!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
       const togglePassword = document.querySelector('#togglePassword');
       const passwordInput = document.querySelector('#password');
@@ -363,7 +363,7 @@
         this.classList.toggle('bi-eye-slash');
       });
     });
-  </script>
+  </script> -->
 
   <script src="assets/js/auth.js"></script>
 

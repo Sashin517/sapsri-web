@@ -18,9 +18,11 @@
           <li><a class="dropdown-item date-dropdown-item date-filter" href="#" data-range="week">Week-to-Date</a></li>
           <li><a class="dropdown-item date-dropdown-item date-filter" href="#" data-range="month">Month-to-Date</a></li>
           <li><a class="dropdown-item date-dropdown-item date-filter" href="#" data-range="year">Year-to-Date</a></li>
+          <li><a class="dropdown-item date-dropdown-item date-filter" href="#" data-range="all-time">All Time</a></li>
           <li><hr class="dropdown-divider"></li>
           <li class="position-relative">
-            <div class="dropdown-item date-dropdown-item" id="customDateBtn" onclick="toggleCalendar(event)">
+            <!-- <div class="dropdown-item date-dropdown-item" id="customDateBtn" onclick="toggleCalendar(event)"> -->
+            <div class="dropdown-item date-dropdown-item" id="customDateBtn">
               Custom <i data-lucide="chevron-right" style="width: 16px;"></i>
             </div>
 
