@@ -189,9 +189,14 @@
             }
 
             dropdown.innerHTML = results.map(post => {
+                // UPDATE: Correct image mapping for search dropdown
                 let imgUrl = './assets/media/img/thumbnails/default.webp';
-                const cardImage = post.post_media.find(m => m.type === 'card_image');
-                if (cardImage) imgUrl = cardImage.url;
+                if (post.cover_image && post.cover_image.trim() !== '') {
+                    imgUrl = post.cover_image;
+                } else if (post.post_media && post.post_media.length > 0) {
+                    const cardImage = post.post_media.find(m => m.type === 'card_image');
+                    if (cardImage) imgUrl = cardImage.url;
+                }
 
                 let content = post.content || '';
                 if (content.length > 80) {
@@ -289,14 +294,27 @@
             const paginatedPosts = posts.slice(start, end);
 
             paginatedPosts.forEach(post => {
+                // UPDATE: Correct image mapping for main grid
                 let imgUrl = './assets/media/img/thumbnails/default.webp';
-                const cardImage = post.post_media.find(m => m.type === 'card_image');
-                if (cardImage) imgUrl = cardImage.url;
+                if (post.cover_image && post.cover_image.trim() !== '') {
+                    imgUrl = post.cover_image;
+                } else if (post.post_media && post.post_media.length > 0) {
+                    const cardImage = post.post_media.find(m => m.type === 'card_image');
+                    if (cardImage) imgUrl = cardImage.url;
+                }
 
                 let content = post.content || '';
                 if (content.length > 120) {
                     content = content.substring(0, 120) + '...';
                 }
+                
+                // UPDATE: Cleanly format the date
+                const dateObj = new Date(post.published_date);
+                const formattedDate = dateObj.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                });
 
                 const cardHtml = `
                     <div class="col">
@@ -308,7 +326,7 @@
                                     <p class="card-text">${content}</p>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between align-items-center">
-                                    <span>Posted on ${post.published_date || ''}</span>
+                                    <small class="text-muted">Posted on ${formattedDate || ''}</small>
                                     <button class="btn btn-sm btn-dark rounded-circle" style="aspect-ratio: 1;">
                                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </button>
