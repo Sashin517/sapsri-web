@@ -17,13 +17,15 @@ function googleTranslateElementInit() {
 
 // 3. Handle Cookie Management for Translation
 function setCookie(name, value, days) {
+    const domain = window.location.hostname;
     let expires = "";
     if (days) {
         const date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
-    // Set cookie for both root and current path to ensure it triggers
+    // Set for both root and specific domain to cleanly override Google's native cookie mapping
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; domain=" + domain;
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
@@ -38,17 +40,29 @@ function getCookie(name) {
     return null;
 }
 
+// 🚨 PRO FIX 1: Function to completely obliterate the Google Translate cookie
+function clearGoogleTranslateCookies() {
+    const domain = window.location.hostname;
+    // Erase from current path
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Erase from specific domain
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+    // Erase from wildcard subdomain (this is where Google usually causes the sticking bug)
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+}
+
 // 4. Toggle Logic (Fired when button is clicked)
 function toggleLanguage() {
     const currentLang = getCookie('googtrans');
     
     if (currentLang && currentLang.includes('/si')) {
-        // Currently Sinhala, switch back to English
-        setCookie('googtrans', '/en/en', 1);
+        // Currently Sinhala, switch back to English by completely wiping the cookie
+        clearGoogleTranslateCookies();
     } else {
         // Currently English, switch to Sinhala
         setCookie('googtrans', '/en/si', 1);
     }
+    
     // Reload page to apply the translation natively
     location.reload();
 }
@@ -59,6 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleTexts = document.querySelectorAll('.lang-toggle-text');
     
     toggleTexts.forEach(textEl => {
+        // 🚨 PRO FIX 2: Force Google to ignore this specific text element
+        textEl.classList.add('notranslate');
+        textEl.setAttribute('translate', 'no');
+        
         if (currentLang && currentLang.includes('/si')) {
             textEl.innerText = 'EN'; // Show EN option if already translated
         } else {
