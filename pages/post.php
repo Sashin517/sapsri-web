@@ -165,7 +165,8 @@
             console.log(post_id, len_posts);
 
             async function getPostsData() {
-                const url = '../project-sedna/includes/post-data.php';
+                // Pointing directly to the root includes folder
+                const url = 'includes/post-data.php'; 
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
@@ -175,8 +176,13 @@
                     allPosts = Object.values(data);
                     const matchedPost = allPosts.find(post => post.id == post_id);
                     console.log("Matched Post:", matchedPost);
-                    rederContent(matchedPost);
-                    setupNavigation();
+                    
+                    if (matchedPost) {
+                        rederContent(matchedPost);
+                        setupNavigation();
+                    } else {
+                        throw new Error("Post not found");
+                    }
                 } catch (error) {
                     console.error('Failed to fetch posts:', error);
                     document.getElementById('revImages').innerHTML = `
@@ -198,7 +204,7 @@
                 const nextPostId = post_id + 1;
                 
                 // Handle Previous Button
-                if (post_id === 1) {
+                if (post_id <= 1) {
                     // Disable if at first post
                     prevBtn.classList.add('disabled');
                     prevBtn.style.pointerEvents = 'none';
@@ -210,7 +216,7 @@
                 }
                 
                 // Handle Next Button
-                if (post_id === len_posts) {
+                if (post_id >= len_posts) {
                     // Disable if at last post
                     nextBtn.classList.add('disabled');
                     nextBtn.style.pointerEvents = 'none';
@@ -228,14 +234,22 @@
                 const sectionTitle = document.querySelector(".relevant-photos h3");
                 let currentIndex = 0;
                 const imagesPerLoad = 3;
-                const galleryImages = post.post_media.filter(m => m.type === "gallery_image");
+                
+                // 1. Filter gallery images using the exact DB enum "image"
+                const galleryImages = post.post_media ? post.post_media.filter(m => m.type === "image") : [];
+                
+                // 2. Map the Cover Image directly from the JSON structure
+                let imgUrl = './assets/media/img/thumbnails/default.webp';
+                if (post.cover_image && post.cover_image.trim() !== '') {
+                    imgUrl = post.cover_image;
+                } else if (post.post_media && post.post_media.length > 0) {
+                    const cardImage = post.post_media.find(m => m.type === 'card_image');
+                    if (cardImage) imgUrl = cardImage.url;
+                }
                 
                 // Set other post content
-                let imgUrl = './assets/media/img/thumbnails/default.webp';
-                const cardImage = post.post_media.find(m => m.type === 'card_image');
-                if (cardImage) imgUrl = cardImage.url;
-                
                 document.querySelector('.post-content h1').innerText = post.title;
+                
                 // Convert SQL date
                 const dateObj = new Date(post.published_date);
                 const formattedDate = dateObj.toLocaleDateString("en-US", {
@@ -244,7 +258,8 @@
                     day: "numeric"
                 });
                 
-                document.querySelector('.post-meta').innerText = `Posted on ${formattedDate}`;
+                // Map the author name directly from the JSON output
+                document.querySelector('.post-meta').innerText = `Posted on ${formattedDate} by ${post.author_name}`;
                 document.querySelector('.post-banner').src = imgUrl;
                 document.querySelector('.post-content .row .col-lg-8').innerHTML = post.content;
                 
@@ -289,7 +304,6 @@
             
             await getPostsData();
         };
-            
     </script>
 
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>

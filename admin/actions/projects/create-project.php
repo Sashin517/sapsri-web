@@ -18,8 +18,8 @@ function uploadFile($file, $target_dir, $prefix = '') {
     $target_file = $target_dir . $filename;
     
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        // Return relative path for DB
-        return str_replace('../../', '', $target_file);
+        // Correctly strip all 3 directory levels for the database
+        return str_replace('../../../', '', $target_file);
     }
     return null;
 }

@@ -20,7 +20,7 @@ function uploadFile($file, $target_dir, $prefix = '') {
     $target_file = $target_dir . $filename;
     
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        return str_replace('../../', '', $target_file);
+        return str_replace('../../../', '', $target_file);
     }
     return null; // Fixed the stray 's' here
 }

@@ -507,8 +507,16 @@
     
                 posts.forEach(post => {
                     let imgUrl = './assets/media/img/thumbnails/default.webp';
-                    const cardImage = post.post_media.find(m => m.type === 'card_image');
-                    if (cardImage) imgUrl = cardImage.url;
+
+                    // Check if the cover_image property exists directly on the post object
+                    if (post.cover_image && post.cover_image.trim() !== '') {
+                        imgUrl = post.cover_image;
+                    } 
+                    // Fallback: check the media array just in case it's a different post type
+                    else if (post.post_media && post.post_media.length > 0) {
+                        const cardImage = post.post_media.find(m => m.type === 'card_image');
+                        if (cardImage) imgUrl = cardImage.url;
+                    }
                     const dateObj = new Date(post.published_date);
                     const formattedDate = dateObj.toLocaleDateString("en-US", {
                         year: "numeric",
