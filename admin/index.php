@@ -2718,25 +2718,34 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <script>
     function handleQuickAction(action) {
 
+      const navLinks = document.querySelectorAll('.spa-link');
+      navLinks.forEach(l => l.classList.remove('active-primary'));
+
       switch (action) {
         case 'create-new-project':
-          document.querySelector("[data-view='projects']").click();
+          document.querySelector("[data-view='projects']").classList.add('active-primary');
           loadView('create-project', 'Create New Project');
           break;
 
         case 'create-new-post':
-          document.querySelector("[data-view='posts']").click();
+          document.querySelector("[data-view='posts']").classList.add('active-primary');
           loadView('create-post', 'Create New Post');
           break;
 
         case 'add-new-publication':
-          document.querySelector("[data-view='publications']").click();
+          document.querySelector("[data-view='publications']").classList.add('active-primary');
           loadView('create-publication', 'Create Publication');
           break;
 
         default:
+          document.querySelector("[data-view='publications']").classList.add('active-primary');
+          loadView('dashboard', 'Dashboard');
           alert("Something went wrong.");
           break;
+      }
+
+      if (window.innerWidth <= 991) {
+        toggleMobileMenu();
       }
 
     }
