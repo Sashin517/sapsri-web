@@ -2058,8 +2058,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             try {
               const result = JSON.parse(rawText);
               if (result.success) {
-                alert('Post Saved Successfully!');
                 loadView('posts', 'Posts Management');
+                showAlert("success", 'Post Saved Successfully!');
               } else {
                 alert('Error: ' + result.message);
                 if (pBtn) pBtn.disabled = false;
