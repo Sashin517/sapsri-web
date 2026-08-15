@@ -10,19 +10,80 @@ $img_dir = '../../../assets/media/img/publications/';
 if (!file_exists($doc_dir)) mkdir($doc_dir, 0777, true);
 if (!file_exists($img_dir)) mkdir($img_dir, 0777, true);
 
-// Helper function
+// Upgraded Helper function that skips PDF conversion but converts images to WebP
 function uploadFile($file, $target_dir, $prefix = '') {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) return null;
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    if(empty($ext)) $ext = 'jpg'; // Fallback for blob images
     
-    $filename = $prefix . uniqid() . '.' . $ext;
-    $target_file = $target_dir . $filename;
+    $mime = mime_content_type($file['tmp_name']);
+    $is_pdf = $mime === 'application/pdf';
+
+    // 1. If it's a PDF, bypass conversion and just move it
+    if ($is_pdf) {
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if(empty($ext)) $ext = 'pdf'; // Fallback
+        
+        $filename = $prefix . uniqid() . '.' . $ext;
+        $target_file = $target_dir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $target_file)) {
+            return str_replace('../../../', '', $target_file);
+        }
+        return null;
+    } 
     
-    if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        return str_replace('../../../', '', $target_file);
+    // 2. If it's an image, convert to WebP
+    else if (strpos($mime, 'image/') === 0) {
+        $filename = $prefix . uniqid() . '.webp';
+        $target_file = $target_dir . $filename;
+        $image = null;
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = @imagecreatefromjpeg($file['tmp_name']);
+                break;
+            case 'image/png':
+                $image = @imagecreatefrompng($file['tmp_name']);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/gif':
+                $image = @imagecreatefromgif($file['tmp_name']);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/webp':
+                $image = @imagecreatefromwebp($file['tmp_name']);
+                break;
+            default:
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                if (empty($ext)) $ext = 'jpg';
+                $fallback_target = $target_dir . $prefix . uniqid() . '.' . $ext;
+                if (move_uploaded_file($file['tmp_name'], $fallback_target)) {
+                    return str_replace('../../../', '', $fallback_target);
+                }
+                return null;
+        }
+
+        // Save the image as WebP with 80% quality
+        if ($image !== false && $image !== null) {
+            $success = imagewebp($image, $target_file, 80);
+            imagedestroy($image); // Free up server RAM
+            
+            if ($success) {
+                return str_replace('../../../', '', $target_file);
+            }
+        }
+        return null;
     }
-    return null; // Fixed the stray 's' here
+    
+    return null;
 }
 
 try {
@@ -60,8 +121,6 @@ try {
     }
 
     // 3. Insert into `publications`
-    // Updated bind string to perfectly match the data types: 
-    // s(title), s(description), i(category_id), s(cover_path), i(is_custom_cover), s(pdf_path), s(status), s(publish_date), i(created_by)
     $stmt = $conn->prepare("INSERT INTO publications (title, description, category_id, cover_image, is_custom_cover, file_url, status, publish_date, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     $stmt->bind_param("ssisisssi", $title, $description, $category_id, $cover_path, $is_custom_cover, $pdf_path, $status, $publish_date, $created_by);
