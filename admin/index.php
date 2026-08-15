@@ -825,7 +825,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
 
     <!-- Top Navbar -->
     <header class="top-navbar">
-      <h2 class="page-title">Dashboard</h2>
+      <h2 class="page-title" id="page-title">Dashboard</h2>
 
       <div class="d-flex align-items-center gap-3">
         <div class="search-bar">
@@ -930,7 +930,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       const pageTitle = document.getElementById('page-title');
 
       // --- SPA ROUTER FUNCTION ---
-      async function loadView(viewName, title) {
+      async function loadView(viewName, title, params = {}) {
+
         // Show loader
         appContent.innerHTML = '<div class="d-flex justify-content-center mt-5"><div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div></div>';
 
@@ -959,6 +960,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             initCreateProjectScript();
           } else if (viewName === 'create-post') {
             initCreatePostScript();
+          } else if (viewName === 'edit-post') {
+            initEditPostScript(params);
           } else if (viewName === 'create-publication') {
             initCreatePublicationScript();
           }
@@ -1817,7 +1820,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                     <td>${pubDate}</td>
                     <td class="text-end">
                       <button class="btn btn-sm btn-light text-primary border-0 me-1 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
-                      <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit"><i data-lucide="edit" style="width: 16px;"></i></button>
+                      <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit" onclick="loadView('edit-post', 'Edit Post', {id: ${item.id}})"><i data-lucide="edit" style="width: 16px;"></i></button>
                       <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete"><i data-lucide="trash-2" style="width: 16px;"></i></button>
                     </td>
                   </tr>
@@ -2078,6 +2081,405 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             activeBtn.innerHTML = originalBtnText;
           }
         });
+      }
+
+      // ==========================================
+      // --- VIEW: EDIT POST LOGIC ---
+      // ==========================================
+      function initEditPostScript(params = {}) {
+        // Reset Gallery Array specifically for this view
+        window.galleryFilesArray = [];
+        window.galleryFilesDeletedArray = [];
+        let quill = null;
+        window.postData = {};
+
+        // --- 1. UPLOAD PREVIEW & PROGRESS FUNCTIONS ---
+        // (Included here so they work even if you haven't visited Projects first)
+        function simulateUpload(idPrefix, callback, isLoading = false) {
+          const contentDiv = document.getElementById(idPrefix + 'Content');
+          const progressDiv = document.getElementById(idPrefix + 'Progress');
+          const progressBar = document.getElementById(idPrefix + 'ProgressBar');
+          const progressText = document.getElementById(idPrefix + 'ProgressText');
+
+          if (!contentDiv || !progressDiv) {
+            callback();
+            return;
+          }
+
+          contentDiv.style.display = 'none';
+          progressDiv.style.display = 'block';
+          progressBar.className = 'progress-fill';
+          progressBar.style.width = '0%';
+          progressText.className = 'upload-status-text';
+
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += Math.random() * 20;
+            if (progress >= 100) progress = 100;
+
+            progressBar.style.width = progress + '%';
+
+            const status = (isLoading) ? "Load" : "Upload"
+            progressText.innerText = `${status}ing... ${Math.round(progress)}%`;
+
+            if (progress === 100) {
+              clearInterval(interval);
+              progressBar.classList.add('success');
+              progressText.classList.add('success');
+              progressText.innerHTML = `<i data-lucide="check-circle" style="width:14px;"></i> ${status} Complete!`;
+              lucide.createIcons();
+
+              setTimeout(() => {
+                progressDiv.style.display = 'none';
+                callback();
+              }, 800);
+            }
+          }, 100);
+        }
+
+        window.handleImageUpload = function(input, idPrefix) {
+          if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              simulateUpload(idPrefix, () => {
+                document.getElementById(idPrefix + 'PreviewWrapper').style.display = 'block';
+                document.getElementById(idPrefix + 'PreviewImg').src = e.target.result;
+              });
+            }
+            reader.readAsDataURL(input.files[0]);
+          }
+        };
+
+        window.removeImage = function(event, idPrefix) {
+          event.stopPropagation();
+          const input = document.getElementById(idPrefix + 'Input');
+          if (input.hasAttribute('data-cover-image')) {
+            delete input.dataset.coverImage;
+            window.postData.isCoverDeleted = true;
+          }
+          input.value = "";
+          document.getElementById(idPrefix + 'PreviewImg').src = "";
+          document.getElementById(idPrefix + 'PreviewWrapper').style.display = 'none';
+          document.getElementById(idPrefix + 'Content').style.display = 'block';
+        };
+
+        window.handleGalleryUpload = function(input) {
+          const container = document.getElementById('galleryPreviewContainer');
+          if (input.files) {
+            Array.from(input.files).forEach(file => {
+              const uniqueId = 'gal_' + Math.random().toString(36).substr(2, 9);
+              window.galleryFilesArray.push({
+                id: uniqueId,
+                file: file
+              });
+
+              const isVideo = file.type.startsWith('video/');
+              const injectHTML = (src, showPlayBtn) => {
+                const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : '';
+                const colHTML = `
+                  <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
+                    <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
+                      <img src="${src}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${showPlayBtn ? 0.7 : 1};">
+                      ${playBtnHTML}
+                      <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 8px; right: 8px; border-radius: 50%; z-index: 10;" onclick="removeGalleryItem('${uniqueId}')">
+                        <i data-lucide="x" style="width: 14px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                `;
+                container.insertAdjacentHTML('beforeend', colHTML);
+                lucide.createIcons();
+              };
+
+              if (isVideo) {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.src = URL.createObjectURL(file);
+                video.onloadeddata = () => {
+                  video.currentTime = 1;
+                };
+                video.onseeked = () => {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
+                  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                  injectHTML(canvas.toDataURL('image/jpeg'), true);
+                };
+              } else {
+                const reader = new FileReader();
+                reader.onload = e => injectHTML(e.target.result, false);
+                reader.readAsDataURL(file);
+              }
+            });
+          }
+          input.value = "";
+        };
+
+        window.removeGalleryItem = function(id, isDeleted = false) {
+          document.getElementById(id).remove();
+
+          if (isDeleted) {
+            window.galleryFilesDeletedArray.push(id);
+          } else {
+            window.galleryFilesArray = window.galleryFilesArray.filter(item => item.id !== id);
+          }
+        };
+
+
+        // --- 2. QUILL EDITOR INITIALIZATION ---
+        if (document.getElementById('editor')) {
+          const Icons = Quill.import('ui/icons');
+          Icons.undo = '<svg viewbox="0 0 18 18"><polyline class="ql-stroke" points="6 10 4 12 2 10"></polyline><path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path></svg>';
+          Icons.redo = '<svg viewbox="0 0 18 18"><polyline class="ql-stroke" points="12 10 14 12 16 10"></polyline><path class="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"></path></svg>';
+
+          quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+              history: {
+                delay: 1000,
+                maxStack: 100,
+                userOnly: true
+              },
+              toolbar: {
+                container: [
+                  ['undo', 'redo'],
+                  [{
+                    'size': ['small', false, 'large', 'huge']
+                  }],
+                  ['bold', 'italic', 'underline', 'strike'],
+                  [{
+                    'align': ''
+                  }, {
+                    'align': 'center'
+                  }, {
+                    'align': 'right'
+                  }, {
+                    'align': 'justify'
+                  }],
+                  [{
+                    'list': 'ordered'
+                  }, {
+                    'list': 'bullet'
+                  }],
+                  ['link']
+                ],
+                handlers: {
+                  'undo': function() {
+                    this.quill.history.undo();
+                  },
+                  'redo': function() {
+                    this.quill.history.redo();
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        // --- 3. FORM SUBMIT HANDLER ---
+        document.getElementById('createPostForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          // console.log(window.postData);
+
+          const activeBtn = e.submitter;
+          let postSubmitStatus = (activeBtn && activeBtn.id === 'statusBtn') ? activeBtn.dataset.action : null;
+
+          const originalBtnText = activeBtn.innerHTML;
+          activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
+
+          const statusBtn = document.getElementById('statusBtn');
+          const saveBtn = document.getElementById('saveBtn');
+          if (statusBtn) statusBtn.disabled = true;
+          if (saveBtn) saveBtn.disabled = true;
+
+          const formData = new FormData();
+
+          const id = window.postData.id ?? null;
+          const title = document.getElementById('postTitle').value;
+          const impactArea = document.getElementById('postImpactArea').value;
+          const content = quill.root.innerHTML;
+          const status = postSubmitStatus;
+
+          formData.append('id', id);
+          if (window.postData.title !== title) formData.append('title', title);
+          if (window.postData.impactAreaIds[0] !== impactArea) formData.append('impact_area', impactArea);
+          if (window.postData.content !== content) formData.append('content', quill.root.innerHTML);
+          if (postSubmitStatus) formData.append('status', postSubmitStatus);
+          
+          // Cover Image
+          const coverInput = document.getElementById('coverInput');
+          const coverImage = coverInput.files[0] ? coverInput.files[0] : null;
+          const isCoverDeleted = window.postData.isCoverDeleted;
+          
+          if (coverImage) formData.append('cover_image', coverImage);
+          formData.append('is_cover_deleted', isCoverDeleted);
+          
+          // Media Gallery
+          window.galleryFilesArray.forEach((item) => {
+            formData.append(`gallery_files[]`, item.file);
+          });
+
+          window.galleryFilesDeletedArray.forEach((item) => {
+            formData.append(`gallery_files_deleted[]`, item);
+          });
+          
+          // console.log(formData);
+          
+          try {
+            const response = await fetch('actions/posts/update-post.php', {
+              method: 'POST',
+              body: formData
+            });
+            const rawText = await response.text();
+
+            try {
+              const result = JSON.parse(rawText);
+              if (result.success) {
+                alert('Post Saved Successfully!');
+                loadView('posts', 'Posts Management');
+              } else {
+                alert('Error: ' + result.message);
+                if (saveBtn) saveBtn.disabled = false;
+                if (statusBtn) statusBtn.disabled = false;
+                activeBtn.innerHTML = originalBtnText;
+              }
+            } catch (e) {
+              console.error("Server Error: ", rawText);
+              alert("A server error occurred. Check console for details.");
+              if (saveBtn) saveBtn.disabled = false;
+              if (statusBtn) statusBtn.disabled = false;
+              activeBtn.innerHTML = originalBtnText;
+            }
+          } catch (err) {
+            console.error(err);
+            alert('A network error occurred. Please try again.');
+            if (saveBtn) saveBtn.disabled = false;
+            if (statusBtn) statusBtn.disabled = false;
+            activeBtn.innerHTML = originalBtnText;
+          }
+        });
+
+        const urlParams = new URLSearchParams(params);
+        fetch(`actions/posts/fetch-post.php?${urlParams}`)
+          .then(res => res.json())
+          .then(data => {
+
+            if (!data) {
+              alert("Somethin went wrong.");
+              loadView('posts', 'Posts Management');
+              return;
+            }
+
+            if (data.status === "error") {
+              alert(data.message);
+              loadView('posts', 'Posts Management');
+              return;
+            }
+
+            console.log(data);
+
+            const id = data.id ?? null;
+            const title = data.title ?? null;
+            const content = data.content ?? "";
+            const coverImage = data.cover_image ?? null;
+            const status = data.status ?? null;
+            const publishedDate = data.published_date ?? null;
+            const createdAt = data.created_at ?? null;
+            const updatedAt = data.updated_at ?? null;
+            const impactAreaIds = data.impact_area_ids ?? null;
+            const media = data.post_media ?? null;
+
+            const required = [id, title, status, createdAt, updatedAt];
+
+            if (required.includes(null)) throw new Error("Missing required post data.");
+
+            window.postData.id = id;
+            window.postData.title = title;
+            window.postData.content = content;
+            window.postData.impactAreaIds = impactAreaIds;
+            window.postData.isCoverDeleted = false;
+
+            document.getElementById('postTitle').value = title;
+            document.getElementById('postImpactArea').value = impactAreaIds[0]; // this is not a multi select.
+
+            if (quill && content) quill.root.innerHTML = content;
+
+            if (coverImage) {
+              document.getElementById('coverInput').dataset.coverImage = coverImage;
+              simulateUpload('cover', () => {
+                document.getElementById('coverPreviewWrapper').style.display = 'block';
+                document.getElementById('coverPreviewImg').src = `/project-sedna/${coverImage}`;
+              }, true);
+            }
+
+            if (media) {
+              const container = document.getElementById('galleryPreviewContainer');
+
+              media.forEach(item => {
+                const requiredFields = ["id", "type", "url"];
+                const hasAllFields = requiredFields.every(field => Object.hasOwn(item, field));
+
+                if (!hasAllFields) throw new Error("Missing required post media data.");
+                const uniqueId = item.id;
+                const url = `/project-sedna/${item.url}`;
+
+                const isVideo = (item.type === "video") ? true : false;
+                const injectHTML = (src, showPlayBtn) => {
+                  const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : '';
+                  const colHTML = `
+                      <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
+                        <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
+                          <img src="${src}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${showPlayBtn ? 0.7 : 1};">
+                          ${playBtnHTML}
+                          <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 8px; right: 8px; border-radius: 50%; z-index: 10;" onclick="removeGalleryItem('${uniqueId}', true)">
+                            <i data-lucide="x" style="width: 14px;"></i>
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  container.insertAdjacentHTML('beforeend', colHTML);
+                  lucide.createIcons();
+                };
+
+                if (isVideo) {
+                  const video = document.createElement('video');
+                  video.preload = 'metadata';
+                  video.src = url;
+                  video.onloadeddata = () => {
+                    video.currentTime = 1;
+                  };
+                  video.onseeked = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    injectHTML(canvas.toDataURL('image/jpeg'), true);
+                  };
+                } else {
+                  injectHTML(url, false);
+                }
+              });
+            }
+
+            const statusBtn = document.getElementById('statusBtn');
+
+            if (status === "draft" || status === "archived") {
+              statusBtn.dataset.action = "publish";
+              statusBtn.textContent = "Publish";
+              statusBtn.classList.remove('d-none');
+            } else if (status === "published") {
+              statusBtn.dataset.action = "archive";
+              statusBtn.textContent = "Archive";
+              statusBtn.classList.remove('d-none');
+            } else {
+              throw new Error('Post status unknown.');
+            }
+          })
+          .catch(err => {
+            console.error("Post Fetch Error:", err);
+            alert("Failed to load the post.");
+            loadView('posts', 'Posts Management');
+          });
       }
 
       // ==========================================
