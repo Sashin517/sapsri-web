@@ -40,23 +40,57 @@ function handleQuickAction(action) {
         document.querySelector("[data-view='projects']").classList.add('active-primary');
         loadView('create-project', 'Create New Project');
         break;
+
       case 'create-new-post':
         document.querySelector("[data-view='posts']").classList.add('active-primary');
         loadView('create-post', 'Create New Post');
         break;
+
       case 'add-new-publication':
         document.querySelector("[data-view='publications']").classList.add('active-primary');
         loadView('create-publication', 'Create Publication');
         break;
+
       default:
         document.querySelector("[data-view='dashboard']").classList.add('active-primary');
         loadView('dashboard', 'Dashboard');
+        showAlert("error", "An unexpected action occurred.");
         break;
     }
 
     if (window.innerWidth <= 991) {
       toggleMobileMenu();
     }
+}
+// ==========================================
+// UNIVERSAL ALERT MODAL LOGIC
+// ==========================================
+const toastEl = document.getElementById('alert');
+const toast = new bootstrap.Toast(toastEl);
+
+function showAlert(type, message) {
+  const iconEl = toastEl.querySelector("#alert-icon");
+  const iconBgEl = toastEl.querySelector("#alert-icon-bg");
+  const titleEl = toastEl.querySelector("#alert-title");
+  const messageEl = toastEl.querySelector("#alert-message");
+
+  if (type === "success") {
+    iconEl.dataset.lucide = "check";
+    iconBgEl.style.backgroundColor = "#12B76A";
+    titleEl.textContent = "Success!"
+    messageEl.textContent = message;
+    toast.show();
+    return;
+  }
+
+  if (type === "error") {
+    iconEl.dataset.lucide = "x";
+    iconBgEl.style.backgroundColor = "#CB2045";
+    titleEl.textContent = "Error!"
+    messageEl.textContent = message;
+    toast.show();
+    return;
+  }
 }
 
 // ==========================================
@@ -103,12 +137,14 @@ function openDeleteModal(itemId, itemName, itemType, endpointUrl, callbackFuncti
                 } else if(typeof window[callbackFunctionName] === 'string') {
                     eval(callbackFunctionName + "()");
                 }
+                showAlert("success", `${typeCapitalized} deleted successfully.`);
             } else {
-                alert("Database Error: " + result.message);
+                console.error("Backend Error:", result.message);
+                showAlert("error", "Deletion failed. Please try again.");
             }
         } catch (error) {
             console.error('Delete Error:', error);
-            alert("A network error occurred while deleting.");
+            showAlert("error", "A network error occurred while deleting.");
         } finally {
             this.innerText = 'Yes, Delete';
             this.disabled = false;
@@ -153,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (viewName === 'create-publication') initCreatePublicationScript();
 
       } catch (error) {
-        appContent.innerHTML = `<div class="alert alert-danger m-4">Failed to load module: ${viewName}. Please ensure views/${viewName}.php exists.</div>`;
-        console.error(error);
+        appContent.innerHTML = `<div class="alert alert-danger m-4">Failed to load interface. Please try refreshing the page.</div>`;
+        console.error("View Load Error:", error);
       }
     }
 
@@ -368,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
           })
           .catch(err => {
+            console.error("Projects Fetch Error:", err);
             tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load projects.</td></tr>';
           });
       };
@@ -526,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.handleMetricIconUpload = function(input, rowId) {
         if (input.files && input.files[0]) {
           if (input.files[0].type !== 'image/png') {
-            alert("Only PNG images are allowed for icons.");
+            showAlert("error", "Only PNG images are allowed for icons.");
             return;
           }
           const reader = new FileReader();
@@ -762,16 +799,17 @@ document.addEventListener('DOMContentLoaded', () => {
           const response = await fetch('actions/projects/create-project.php', { method: 'POST', body: formData });
           const result = await response.json();
           if (result.success) {
-            alert('Project Saved Successfully!');
+            showAlert("success", 'Project Saved Successfully!');
             loadView('projects', 'Projects Management');
           } else {
-            alert('Error: ' + result.message);
+            console.error("Backend Error:", result.message);
+            showAlert("error", 'Failed to save project. Please verify the details.');
             publishBtn.innerHTML = originalBtnText;
             publishBtn.disabled = false;
           }
         } catch (err) {
           console.error(err);
-          alert('A network error occurred. Please try again.');
+          showAlert("error", 'A network error occurred. Please try again.');
           publishBtn.innerHTML = originalBtnText;
           publishBtn.disabled = false;
         }
@@ -998,24 +1036,25 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const result = JSON.parse(rawText);
             if (result.success) {
-              alert('Post Saved Successfully!');
               loadView('posts', 'Posts Management');
+              showAlert("success", 'Post Saved Successfully!');
             } else {
-              alert('Error: ' + result.message);
+              console.error("Backend Error:", result.message);
+              showAlert("error", 'Failed to save post. Please verify the details.');
               if (pBtn) pBtn.disabled = false;
               if (dBtn) dBtn.disabled = false;
               activeBtn.innerHTML = originalBtnText;
             }
           } catch (e) {
             console.error("Server Error: ", rawText);
-            alert("A server error occurred. Check console for details.");
+            showAlert("error", "A server error occurred. Please try again later.");
             if (pBtn) pBtn.disabled = false;
             if (dBtn) dBtn.disabled = false;
             activeBtn.innerHTML = originalBtnText;
           }
         } catch (err) {
           console.error(err);
-          alert('A network error occurred. Please try again.');
+          showAlert("error", 'A network error occurred. Please try again.');
           if (pBtn) pBtn.disabled = false;
           if (dBtn) dBtn.disabled = false;
           activeBtn.innerHTML = originalBtnText;
@@ -1139,6 +1178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       window.removeGalleryItem = function(id, isDeleted = false) {
         document.getElementById(id).remove();
+
         if (isDeleted) {
           window.galleryFilesDeletedArray.push(id);
         } else {
@@ -1212,31 +1252,32 @@ document.addEventListener('DOMContentLoaded', () => {
         window.galleryFilesDeletedArray.forEach((item) => {
           formData.append(`gallery_files_deleted[]`, item);
         });
-        
+
         try {
           const response = await fetch('actions/posts/update-post.php', { method: 'POST', body: formData });
           const rawText = await response.text();
           try {
             const result = JSON.parse(rawText);
             if (result.success) {
-              alert('Post Saved Successfully!');
+              showAlert("success", 'Post Updated Successfully!');
               loadView('posts', 'Posts Management');
             } else {
-              alert('Error: ' + result.message);
+              console.error("Backend Error:", result.message);
+              showAlert("error", 'Failed to save post. Please verify the details.');
               if (saveBtn) saveBtn.disabled = false;
               if (statusBtn) statusBtn.disabled = false;
               activeBtn.innerHTML = originalBtnText;
             }
           } catch (e) {
             console.error("Server Error: ", rawText);
-            alert("A server error occurred. Check console for details.");
+            showAlert("error", "A server error occurred. Please try again later.");
             if (saveBtn) saveBtn.disabled = false;
             if (statusBtn) statusBtn.disabled = false;
             activeBtn.innerHTML = originalBtnText;
           }
         } catch (err) {
           console.error(err);
-          alert('A network error occurred. Please try again.');
+          showAlert("error", 'A network error occurred. Please try again.');
           if (saveBtn) saveBtn.disabled = false;
           if (statusBtn) statusBtn.disabled = false;
           activeBtn.innerHTML = originalBtnText;
@@ -1248,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
           if (!data || data.status === "error") {
-            alert(data ? data.message : "Something went wrong.");
+            showAlert("error", data ? data.message : "Something went wrong.");
             loadView('posts', 'Posts Management');
             return;
           }
@@ -1274,7 +1315,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (quill && content) quill.root.innerHTML = content;
 
-          // Align cover image path properly to resolve using root path.
           if (coverImage) {
             document.getElementById('coverInput').dataset.coverImage = coverImage;
             simulateUpload('cover', () => {
@@ -1338,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }).catch(err => {
           console.error("Post Fetch Error:", err);
-          alert("Failed to load the post.");
+          showAlert("error", "Failed to load the post.");
           loadView('posts', 'Posts Management');
         });
     }
@@ -1454,7 +1494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (input.files && input.files[0]) {
           const file = input.files[0];
           if (file.type !== 'application/pdf') {
-            alert("Please upload a valid PDF file.");
+            showAlert("error", "Please upload a valid PDF file.");
             return;
           }
 
@@ -1597,18 +1637,19 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const result = JSON.parse(rawText);
             if (result.success) {
-              alert('Publication Saved Successfully!');
+              showAlert("success", 'Publication Saved Successfully!');
               loadView('publications', 'Publications');
             } else {
-              alert('Error: ' + result.message);
+              console.error("Backend Error:", result.message);
+              showAlert("error", 'Failed to save publication. Please verify the details.');
             }
           } catch (e) {
             console.error("Server Error: ", rawText);
-            alert("A server error occurred. Check console for details.");
+            showAlert("error", "A server error occurred. Check console for details.");
           }
         } catch (err) {
           console.error(err);
-          alert('A network error occurred. Check the server response.');
+          showAlert("error", 'A network error occurred. Check the server response.');
         } finally {
           document.getElementById('draftBtn').disabled = false;
           document.getElementById('publishBtn').disabled = false;
@@ -1726,7 +1767,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const roleSelect = document.getElementById(`role-select-${userId}`);
         const roleId = roleSelect ? roleSelect.value : null;
 
-        if (action === 'accept' && !roleId) return alert('Please select a role before accepting the user.');
+        if (action === 'accept' && !roleId) return showAlert("error", 'Please select a role before accepting the user.');
         if (!confirm(`Are you sure you want to ${action} this user?`)) return;
 
         const formData = new FormData();
@@ -1739,16 +1780,17 @@ document.addEventListener('DOMContentLoaded', () => {
           const result = await response.json();
 
           if (result.success) {
-            alert(result.message);
+            showAlert("success", result.message);
             const row = document.getElementById(`pending-row-${userId}`);
             if (row) row.remove();
             if (action === 'accept') fetchUserManagementData();
           } else {
-            alert('Error: ' + result.message);
+            console.error("Backend Error:", result.message);
+            showAlert("error", "Action could not be completed.");
           }
         } catch (error) {
           console.error(error);
-          alert('A network error occurred processing the request.');
+          showAlert("error", 'A network error occurred processing the request.');
         }
       };
 
@@ -1771,14 +1813,15 @@ document.addEventListener('DOMContentLoaded', () => {
           const response = await fetch('actions/users/suspend-user.php', { method: 'POST', body: formData });
           const result = await response.json();
           if (result.success) {
-            alert(result.message);
+            showAlert("success", result.message);
             fetchUserManagementData();
           } else {
-            alert('Error: ' + result.message);
+            console.error("Backend Error:", result.message);
+            showAlert("error", "Action could not be completed.");
           }
         } catch (error) {
           console.error(error);
-          alert('A network error occurred.');
+          showAlert("error", 'A network error occurred.');
         }
       };
 
@@ -1791,7 +1834,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const userId = this.getAttribute('data-target-user');
           const duration = document.getElementById('suspendDuration').value;
 
-          if (!duration) return alert('Please select a suspension duration.');
+          if (!duration) return showAlert("error", 'Please select a suspension duration.');
 
           const modalEl = document.getElementById('suspendUserModal');
           const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -1823,21 +1866,22 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
               const result = JSON.parse(rawText);
               if (result.success) {
-                alert(result.message);
+                showAlert("success", result.message);
                 const modalEl = document.getElementById('createRoleModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                 modalInstance.hide();
                 if (typeof fetchUserManagementData === 'function') fetchUserManagementData();
               } else {
-                alert('Database Error: ' + result.message);
+                console.error("Backend Error:", result.message);
+                showAlert("error", 'Failed to save role. Please try again.');
               }
             } catch (parseError) {
               console.error("PHP/SQL Error Output:", rawText);
-              alert("The server encountered an SQL error. Please check the Console.");
+              showAlert("error", "A server error occurred while saving.");
             }
           } catch (error) {
             console.error('Role Creation Error:', error);
-            alert('A network error occurred while saving the role.');
+            showAlert("error", 'A network error occurred while saving the role.');
           } finally {
             if (submitBtn) {
               submitBtn.innerText = originalText;

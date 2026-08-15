@@ -180,6 +180,24 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     </div>
   </div>
 
+    <!-- Universal Alert Modal -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="alert" class="toast rounded-3 bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body d-flex gap-3 p-3">
+        <span id="alert-icon-bg" class="rounded-circle d-grid text-white" style="width: 36px; height: 36px; place-items: center; aspect-ratio: 1;">
+          <i id="alert-icon" data-lucide="check" width="18" height="18"></i>
+        </span>
+        <div class="w-100">
+          <div class="d-flex justify-content-between">
+            <strong id="alert-title" class="fs-6">Success!</strong>
+            <i data-lucide="x" width="24" height="24" data-bs-dismiss="toast" aria-label="Close" style="cursor: pointer;"></i>
+          </div>
+          <span id="alert-message">Message.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Quill Rich Text Editor -->
