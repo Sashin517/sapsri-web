@@ -10,16 +10,78 @@ $vid_dir = '../../../assets/media/videos/posts/';
 if (!file_exists($img_dir)) mkdir($img_dir, 0777, true);
 if (!file_exists($vid_dir)) mkdir($vid_dir, 0777, true);
 
-// Helper function to handle file uploads
+// Upgraded Helper function to handle WebP Conversion
 function uploadFile($file, $target_dir, $prefix = '') {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) return null;
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = $prefix . uniqid() . '.' . $ext;
-    $target_file = $target_dir . $filename;
     
-    if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        return str_replace('../../../', '', $target_file);
+    $mime = mime_content_type($file['tmp_name']);
+    $is_video = strpos($mime, 'video/') === 0;
+
+    // 1. If it's a video, bypass conversion and just move it
+    if ($is_video) {
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = $prefix . uniqid() . '.' . $ext;
+        $target_file = $target_dir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $target_file)) {
+            return str_replace('../../../', '', $target_file);
+        }
+        return null;
+    } 
+    
+    // 2. If it's an image, convert to WebP
+    else if (strpos($mime, 'image/') === 0) {
+        $filename = $prefix . uniqid() . '.webp';
+        $target_file = $target_dir . $filename;
+        $image = null;
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = @imagecreatefromjpeg($file['tmp_name']);
+                break;
+            case 'image/png':
+                $image = @imagecreatefrompng($file['tmp_name']);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/gif':
+                $image = @imagecreatefromgif($file['tmp_name']);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/webp':
+                $image = @imagecreatefromwebp($file['tmp_name']);
+                break;
+            default:
+                // Fallback for unsupported image types
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                if (empty($ext)) $ext = 'jpg';
+                $fallback_target = $target_dir . $prefix . uniqid() . '.' . $ext;
+                if (move_uploaded_file($file['tmp_name'], $fallback_target)) {
+                    return str_replace('../../../', '', $fallback_target);
+                }
+                return null;
+        }
+
+        // Save the image as WebP with 80% quality
+        if ($image !== false && $image !== null) {
+            $success = imagewebp($image, $target_file, 80);
+            imagedestroy($image); // Free up server RAM
+            
+            if ($success) {
+                return str_replace('../../../', '', $target_file);
+            }
+        }
+        return null;
     }
+    
     return null;
 }
 
