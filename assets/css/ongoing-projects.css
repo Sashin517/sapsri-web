@@ -12,7 +12,6 @@
 .btn-show-more {
     background-color: #000;
     border-color: #000;
-
     color: #fff;
     padding: 0.75rem 1.5rem;
     font-weight: 500;
@@ -81,14 +80,29 @@ main iframe{
     background-color: #212529; /* Color of the active dot */
 }
 .captured-photos div{
-        width: 50%!important;
-    }
+    width: 50%!important;
+}
 
 .story-image, .story-text{
     width: 50%;
 }
 
-/* ↓ Below Bootstrap'm "md" (576px) */
+/* --- Dynamic Card Hover Effects --- */
+.hover-zoom {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-zoom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+.hover-zoom .card-img-top img {
+    transition: transform 0.3s ease;
+}
+.hover-zoom:hover .card-img-top img {
+    transform: scale(1.05);
+}
+
+/* ↓ Below Bootstrap's "md" (576px) */
 @media (max-width: 768.98px) {
     .text-truncate-6 {
         -webkit-line-clamp: 12;
@@ -100,8 +114,7 @@ main iframe{
     .story-image{
         height: 52vh;
     }
-  .captured-photos div{
+    .captured-photos div{
         width: 94%!important;
     }
 }
-

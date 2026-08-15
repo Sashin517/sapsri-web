@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/ongoing-projects.css">
-    <link rel="stylesheet" href="./assets/css/project-style.css">
     <!-- font awesome v7 -->
     <script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous"></script>
 </head>
@@ -197,12 +196,13 @@
                 }
 
                 // 4. Build Card HTML
+                // OPTIMIZATION: Added loading="lazy" and decoding="async" to the <img> tag
                 const cardHtml = `
                     <div class="col-12 col-lg-4">
-                        <a href="ongoing-project.php?id=${project.id}" class="card-link text-decoration-none">
+                        <a href="ongoing-project?id=${project.id}" class="card-link text-decoration-none">
                             <div class="card border-0 h-100 d-flex flex-column shadow-sm hover-zoom">
-                                <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-                                    <img src="${imgUrl}" alt="${project.title}" class="w-100 h-100 rounded-top-3" style="object-fit: cover;">
+                                <div class="card-img-top" style="height: 332.8px; overflow: hidden; background-color: #f8f9fa;">
+                                    <img src="${imgUrl}" alt="${project.title}" class="w-100 h-100 rounded-top-3" style="object-fit: cover;" loading="lazy" decoding="async">
                                 </div>
                                 <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column">
                                     <h3 class="mb-0 fs-4 overflow-hidden text-dark" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${project.title}</h3>
