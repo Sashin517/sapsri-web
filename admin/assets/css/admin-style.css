@@ -662,6 +662,24 @@ body {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
 }
+/* --- Custom Multi-Select UI --- */
+  .ms-wrapper { position: relative; width: 100%; font-family: 'Inter', sans-serif; }
+  .ms-input-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0.5rem 0.75rem; min-height: 48px; border: 1px solid #ced4da; border-radius: 8px; background-color: #fff; cursor: text; transition: all 0.2s ease; }
+  .ms-input-box.active { border-color: var(--sapsri-red); box-shadow: 0 0 0 3px rgba(201, 24, 74, 0.1); }
+  .ms-pill { display: inline-flex; align-items: center; background-color: #E6E6E6; color: #111; border-radius: 6px; padding: 4px 8px 4px 12px; font-size: 0.9rem; font-weight: 400; }
+  .ms-pill .remove-pill { margin-left: 6px; cursor: pointer; color: #111; display: flex; align-items: center; justify-content: center; padding: 2px; }
+  .ms-pill .remove-pill:hover { color: var(--sapsri-red); }
+  .ms-search-input { border: none; outline: none; flex-grow: 1; min-width: 120px; font-size: 0.95rem; background: transparent; padding: 0; margin: 0; color: #333; }
+  .ms-controls { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #111; }
+  .ms-clear-all { cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .ms-clear-all:hover { color: var(--sapsri-red); }
+  .ms-chevron { pointer-events: none; transition: transform 0.2s; display: flex; align-items: center; }
+  .ms-wrapper.open .ms-chevron { transform: rotate(180deg); }
+  .ms-dropdown { position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 1050; background-color: #F4F4F4; border: 1px solid #ced4da; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-height: 250px; overflow-y: auto; display: none; padding: 8px 0; }
+  .ms-wrapper.open .ms-dropdown { display: block; }
+  .ms-option { padding: 10px 16px; cursor: pointer; font-size: 0.95rem; color: #111; transition: background 0.1s; }
+  .ms-option:hover { background-color: #E6E6E6; }
+  .ms-empty-state { padding: 10px 16px; color: #666; font-size: 0.95rem; text-align: center; }
 
 /* --- Responsive Queries --- */
 @media (max-width: 991px) {

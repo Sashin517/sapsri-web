@@ -91,12 +91,17 @@ try {
 
     $title = $_POST['title'] ?? 'Untitled';
     $phase = $_POST['phase'] ?? 'ongoing';
-    $impact_area = $_POST['impact_area'] ?? null;
     $description = $_POST['full_description'] ?? '';
     $status = $_POST['status'] ?? 'draft';
     $start_date = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
     $end_date = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
     
+    // --- CHANGED: Retrieve impact areas as an array ---
+    $impact_areas = $_POST['impact_area'] ?? [];
+    if (!is_array($impact_areas) && !empty($impact_areas)) {
+        $impact_areas = [$impact_areas]; // Fallback in case a single string is passed
+    }
+
     // Safety check: if phase is ongoing, ensure end_date is strictly null
     if ($phase === 'ongoing') {
         $end_date = null;
@@ -119,11 +124,16 @@ try {
     $project_id = $conn->insert_id;
     $stmt->close();
 
-    // 3. Insert into `project_impact_areas`
-    if ($impact_area) {
+    // 3. Insert into `project_impact_areas` (CHANGED: Now loops through array)
+    if (!empty($impact_areas)) {
         $stmt = $conn->prepare("INSERT INTO project_impact_areas (project_id, impact_area_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $project_id, $impact_area);
-        $stmt->execute();
+        foreach ($impact_areas as $area_id) {
+            $area_id_int = intval($area_id);
+            if ($area_id_int > 0) {
+                $stmt->bind_param("ii", $project_id, $area_id_int);
+                $stmt->execute();
+            }
+        }
         $stmt->close();
     }
 

@@ -92,8 +92,13 @@ try {
     mysqli_begin_transaction($conn);
 
     $title = $_POST['title'] ?? 'Untitled Post';
-    $impact_area = $_POST['impact_area'] ?? null;
     $content = $_POST['content'] ?? '';
+    
+    // --- CHANGED: Retrieve impact areas as an array ---
+    $impact_areas = $_POST['impact_area'] ?? [];
+    if (!is_array($impact_areas) && !empty($impact_areas)) {
+        $impact_areas = [$impact_areas]; // Fallback in case a single string is passed
+    }
     
     // Status Guard
     $raw_status = $_POST['status'] ?? 'draft';
@@ -123,11 +128,16 @@ try {
     $post_id = $conn->insert_id;
     $stmt->close();
 
-    // 3. Insert into `post_impact_areas`
-    if (!empty($impact_area)) {
+    // 3. Insert into `post_impact_areas` (CHANGED: Now loops through array)
+    if (!empty($impact_areas)) {
         $stmt = $conn->prepare("INSERT INTO post_impact_areas (post_id, impact_area_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $post_id, $impact_area);
-        $stmt->execute();
+        foreach ($impact_areas as $area_id) {
+            $area_id_int = intval($area_id);
+            if ($area_id_int > 0) {
+                $stmt->bind_param("ii", $post_id, $area_id_int);
+                $stmt->execute();
+            }
+        }
         $stmt->close();
     }
 

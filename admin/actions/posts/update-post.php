@@ -157,19 +157,29 @@ try {
         $stmt->close();
     }
 
-    // Update `post_impact_areas` (only if impact_area was passed)
+    // --- CHANGED: Update `post_impact_areas` (looping through array) ---
     if (isset($_POST['impact_area'])) {
-        $impact_area = $_POST['impact_area'];
+        $impact_areas = $_POST['impact_area'];
+        if (!is_array($impact_areas)) {
+            $impact_areas = [$impact_areas]; // Fallback
+        }
         
+        // Always delete old associations first to ensure a clean update
         $stmt = $conn->prepare("DELETE FROM post_impact_areas WHERE post_id = ?");
         $stmt->bind_param("i", $post_id);
         $stmt->execute();
         $stmt->close();
 
-        if (!empty($impact_area)) {
+        // Insert new ones
+        if (!empty($impact_areas)) {
             $stmt = $conn->prepare("INSERT INTO post_impact_areas (post_id, impact_area_id) VALUES (?, ?)");
-            $stmt->bind_param("ii", $post_id, $impact_area);
-            $stmt->execute();
+            foreach ($impact_areas as $area_id) {
+                $area_id_int = intval($area_id);
+                if ($area_id_int > 0) {
+                    $stmt->bind_param("ii", $post_id, $area_id_int);
+                    $stmt->execute();
+                }
+            }
             $stmt->close();
         }
     }

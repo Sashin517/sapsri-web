@@ -415,6 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- VIEW: CREATE PROJECT LOGIC ---
     // ==========================================
     function initCreateProjectScript() {
+      new SAPSRIMultiSelect('projectImpactArea', 'Add Impact Areas...');
       const phaseToggle = document.getElementById('projectPhaseToggle');
       const phaseLabel = document.getElementById('phaseLabel');
       const startDateContainer = document.getElementById('startDateContainer');
@@ -747,7 +748,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('title', document.getElementById('projectTitle').value);
         formData.append('phase', document.getElementById('projectPhaseToggle').checked ? 'ongoing' : 'past');
-        formData.append('impact_area', document.getElementById('projectImpactArea').value);
+        Array.from(document.getElementById('projectImpactArea').selectedOptions).forEach(option => {
+            formData.append('impact_area[]', option.value);
+        });
         formData.append('start_date', document.getElementById('projectStartDate').value);
         formData.append('end_date', document.getElementById('projectEndDate').value);
         formData.append('full_description', quill.root.innerHTML);
@@ -870,6 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- VIEW: CREATE POST LOGIC ---
     // ==========================================
     function initCreatePostScript() {
+      new SAPSRIMultiSelect('postImpactArea', 'Add Impact Areas...');
       window.galleryFilesArray = [];
 
       function simulateUpload(idPrefix, callback) {
@@ -1019,7 +1023,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         formData.append('title', document.getElementById('postTitle').value);
-        formData.append('impact_area', document.getElementById('postImpactArea').value);
+        Array.from(document.getElementById('postImpactArea').selectedOptions).forEach(option => {
+            formData.append('impact_area[]', option.value);
+        });
         formData.append('content', quill.root.innerHTML);
         formData.append('status', postSubmitStatus);
 
@@ -1066,6 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- VIEW: EDIT POST LOGIC ---
     // ==========================================
     function initEditPostScript(params = {}) {
+      window.editPostMultiSelect = new SAPSRIMultiSelect('postImpactArea', 'Add Impact Areas...');
       window.galleryFilesArray = [];
       window.galleryFilesDeletedArray = [];
       let quill = null;
@@ -1229,14 +1236,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         const id = window.postData.id ?? null;
         const title = document.getElementById('postTitle').value;
-        const impactArea = document.getElementById('postImpactArea').value;
         const content = quill.root.innerHTML;
 
         formData.append('id', id);
         if (window.postData.title !== title) formData.append('title', title);
-        if (window.postData.impactAreaIds[0] !== impactArea) formData.append('impact_area', impactArea);
-        if (window.postData.content !== content) formData.append('content', quill.root.innerHTML);
+        if (window.postData.content !== content) formData.append('content', content);
         if (postSubmitStatus) formData.append('status', postSubmitStatus);
+        
+        // Loop and append the array only ONCE
+        Array.from(document.getElementById('postImpactArea').selectedOptions).forEach(option => {
+            formData.append('impact_area[]', option.value);
+        });
         
         const coverInput = document.getElementById('coverInput');
         const coverImage = coverInput.files[0] ? coverInput.files[0] : null;
@@ -1311,7 +1321,16 @@ document.addEventListener('DOMContentLoaded', () => {
           window.postData.isCoverDeleted = false;
 
           document.getElementById('postTitle').value = title;
-          document.getElementById('postImpactArea').value = impactAreaIds[0];
+          const postImpactAreaSelect = document.getElementById('postImpactArea');
+          if (impactAreaIds && impactAreaIds.length > 0) {
+              Array.from(postImpactAreaSelect.options).forEach(opt => {
+                  if (impactAreaIds.includes(opt.value) || impactAreaIds.includes(parseInt(opt.value))) {
+                      opt.selected = true;
+                  }
+              });
+
+              if (window.editPostMultiSelect) window.editPostMultiSelect.refresh();
+          }
 
           if (quill && content) quill.root.innerHTML = content;
 
@@ -1893,3 +1912,153 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 }); // END DOMContentLoaded
+
+// ==========================================
+// CUSTOM PILL MULTI-SELECT UI COMPONENT
+// ==========================================
+class SAPSRIMultiSelect {
+    constructor(selectId, placeholderText = "Search and select...") {
+        this.nativeSelect = document.getElementById(selectId);
+        if (!this.nativeSelect) return;
+
+        this.placeholderText = placeholderText;
+        this.nativeSelect.style.display = 'none'; // Hide native select
+
+        this.buildUI();
+        this.bindEvents();
+        this.updateUI(); // Initial render
+    }
+
+    buildUI() {
+        this.wrapper = document.createElement('div');
+        this.wrapper.className = 'ms-wrapper';
+
+        this.inputBox = document.createElement('div');
+        this.inputBox.className = 'ms-input-box';
+
+        this.pillsContainer = document.createElement('div');
+        this.pillsContainer.style.display = 'flex';
+        this.pillsContainer.style.flexWrap = 'wrap';
+        this.pillsContainer.style.gap = '6px';
+
+        this.searchInput = document.createElement('input');
+        this.searchInput.type = 'text';
+        this.searchInput.className = 'ms-search-input';
+        this.searchInput.placeholder = this.placeholderText;
+
+        const controls = document.createElement('div');
+        controls.className = 'ms-controls';
+
+        this.clearBtn = document.createElement('div');
+        this.clearBtn.className = 'ms-clear-all';
+        this.clearBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+        this.chevron = document.createElement('div');
+        this.chevron.className = 'ms-chevron';
+        this.chevron.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+        controls.appendChild(this.clearBtn);
+        controls.appendChild(this.chevron);
+
+        this.dropdown = document.createElement('div');
+        this.dropdown.className = 'ms-dropdown';
+
+        this.inputBox.appendChild(this.pillsContainer);
+        this.inputBox.appendChild(this.searchInput);
+        this.inputBox.appendChild(controls);
+        this.wrapper.appendChild(this.inputBox);
+        this.wrapper.appendChild(this.dropdown);
+
+        this.nativeSelect.parentNode.insertBefore(this.wrapper, this.nativeSelect.nextSibling);
+    }
+
+    bindEvents() {
+        this.inputBox.addEventListener('click', () => {
+            this.wrapper.classList.add('open');
+            this.inputBox.classList.add('active');
+            this.searchInput.focus();
+            this.renderDropdown();
+        });
+
+        this.searchInput.addEventListener('input', () => {
+            this.wrapper.classList.add('open');
+            this.renderDropdown(this.searchInput.value);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!this.wrapper.contains(e.target)) {
+                this.wrapper.classList.remove('open');
+                this.inputBox.classList.remove('active');
+                this.searchInput.value = ''; 
+            }
+        });
+
+        this.clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            Array.from(this.nativeSelect.options).forEach(opt => opt.selected = false);
+            this.updateUI();
+            this.wrapper.classList.remove('open');
+        });
+    }
+
+    updateUI() {
+        this.pillsContainer.innerHTML = '';
+        let hasSelection = false;
+
+        Array.from(this.nativeSelect.options).forEach(option => {
+            if (option.selected && option.value) {
+                hasSelection = true;
+                const pill = document.createElement('div');
+                pill.className = 'ms-pill';
+                pill.innerHTML = `${option.text} <div class="remove-pill" data-val="${option.value}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>`;
+                this.pillsContainer.appendChild(pill);
+            }
+        });
+
+        this.pillsContainer.querySelectorAll('.remove-pill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const opt = Array.from(this.nativeSelect.options).find(o => o.value === btn.getAttribute('data-val'));
+                if (opt) opt.selected = false;
+                this.updateUI();
+                if (this.wrapper.classList.contains('open')) this.renderDropdown(this.searchInput.value);
+            });
+        });
+
+        this.searchInput.placeholder = hasSelection ? "" : this.placeholderText;
+        this.clearBtn.style.display = hasSelection ? 'flex' : 'none';
+    }
+
+    renderDropdown(filterText = "") {
+        this.dropdown.innerHTML = '';
+        const lowerFilter = filterText.toLowerCase();
+        let hasVisibleOptions = false;
+
+        Array.from(this.nativeSelect.options).forEach(option => {
+            if (!option.value || option.selected) return;
+
+            if (option.text.toLowerCase().includes(lowerFilter)) {
+                hasVisibleOptions = true;
+                const item = document.createElement('div');
+                item.className = 'ms-option';
+                item.innerText = option.text;
+                
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    option.selected = true;
+                    this.searchInput.value = ''; 
+                    this.updateUI();
+                    this.renderDropdown();
+                    this.searchInput.focus(); // Keep open for multi-select
+                });
+                this.dropdown.appendChild(item);
+            }
+        });
+
+        if (!hasVisibleOptions) {
+            this.dropdown.innerHTML = `<div class="ms-empty-state">${filterText ? "No matches found" : "All selected"}</div>`;
+        }
+    }
+    
+    refresh() { this.updateUI(); }
+}

@@ -52,12 +52,12 @@
       <!-- Impact Area -->
       <div class="mb-4">
         <label class="form-label fw-medium">Impact Area</label>
-        <select class="form-select" id="postImpactArea">
-          <option selected disabled value="">Select Impact Area...</option>
+        <select class="form-select" id="postImpactArea" multiple>
           <option value="1">Climate & Biodiversity</option>
           <option value="2">Sustainable Agriculture</option>
           <option value="3">Finance & Governance</option>
           <option value="4">Gender Inclusion</option>
+          <option value="5">Other</option>
         </select>
       </div>
 

@@ -6,7 +6,7 @@ assets/media/**
 
 # Ignore repomix output
 repomix-output.xml
-
+*.zip
 *.mp4
 *.pdf
-*.zip
+*.webp
