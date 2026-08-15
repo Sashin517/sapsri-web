@@ -1,0 +1,76 @@
+/* Define custom color variables for the project page */
+:root {
+    --brand-dark-blue: #0c1f3e;
+    --brand-maroon: #9d2449;
+    --text-light-gray: #6c757d;
+}
+
+/* --- Blog Post Styles --- */
+.post-meta {
+    color: var(--text-light-gray);
+    font-size: 0.9rem;
+}
+
+.post-content h1 {
+    font-weight: 700;
+}
+
+.post-content h2 {
+    font-size: 1.75rem;
+    color: #343a40;
+}
+
+.section-title {
+    color: var(--brand-dark-blue);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Buttons --- */
+.btn-show-more, .btn-post-nav, .btn-prev-post-nav {
+    background-color: var(--brand-maroon);
+    border-color: var(--brand-maroon);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-show-more:hover, .btn-post-nav:hover, .btn-prev-post-nav:hover {
+    background-color: #831e3c;
+    border-color: #831e3c;
+    color: #fff;
+}
+
+.btn-prev-post-nav {
+    background-color: var(--text-light-gray);
+    border-color: var(--text-light-gray);
+}
+
+.btn-prev-post-nav:hover {
+    background-color: #000;
+    border-color: #000;
+}
+
+/* --- Dynamic Render Utility Classes --- */
+.metric-icon-wrapper {
+    padding: 2rem;
+    width: 108px;
+    height: 108px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-text-container {
+    background: #EEEFF0;
+}
+
+.hover-zoom {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hover-zoom:hover {
+    transform: scale(1.08);
+    opacity: 1 !important;
+}
