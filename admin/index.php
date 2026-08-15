@@ -2305,15 +2305,15 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           if (window.postData.impactAreaIds[0] !== impactArea) formData.append('impact_area', impactArea);
           if (window.postData.content !== content) formData.append('content', quill.root.innerHTML);
           if (postSubmitStatus) formData.append('status', postSubmitStatus);
-          
+
           // Cover Image
           const coverInput = document.getElementById('coverInput');
           const coverImage = coverInput.files[0] ? coverInput.files[0] : null;
           const isCoverDeleted = window.postData.isCoverDeleted;
-          
+
           if (coverImage) formData.append('cover_image', coverImage);
           formData.append('is_cover_deleted', isCoverDeleted);
-          
+
           // Media Gallery
           window.galleryFilesArray.forEach((item) => {
             formData.append(`gallery_files[]`, item.file);
@@ -2322,9 +2322,9 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
           window.galleryFilesDeletedArray.forEach((item) => {
             formData.append(`gallery_files_deleted[]`, item);
           });
-          
+
           // console.log(formData);
-          
+
           try {
             const response = await fetch('actions/posts/update-post.php', {
               method: 'POST',
@@ -2335,7 +2335,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             try {
               const result = JSON.parse(rawText);
               if (result.success) {
-                alert('Post Saved Successfully!');
+                alert('Post Updated Successfully!');
                 loadView('posts', 'Posts Management');
               } else {
                 alert('Error: ' + result.message);
@@ -3030,7 +3030,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
             const duration = document.getElementById('suspendDuration').value;
 
             if (!duration) {
-              alert('Please select a suspension duration.');
+              showAlert("error", 'Please select a suspension duration.');
               return;
             }
 
@@ -3081,7 +3081,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                 const result = JSON.parse(rawText);
 
                 if (result.success) {
-                  alert(result.message);
+                  showAlert("success", result.message);
+
 
                   // Hide modal cleanly
                   const modalEl = document.getElementById('createRoleModal');
@@ -3093,16 +3094,17 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
                     fetchUserManagementData();
                   }
                 } else {
-                  alert('Database Error: ' + result.message);
+                  showAlert("error", 'Database Error: ' + result.message);
+
                 }
               } catch (parseError) {
                 // If the response wasn't valid JSON, it means PHP threw a fatal SQL error.
                 console.error("PHP/SQL Error Output:", rawText);
-                alert("The server encountered an SQL error. Please press F12 and check the Console for the exact database error.");
+                showAlert("error", "The server encountered an error. Please try again.");
               }
             } catch (error) {
               console.error('Role Creation Error:', error);
-              alert('A network error occurred while saving the role.');
+              showAlert("error", "A network error occurred while saving the role.");
             } finally {
               if (submitBtn) {
                 submitBtn.innerText = originalText;
@@ -3142,7 +3144,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         default:
           document.querySelector("[data-view='publications']").classList.add('active-primary');
           loadView('dashboard', 'Dashboard');
-          alert("Something went wrong.");
+          showAlert("error", "Something went wrong.");
           break;
       }
 
@@ -3154,6 +3156,53 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   </script>
 
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="alert" class="toast rounded-3 bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body d-flex gap-3 p-3">
+        <span id="alert-icon-bg" class="rounded-circle d-grid text-white" style="width: 36px; height: 36px; place-items: center; aspect-ratio: 1;">
+          <i id="alert-icon" data-lucide="check" width="18" height="18"></i>
+        </span>
+        <div class="w-100">
+          <div class="d-flex justify-content-between">
+            <strong id="alert-title" class="fs-6">Success!</strong>
+            <i data-lucide="x" width="24" height="24" data-bs-dismiss="toast" aria-label="Close" style="cursor: pointer;"></i>
+          </div>
+          <span id="alert-message">Message.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toastEl = document.getElementById('alert');
+    const toast = new bootstrap.Toast(toastEl);
+
+    function showAlert(type, message) {
+      const iconEl = toastEl.querySelector("#alert-icon");
+      const iconBgEl = toastEl.querySelector("#alert-icon-bg");
+      const titleEl = toastEl.querySelector("#alert-title");
+      const messageEl = toastEl.querySelector("#alert-message");
+
+      if (type === "success") {
+        iconEl.dataset.lucide = "check";
+        iconBgEl.style.backgroundColor = "#12B76A";
+        titleEl.textContent = "Success!"
+        messageEl.textContent = message;
+        toast.show();
+        return;
+      }
+
+      if (type === "error") {
+        iconEl.dataset.lucide = "x";
+        iconBgEl.style.backgroundColor = "#CB2045";
+        titleEl.textContent = "Error!"
+        messageEl.textContent = message;
+        toast.show();
+        return;
+      }
+    }
+  </script>
 
 </body>
 
