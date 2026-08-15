@@ -1193,6 +1193,37 @@ section.past-projects {
     height: 0 !important;
 }
 
+/* --- Home News Section --- */
+.swiper-button-custom-prev,
+.swiper-button-custom-next {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.swiper-button-custom-prev:hover,
+.swiper-button-custom-next:hover {
+  background-color: #a20a35;
+  color: #ffffff;
+  border-color: #a20a35;
+}
+
+.swiper-button-custom-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* --- Extra Small / Tiny Devices --- */
 @media (max-width: 299px) {
   body {
@@ -1213,6 +1244,12 @@ section.past-projects {
         }
       }
     }
+  }
+}
+
+@media (max-width: 320px) {
+  .news-card-title {
+    font-size: 1rem;
   }
 }
 

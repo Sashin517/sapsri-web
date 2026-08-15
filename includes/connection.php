@@ -12,7 +12,7 @@ class Database {
             //Database::$connection = new mysqli("localhost", "root", "", "sapsri_admin_core");
 
             // Batawala Local
-            //Database::$connection = new mysqli("localhost", "root", "", "sapsril_sapsri_admin_core");
+            // Database::$connection = new mysqli("localhost", "root", "", "sapsril_sapsri_admin_core");
             
             // SAPSRI DB
             Database::$connection = new mysqli("localhost", "sapsril_sldevs", "wveeaj+!eTIUNHLI", "sapsril_sapsri_admin_core");

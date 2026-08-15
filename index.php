@@ -111,10 +111,10 @@
 
 
         <div class="container-fluid hero-holder py-5">
-            
+
             <div class="container">
-                    <h3 class="fw-semibold text-secondary lead mb-0">Empowering Communities, Enabling Change</h3>
-                    <p class="fs-6 text-muted mt-6 mb-0">Working Together for a Just and Inclusive Sri Lanka</p>
+                <h3 class="fw-semibold text-secondary lead mb-0">Empowering Communities, Enabling Change</h3>
+                <p class="fs-6 text-muted mt-6 mb-0">Working Together for a Just and Inclusive Sri Lanka</p>
             </div>
 
         </div>
@@ -128,8 +128,8 @@
 
                     <div class="col">
                         <div class="card border-0 rounded-4 h-100">
-                            <img src="assets/media/img/impact-areas/impact-area-card-img-climate-and-biodiversity.webp" 
-                                class="card-img impact-img-fit rounded-4" 
+                            <img src="assets/media/img/impact-areas/impact-area-card-img-climate-and-biodiversity.webp"
+                                class="card-img impact-img-fit rounded-4"
                                 alt="Climate Biodiversity">
                             <div class="card-img-overlay z-1 d-flex align-items-center justify-content-center">
                                 <p class="text-white text-center fw-semibold m-0 fs-5">Climate & Biodiversity</p>
@@ -140,8 +140,8 @@
 
                     <div class="col">
                         <div class="card border-0 rounded-4 h-100">
-                            <img src="assets/media/img/impact-areas/impact-area-card-img-sustainable-agriculture.webp" 
-                                class="card-img impact-img-fit rounded-4" 
+                            <img src="assets/media/img/impact-areas/impact-area-card-img-sustainable-agriculture.webp"
+                                class="card-img impact-img-fit rounded-4"
                                 alt="Sustainable Agriculture">
                             <div class="card-img-overlay z-1 d-flex align-items-center justify-content-center">
                                 <p class="text-white text-center fw-semibold m-0 fs-5">Sustainable Agriculture</p>
@@ -152,8 +152,8 @@
 
                     <div class="col">
                         <div class="card border-0 rounded-4 h-100">
-                            <img src="assets/media/img/impact-areas/finance-and-governance.jpg" 
-                                class="card-img impact-img-fit rounded-4" 
+                            <img src="assets/media/img/impact-areas/finance-and-governance.jpg"
+                                class="card-img impact-img-fit rounded-4"
                                 alt="Finance & Governance">
                             <div class="card-img-overlay z-1 d-flex align-items-center justify-content-center">
                                 <p class="text-white text-center fw-semibold m-0 fs-5">Finance & Governance</p>
@@ -164,8 +164,8 @@
 
                     <div class="col">
                         <div class="card border-0 rounded-4 h-100">
-                            <img src="assets/media/img/impact-areas/impact-area-card-img-gender-inclusion.webp" 
-                                class="card-img impact-img-fit rounded-4" 
+                            <img src="assets/media/img/impact-areas/impact-area-card-img-gender-inclusion.webp"
+                                class="card-img impact-img-fit rounded-4"
                                 alt="Gender Inclusion">
                             <div class="card-img-overlay z-1 d-flex align-items-center justify-content-center">
                                 <p class="text-white text-center fw-semibold m-0 fs-5">Gender Inclusion</p>
@@ -313,7 +313,40 @@
 
                 <div class="row">
 
-                    <div class="col-12 text-center">
+                    <div class="col-12">
+
+                        <div class="d-flex justify-content-center align-items-center mb-4">
+
+                            <button class="swiper-button-custom-prev me-3" id="newsPrevBtn" aria-label="Previous Slide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+                                </svg>
+                            </button>
+
+                            <div>
+                                <h3 class="fw-semibold mb-1 h3-underline">Latest News</h3>
+                            </div>
+
+                            <button class="swiper-button-custom-next ms-3" id="newsNextBtn" aria-label="Next Slide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="swiper news-swiper" id="newsSwiper">
+                            <div class="swiper-wrapper" id="newsWrapper">
+                                <div class="w-100 text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading news...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- <div class="col-12 text-center">
                         <h3 class="fw-semibold h3-underline">Latest News</h3>
                     </div>
 
@@ -323,7 +356,7 @@
 
                             <div class="swiper-wrapper d-flex justify-content-center" id="latestNews">
 
-                                
+
                             </div>
 
                             <div class="swiper-button-prev"></div>
@@ -333,10 +366,10 @@
 
                         <div class="swiper-pagination"></div>
 
-                    </div>
+                    </div> -->
 
                     <div class="col-12 text-center mt-3">
-                        <button id="ltsnews-btn" class="btn btn-pill btn-primary">See All</button>
+                        <a href="news" id="ltsnews-btn" class="btn btn-pill btn-primary">See All</a>
                     </div>
 
                 </div>
@@ -458,79 +491,80 @@
 
     <?php include "includes/footer.php"; ?>
 
-    <script>
-            const ltsnewsBtn = document.getElementById('ltsnews-btn');
-            const loaderOverlay = document.getElementById('loader-overlay');
-            ltsnewsBtn.addEventListener('click', () => {
-                window.location.href = 'news';
-            });
-            async function getPostsData() {
-                const url = 'includes/post-data.php';
-    
-                try {
-                    const response = await fetch(url);
-    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-    
-                    const data = await response.json();
-                    allPosts = Object.values(data).reverse();
-    
-                    renderPosts(allPosts);
-    
-                } catch (error) {
-                    console.error('Failed to fetch posts:', error);
-                    document.getElementById('latestNews').innerHTML = `
+    <!-- <script>
+        const ltsnewsBtn = document.getElementById('ltsnews-btn');
+        const loaderOverlay = document.getElementById('loader-overlay');
+        ltsnewsBtn.addEventListener('click', () => {
+            window.location.href = 'news';
+        });
+        async function getPostsData() {
+            const url = 'includes/post-data.php';
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                allPosts = Object.values(data).reverse();
+
+                renderPosts(allPosts);
+
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+                document.getElementById('latestNews').innerHTML = `
                         <div class="col-12 text-center w-100">
                             <p class="text-danger">Failed to load posts. Please try again later.</p>
                         </div>
                     `;
-                    return null;
-                }
+                return null;
             }
-            function renderPosts(posts) {
-                //const latestNews = document.getElementById('latestNews');
-                latestNews.innerHTML = '';
-    
-                if (posts.length === 0) {
-                    latestNews.innerHTML = `
+        }
+
+        function renderPosts(posts) {
+            //const latestNews = document.getElementById('latestNews');
+            latestNews.innerHTML = '';
+
+            if (posts.length === 0) {
+                latestNews.innerHTML = `
                         <div class="col-12 text-center py-5 w-100">
                             <i class="fa-solid fa-magnifying-glass mb-3" style="font-size: 48px; color: #ccc;"></i>
                             <h5>No posts found</h5>
                             <p class="text-muted">No posts found</p>
                         </div>
                     `;
-                    document.querySelector('.news-pagination').innerHTML = '';
-                    return;
-                }
-    
-                posts.forEach(post => {
-                    let imgUrl = './assets/media/img/thumbnails/default.webp';
+                document.querySelector('.news-pagination').innerHTML = '';
+                return;
+            }
 
-                    // Check if the cover_image property exists directly on the post object
-                    if (post.cover_image && post.cover_image.trim() !== '') {
-                        imgUrl = post.cover_image;
-                    } 
-                    // Fallback: check the media array just in case it's a different post type
-                    else if (post.post_media && post.post_media.length > 0) {
-                        const cardImage = post.post_media.find(m => m.type === 'card_image');
-                        if (cardImage) imgUrl = cardImage.url;
-                    }
-                    const dateObj = new Date(post.published_date);
-                    const formattedDate = dateObj.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                    });
-    
-                    let content = post.content || '';
-                    if (content.length > 120) {
-                        content = content.substring(0, 120) + '...';
-                    }
-    
-                    const cardHtml =
-                        `
+            posts.forEach(post => {
+                let imgUrl = './assets/media/img/thumbnails/default.webp';
+
+                // Check if the cover_image property exists directly on the post object
+                if (post.cover_image && post.cover_image.trim() !== '') {
+                    imgUrl = post.cover_image;
+                }
+                // Fallback: check the media array just in case it's a different post type
+                else if (post.post_media && post.post_media.length > 0) {
+                    const cardImage = post.post_media.find(m => m.type === 'card_image');
+                    if (cardImage) imgUrl = cardImage.url;
+                }
+                const dateObj = new Date(post.published_date);
+                const formattedDate = dateObj.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+
+                let content = post.content || '';
+                if (content.length > 120) {
+                    content = content.substring(0, 120) + '...';
+                }
+
+                const cardHtml =
+                    `
                         <div class="swiper-slide">
                             <a href="post?id=${post.id}&len_posts=${posts.length}" class="card-link text-decoration-none text-reset h-100">
                                 <div class="card news-card rounded-4 h-100">
@@ -560,14 +594,13 @@
                             </a>
                         </div>
                     `;
-                    latestNews.insertAdjacentHTML('beforeend', cardHtml);
-                });
+                latestNews.insertAdjacentHTML('beforeend', cardHtml);
+            });
 
-                // loaderOverlay.classList.add('hidden');
-            }
-            getPostsData();
-        
-    </script>
+            // loaderOverlay.classList.add('hidden');
+        }
+        getPostsData();
+    </script> -->
     <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./vendor/swiper/swiper-bundle.min.js"></script>
