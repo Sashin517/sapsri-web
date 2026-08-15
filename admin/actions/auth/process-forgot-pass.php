@@ -35,14 +35,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();                                      
-            $mail->Host       = 'smtp.gmail.com';                 
-            $mail->SMTPAuth   = true;                             
-            $mail->Username   = 'sashindeemantha@gmail.com';           
-            $mail->Password   = 'mkht icqd cbjv cyon';              
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   
-            $mail->Port       = 587;                              
+            
+            $mail->Host       = 'mail.sapsri.lk';                 
+            $mail->SMTPAuth   = true;                                   
+            $mail->Username   = 'noreply@sapsri.lk';              
+            $mail->Password   = 'S.b*JgSY.uV5Q]vs'; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;      
+            $mail->Port       = 465;  
 
-            $mail->setFrom('sashindeemantha@gmail.com', 'SAPSRI Admin Portal');
+            $mail->setFrom('noreply@sapsri.lk', 'SAPSRI Admin Portal');
+
             $mail->addAddress($email, $user['first_name']);
             $mail->addEmbeddedImage('../../assets/img/sapsri-logo-white.png', 'sapsri_logo');
 

@@ -64,16 +64,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mail = new PHPMailer(true);
     try {
         // Server settings
-        $mail->isSMTP();                                      // Set mailer to use SMTP
-        $mail->Host       = 'smtp.gmail.com';                 // Specify main and backup SMTP servers (e.g., Gmail)
-        $mail->SMTPAuth   = true;                             // Enable SMTP authentication
-        $mail->Username   = 'sashindeemantha@gmail.com';           // Your Gmail address
-        $mail->Password   = 'mkht icqd cbjv cyon';              // Your Gmail App Password (NOT your regular password)
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption, `ssl` also accepted
-        $mail->Port       = 587;                              // TCP port to connect to (587 for TLS, 465 for SSL)
+        $mail->isSMTP(); // Set mailer to use SMTP
+        $mail->Host       = 'mail.sapsri.lk';                 
+        $mail->SMTPAuth   = true;                                   
+        $mail->Username   = 'noreply@sapsri.lk';              
+        $mail->Password   = 'S.b*JgSY.uV5Q]vs'; 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;      
+        $mail->Port       = 465;  
 
         // Recipients
-        $mail->setFrom('sashindeemantha@gmail.com', 'SAPSRI Admin Portal');
+        $mail->setFrom('noreply@sapsri.lk', 'SAPSRI Admin Portal');
         $mail->addAddress($email, $first_name . ' ' . $last_name);
         $mail->addEmbeddedImage('../../assets/img/sapsri-logo-white.png', 'sapsri_logo');
 

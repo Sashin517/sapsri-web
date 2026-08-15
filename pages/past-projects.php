@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAPSRI | Past Projects</title>
+    <!-- Frontend assets use ./ because of .htaccess root routing -->
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/past-projects.css">
@@ -14,399 +15,47 @@
 
 <body>
 
-    <!-- header -->
+    <!-- header (PHP requires physical paths, so ../ is correct here) -->
     <?php include "../includes/header.php"; ?>
-
 
     <!-- content start -->
     <main>
 
         <!-- hero -->
         <section class="onGoingPro-hero mb-5">
-
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-12 text-center text-white justify-content-center d-flex flex-column align-items-center gap-2">
-
                         <h1 class="fw-semibold mb-4 display-2">Past Projects</h1>
                         <div style="width: 50%; max-width: 121.57px;  aspect-ratio: 1 / 1;" class="d-flex justify-content-center overflow-hidden align-items-center">
-                            <img src="./assets/icons/pepicons-pop_rewind-time-circle-filled.svg" alt="Finance & Governance icon" class="w-100 h-100 object-fit-cover">
+                            <img src="./assets/icons/pepicons-pop_rewind-time-circle-filled.svg" alt="Past Projects icon" class="w-100 h-100 object-fit-cover">
                         </div>
-                        <!-- <p class="fs-5 mt-4">Building brighter futures and fostering resilience through community-driven development projects.</p> -->
-
-                        <div class="hstack gap-3 justify-content-center flex-wrap">
-
-                            <!-- <a class="btn btn-warning rounded-pill py-3 px-5 fs-6 fw-semibold" href="#climate-and-biodiversity">Climate & Biodiversity</a>
-                            <a class="btn btn-warning rounded-pill py-3 px-5 fs-6 fw-semibold" href="#sustainable-agriculture">Sustainable Agriculture</a>
-                            <a class="btn btn-warning rounded-pill py-3 px-5 fs-6 fw-semibold" href="#governance-and-finance">Governance & Finance</a>
-                            <a class="btn btn-warning rounded-pill py-3 px-5 fs-6 fw-semibold" href="#gender-inclusion">Gender Inclusion</a> -->
-
-                        </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
         <!-- hero -->
 
         <!-- Past Projects Section -->
-        <section id="past-projects" class="container d-flex flex-column align-items-center gap-3 mb-5 d-non">
-            <!-- <h3 class="text-crimson fw-semibold">Climate & Biodiversity</h3> -->
-            <div class="row g-4">
-                <div class="col-12 col-lg-4">
-                    <a href="a-tank-based-biodiversity-improvement-and-protection-project" class="card-link text-decoration-none">
-                        <div class="card border-0 h-100">
-                            <!-- 1. The Container DIV -->
-                            <!-- It has a fixed height and overflow is hidden. -->
-                            <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                                <!-- 2. The Image IMG -->
-                                <!-- w-100 and h-100 make it fill the div. -->
-                                <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                                <img src="./assets/media/img/past-projects/A Tank Based Biodiversity Improvement & Protection Project 2.JPG"
-                                    alt="A Tank Based Biodiversity Improvement & Protection Project"
-                                    class="w-100 h-100 rounded-top-3"
-                                    style="object-fit: cover;">
-
-                            </div>
-                            <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                                <span class="d-flex align-items-center mb-3 flex-wrap">
-                                    <h3 class="mb-0 fs-4 overflow-hidden ">A Tank Based Biodiversity Improvement & Protection Project </h3>
-                                    <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            Anuradhapura District
-                                        </div>
-
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            Funded by Gef Small grant Program
-                                        </div>
-
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            2014-2016
-                                        </div>
-
-                                    </div>
-                                </span>
-
-
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/Peoples' Initiative for Responsible Management of Water Resources at Kudadodanathathawa 2.jpg"
-                                alt="Peoples' Initiative for Responsible Management of Water Resources at Kudadodanathathawa"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                            <span class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Peoples' Initiative for Responsible Management of Water Resources at Kudadodanathathawa</h3>
-                                <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Puttalam District
-                                    </div>
-                                </div>
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/Community Participatory Action to build resilience in response to drought and human elephant.jpeg"
-                                alt="Project CodeKids"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                            <span class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Community Participatory Action to build resilience in response to drought and human
-                                    elephant conflict, Nawagattegama, Sri Lanka - CPABR </h3>
-                                <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Puttalam District
-                                    </div>
-
-
-
-                                </div>
-                            </span>
-
-                            <div class=" w-100">
-
-                            </div>
-
-                            <span class="d-flex justify-content-between align-items-center mt-3">
-                                <p class="text fs-6 fw-semibold mb-0"></p>
-                                <!-- <a href="#" class="d-flex justify-content-center align-items-center bg-black rounded-circle border-0 p-2">
-                                    <img src="./assets/icons/iconamoon_link-external-bold.svg" alt="External link icon" style="width: 21px; height: 21px;">
-                                </a>  -->
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/Increased resilience of women micro-entrepreneurs through the support for production, processing, and creating market avenues for enterprises.jpeg"
-                                alt="Project CodeKids"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                            <span class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Increased resilience of women micro-entrepreneurs through the support for production,
-                                    processing, and creating market avenues for enterprises </h3>
-                                <!-- <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap"> 
-                                        Anuradhapura District 
-                                    </div>
-                                    
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap"> 
-                                        Funded by Japanese Subsidiary Budget
-                                    </div>
-
-                                </div> -->
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/Strengthening Smallholder Farmers and MicroHome-Based Agriculture industries for Enhanced Food & Livelihood Security.jpeg"
-                                alt="Project CodeKids"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-center">
-                            <span class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Strengthening Smallholder Farmers and Micro/Home-Based Agriculture industries for
-                                    Enhanced Food & Livelihood Security </h3>
-                                <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Anuradhapura District
-                                    </div>
-
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Funded by Japanese Subsidiary Budget
-                                    </div>
-
-                                </div>
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/Economic Uplift of Vulnerable Farming Communities and Addressing Food Security.jpeg"
-                                alt="Project CodeKids"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                            <span class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Economic Uplift of Vulnerable Farming Communities and Addressing Food Security </h3>
-                                <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Puttalam District
-                                    </div>
-
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                        Funded by CITI Foundation
-                                    </div>
-
-                                </div>
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100 d-flex flex-column">
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-                            <img src="./assets/media/img/past-projects/Strengthening Rural Entrepreneurship by Adding Value to Traditional Crafts.jpeg" alt="Project Image" class="w-100 h-100 rounded-top-3" style="object-fit: cover;">
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column">
-
-                            <h3 class="mb-0 fs-4 overflow-hidden">Strengthening Rural Entrepreneurship by Adding Value to Traditional Crafts</h3>
-
-                            <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 my-3">
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    Puttalam District
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    North Western Province
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    Funded by HSBC
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    2019-2022
-                                </div>
-                            </div>
-
-                            <div class="w-100">
-                                Increased resilience of women micro-entrepreneurs through the support for production, processing, and creating market avenues for enterprises
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100 d-flex flex-column">
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-                            <img src="./assets/media/img/past-projects/Strengthening Livelihoods Through Reduced Vulnerability of Dry Zone Farmers with.jpeg" alt="Project Image" class="w-100 h-100 rounded-top-3" style="object-fit: cover;">
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-
-                            <h3 class="mb-0 fs-4 overflow-hidden">Strengthening Livelihoods Through Reduced Vulnerability of Dry Zone Farmers with Empowered Women (SLRV)</h3>
-
-                            <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 my-3">
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    Anuradhapura District
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    North Western Province
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    Funded by Australian Government
-                                </div>
-                                <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                    2023-2024
-                                </div>
-                            </div>
-
-                            <div class="text-truncate-3 w-100">
-                                Focus on Women’s economic empowerment, crafts
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="card border-0 h-100">
-                        <!-- 1. The Container DIV -->
-                        <!-- It has a fixed height and overflow is hidden. -->
-                        <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-
-                            <!-- 2. The Image IMG -->
-                            <!-- w-100 and h-100 make it fill the div. -->
-                            <!-- object-fit: cover tells it how to fill the space without distortion. -->
-                            <img src="./assets/media/img/past-projects/sage-program.webp"
-                                alt="Project CodeKids"
-                                class="w-100 h-100 rounded-top-3"
-                                style="object-fit: cover;">
-
-                        </div>
-                        <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                            <div class="d-flex align-items-center mb-3 flex-wrap">
-                                <h3 class="mb-0 fs-4 overflow-hidden ">Sustainable Agriculture and Global Exchange (SAGE) program</h3>
-                                <!-- <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                
-                                    <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap"> 
-                                        Puttalam District 
-                                    </div>
-                                     
-                                </div>                                -->
-                            </div>
-                            <!-- <div class="text-truncate-3 w-100 flex-grow-1"> 
-                                Focus on Women’s economic empowerment, crafts
-                            </div>  -->
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <a href="criwmp" class="card-link text-decoration-none">
-                        <div class="card border-0 h-100">
-                            <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
-                                <img src="./assets/media/img/past-projects/Climate Resilient Integrated Water Management Project.jpg"
-                                    alt="Climate Resilient Integrated Water Management Project"
-                                    class="w-100 h-100 rounded-top-3"
-                                    style="object-fit: cover;">
-                            </div>
-
-                            <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column justify-content-between">
-                                <div class="d-flex align-items-center mb-3 flex-wrap">
-                                    <h3 class="mb-0 fs-4 overflow-hidden">Climate Resilient Integrated Water Management Project</h3>
-
-                                    <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 mt-2">
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            Puttalam District, Nawagaththegama
-                                        </div>
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            Sustainable Agriculture
-                                        </div>
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            Climate Resilience
-                                        </div>
-                                        <div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap">
-                                            2017-2024
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-truncate-3 w-100 flex-grow-1">
-                                    We work with communities in Sri Lanka’s Dry Zone to improve food security, enhance biodiversity and promote sustainable resource management around Ellangawa - village tank cascade systems.
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+        <section class="container d-flex flex-column align-items-center gap-4 mb-5">
+            
+            <!-- Dynamic Grid Container -->
+            <div id="pastProjectsRow" class="row w-100 g-4">
+                <div class="col-12 text-center py-5">
+                    <span class="spinner-border text-warning" style="width: 3rem; height: 3rem;"></span>
+                    <p class="mt-2 text-muted">Loading past projects...</p>
                 </div>
             </div>
-            <!-- <button class="btn btn-outline-secondary btn-show-more rounded-pill">Show more <i class="bi bi-chevron-down"></i></button> -->
+
+            <!-- Pagination Container -->
+            <div class="row w-100 mt-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="projects-pagination d-flex align-items-center gap-2">
+                        <!-- Pagination buttons will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
         </section>
 
     </main>
@@ -416,6 +65,188 @@
     <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/script.js"></script>
-</body>
 
+    <!-- Dynamic Fetch & Render Logic -->
+    <script>
+        let pastProjects = [];
+        let currentPage = 1;
+        const projectsPerPage = 9;
+
+        async function fetchPastProjects() {
+            try {
+                // Fetch using the root-relative path
+                const response = await fetch('./includes/projects-data.php');
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                
+                // Filter exclusively for 'past' projects
+                pastProjects = data.filter(project => project.phase === 'past');
+                
+                renderProjects(currentPage);
+                
+            } catch (error) {
+                console.error('Failed to fetch projects:', error);
+                document.getElementById('pastProjectsRow').innerHTML = `
+                    <div class="col-12 text-center w-100 py-5">
+                        <p class="text-danger fs-5">Failed to load projects. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderProjects(page) {
+            const row = document.getElementById('pastProjectsRow');
+            row.innerHTML = '';
+
+            if (pastProjects.length === 0) {
+                row.innerHTML = `
+                    <div class="col-12 text-center py-5 w-100">
+                        <i class="fa-solid fa-folder-open mb-3" style="font-size: 48px; color: #ccc;"></i>
+                        <h5>No past projects found</h5>
+                    </div>
+                `;
+                document.querySelector('.projects-pagination').innerHTML = '';
+                return;
+            }
+
+            const start = (page - 1) * projectsPerPage;
+            const end = start + projectsPerPage;
+            const paginatedProjects = pastProjects.slice(start, end);
+
+            paginatedProjects.forEach(project => {
+                
+                // 1. Resolve Cover Image (Replacing the admin `../` with the frontend `./`)
+                let imgUrl = './assets/media/img/thumbnails/default.webp';
+                if (project.cover_image && project.cover_image.trim() !== '') {
+                    imgUrl = project.cover_image.replace(/^\.\.\//, './');
+                }
+
+                // 2. Clean HTML from description & Truncate
+                let tempDiv = document.createElement("div");
+                tempDiv.innerHTML = project.description || '';
+                let cleanText = tempDiv.textContent || tempDiv.innerText || "";
+                if (cleanText.length > 120) cleanText = cleanText.substring(0, 120) + '...';
+
+                // 3. Render max 3 Metric Labels
+                let metricsHtml = '';
+                if (project.metrics && project.metrics.length > 0) {
+                    const validMetrics = project.metrics.filter(m => m.label && m.label.trim() !== '').slice(0, 3);
+                    validMetrics.forEach(m => {
+                        metricsHtml += `<div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap" style="font-size: 0.85rem; font-weight: 500;">${m.label}</div>`;
+                    });
+                }
+                
+                // Fallback: If no metrics exist, show impact areas instead to keep the design balanced
+                if(metricsHtml === '' && project.impact_areas.length > 0) {
+                    project.impact_areas.slice(0, 3).forEach(area => {
+                        metricsHtml += `<div class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap" style="font-size: 0.85rem; font-weight: 500;">${area.name}</div>`;
+                    });
+                }
+
+                // 4. Build Card HTML
+                const cardHtml = `
+                    <div class="col-12 col-lg-4">
+                        <a href="past-project?id=${project.id}" class="card-link text-decoration-none">
+                            <div class="card border-0 h-100 shadow-sm transition-hover">
+                                <div class="card-img-top" style="height: 332.8px; overflow: hidden;">
+                                    <img src="${imgUrl}" alt="${project.title}" class="w-100 h-100 rounded-top-3" style="object-fit: cover; transition: transform 0.3s ease;">
+                                </div>
+                                <div class="card-body bg-fade-gold rounded-bottom-4 d-flex flex-column">
+                                    <h3 class="mb-0 fs-4 overflow-hidden text-dark" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${project.title}</h3>
+                                    
+                                    <div class="dis-btns d-flex align-items-center flex-wrap column-gap-2 row-gap-2 my-3">
+                                        ${metricsHtml}
+                                    </div>
+
+                                    <div class="w-100 text-dark opacity-75 mt-auto" style="font-size: 0.95rem;">
+                                        ${cleanText}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `;
+                row.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            renderPagination(pastProjects.length, page);
+        }
+
+        function renderPagination(totalItems, page) {
+            const pagination = document.querySelector('.projects-pagination');
+            pagination.innerHTML = '';
+
+            const totalPages = Math.ceil(totalItems / projectsPerPage);
+
+            if (totalPages > 1) {
+                // Previous Button
+                pagination.insertAdjacentHTML('beforeend', `
+                    <button class="btn btn-sm btn-dark rounded-circle" style="width: 36px; height: 36px;" ${page === 1 ? 'disabled' : ''} id="prevPage">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                `);
+
+                let startPage = Math.max(1, page - 2);
+                let endPage = Math.min(totalPages, page + 2);
+
+                if (startPage > 1) {
+                    pagination.insertAdjacentHTML('beforeend', `<button class="btn btn-sm btn-dark page-btn" style="min-width: 36px;" data-page="1">1</button>`);
+                    if (startPage > 2) pagination.insertAdjacentHTML('beforeend', `<span class="mx-1 text-muted">...</span>`);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === page ? 'btn-warning fw-bold text-dark' : 'btn-dark';
+                    pagination.insertAdjacentHTML('beforeend', `
+                        <button class="btn btn-sm ${activeClass} page-btn" style="min-width: 36px;" data-page="${i}">${i}</button>
+                    `);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) pagination.insertAdjacentHTML('beforeend', `<span class="mx-1 text-muted">...</span>`);
+                    pagination.insertAdjacentHTML('beforeend', `<button class="btn btn-sm btn-dark page-btn" style="min-width: 36px;" data-page="${totalPages}">${totalPages}</button>`);
+                }
+
+                // Next Button
+                pagination.insertAdjacentHTML('beforeend', `
+                    <button class="btn btn-sm btn-dark rounded-circle" style="width: 36px; height: 36px;" ${page === totalPages ? 'disabled' : ''} id="nextPage">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                `);
+
+                // Event Listeners for Pagination
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        currentPage = parseInt(btn.dataset.page);
+                        renderProjects(currentPage);
+                        window.scrollTo({ top: document.getElementById('pastProjectsRow').offsetTop - 100, behavior: 'smooth' });
+                    });
+                });
+
+                document.getElementById('prevPage')?.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderProjects(currentPage);
+                        window.scrollTo({ top: document.getElementById('pastProjectsRow').offsetTop - 100, behavior: 'smooth' });
+                    }
+                });
+
+                document.getElementById('nextPage')?.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderProjects(currentPage);
+                        window.scrollTo({ top: document.getElementById('pastProjectsRow').offsetTop - 100, behavior: 'smooth' });
+                    }
+                });
+            }
+        }
+
+        // Add a subtle hover effect via JS dynamically injected CSS
+        document.head.insertAdjacentHTML("beforeend", `<style>.transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; transition: all 0.3s ease; } .transition-hover:hover img { transform: scale(1.05); }</style>`);
+
+        // Start Execution
+        document.addEventListener('DOMContentLoaded', fetchPastProjects);
+    </script>
+</body>
 </html>
