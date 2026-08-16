@@ -189,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (viewName === "create-post") initCreatePostScript();
       else if (viewName === "edit-post") initEditPostScript(params);
       else if (viewName === "create-publication") initCreatePublicationScript();
+      else if (viewName === "edit-publication") initEditPublicationScript(params);
     } catch (error) {
       appContent.innerHTML = `<div class="alert alert-danger m-4">Failed to load interface. Please try refreshing the page.</div>`;
       console.error("View Load Error:", error);
@@ -858,7 +859,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
 
   function initEditProjectScript(params = {}) {
-    if(!params.id) {
+    if (!params.id) {
       loadView("projects", "Projects");
       showAlert("error", "Something went wrong.");
       return;
@@ -2179,7 +2180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   <td>${item.uploaded_by_name || "System"}</td>
                   <td class="text-end">
                     <button class="btn btn-sm btn-light text-primary border-0 me-1 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
-                    <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit"><i data-lucide="edit" style="width: 16px;"></i></button>
+                    <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit" onclick="loadView('edit-publication', 'Publications', { id: ${item.id} });"><i data-lucide="edit" style="width: 16px;"></i></button>
                     <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${item.title.replace(/'/g, "\\'")}', 'publication', 'actions/publications/delete-publication.php', 'loadPublications')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
                   </td>
                 </tr>
@@ -2446,6 +2447,393 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         document.getElementById("draftBtn").disabled = false;
         document.getElementById("publishBtn").disabled = false;
+        activeBtn.innerHTML = originalBtnText;
+      }
+    });
+  }
+
+  // ==========================================
+  // --- VIEW: EDIT PUBLICATION LOGIC ---
+  // ==========================================
+  async function initEditPublicationScript(params = {}) {
+    const publicationId = params.id;
+    if (!publicationId) {
+      showAlert("error", "Invalid or missing publication ID.");
+      return;
+    }
+
+    // State tracking variables
+    let extractedPdfCoverBlob = null;
+    let currentStatus = "draft";
+    let existingPdfUrl = null;
+    let existingCoverUrl = null;
+    let isCustomCoverRemoved = false;
+    let isPdfFileRemoved = false;
+
+    const radioAuto = document.getElementById("coverAuto");
+    const radioCustom = document.getElementById("coverCustom");
+    const autoSection = document.getElementById("autoCoverSection");
+    const customSection = document.getElementById("customCoverSection");
+    const secondaryBtn = document.getElementById("secondaryActionBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    document.getElementById("pubId").value = publicationId;
+
+    // -------------------------------------------------------------
+    // 1. Cover Strategy Toggle Listener
+    // -------------------------------------------------------------
+    function updateCoverUI() {
+      if (radioAuto.checked) {
+        autoSection.style.display = "block";
+        customSection.style.display = "none";
+      } else {
+        autoSection.style.display = "none";
+        customSection.style.display = "block";
+      }
+    }
+
+    if (radioAuto && radioCustom) {
+      radioAuto.addEventListener("change", updateCoverUI);
+      radioCustom.addEventListener("change", updateCoverUI);
+    }
+
+    // -------------------------------------------------------------
+    // 2. Load Existing Data from Backend
+    // -------------------------------------------------------------
+    try {
+      const response = await fetch(`actions/publications/fetch-publication.php?id=${publicationId}`);
+      if (!response.ok) throw new Error("Failed to load publication data");
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      // Populate standard form fields
+      document.getElementById("pubTitle").value = data.title || "";
+      document.getElementById("pubCategory").value = data.category_id || "";
+      document.getElementById("pubDescription").value = data.description || "";
+      currentStatus = data.status || "draft";
+
+      // Dynamic Action Buttons State
+      updateActionButtons(currentStatus);
+
+      // Populate File Preview (PDF)
+      if (data.file_url) {
+        existingPdfUrl = data.file_url;
+        const fileName = data.file_url.split("/").pop() || "Uploaded Document.pdf";
+        document.getElementById("pdfContent").style.display = "none";
+        document.getElementById("pdfPreviewWrapper").style.display = "block";
+        document.getElementById("pdfFileNameDisplay").innerText = fileName;
+      }
+
+      // Populate Strategy & Cover Image Preview
+      const isCustom = Boolean(data.is_custom_cover);
+      if (isCustom) {
+        radioCustom.checked = true;
+        if (data.cover_image) {
+          existingCoverUrl = data.cover_image;
+          document.getElementById("pubCoverContent").style.display = "none";
+          document.getElementById("pubCoverPreviewWrapper").style.display = "block";
+          document.getElementById("pubCoverPreviewImg").src = data.cover_image;
+        }
+      } else {
+        radioAuto.checked = true;
+        if (data.cover_image) {
+          document.getElementById("autoCoverPlaceholder").style.display = "none";
+          const imgEl = document.getElementById("autoCoverImg");
+          imgEl.src = data.cover_image;
+          imgEl.style.display = "block";
+        }
+      }
+
+      updateCoverUI();
+
+      if (window.lucide) lucide.createIcons();
+    } catch (err) {
+      console.error("Fetch Publication Error:", err);
+      showAlert("error", err.message || "Failed to fetch publication details.");
+    }
+
+    // Helper function to update action button labels based on loaded status
+    function updateActionButtons(status) {
+      if (status === "draft") {
+        secondaryBtn.innerText = "Publish";
+        secondaryBtn.dataset.targetStatus = "published";
+        // secondaryBtn.className = "btn btn-outline-success px-4";
+      } else if (status === "published") {
+        secondaryBtn.innerText = "Archive";
+        secondaryBtn.dataset.targetStatus = "archived";
+        // secondaryBtn.className = "btn btn-outline-warning px-4";
+      } else if (status === "archived") {
+        secondaryBtn.innerText = "Publish";
+        secondaryBtn.dataset.targetStatus = "published";
+        // secondaryBtn.className = "btn btn-outline-success px-4";
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 3. Upload Simulation Helper
+    // -------------------------------------------------------------
+    function simulateUploadAsync(idPrefix) {
+      return new Promise((resolve) => {
+        const contentDiv = document.getElementById(idPrefix + "Content");
+        const progressDiv = document.getElementById(idPrefix + "Progress");
+        const progressBar = document.getElementById(idPrefix + "ProgressBar");
+        const progressText = document.getElementById(idPrefix + "ProgressText");
+
+        if (!contentDiv || !progressDiv) return resolve();
+
+        contentDiv.style.display = "none";
+        progressDiv.style.display = "block";
+        progressBar.className = "progress-fill";
+        progressBar.style.width = "0%";
+        progressText.className = "upload-status-text";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 25;
+          if (progress >= 100) progress = 100;
+          progressBar.style.width = progress + "%";
+          progressText.innerText = `Uploading & Processing... ${Math.round(progress)}%`;
+
+          if (progress === 100) {
+            clearInterval(interval);
+            progressBar.classList.add("success");
+            progressText.classList.add("success");
+            progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Processing Complete!';
+            if (window.lucide) lucide.createIcons();
+            setTimeout(() => {
+              progressDiv.style.display = "none";
+              resolve();
+            }, 700);
+          }
+        }, 100);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 4. File Upload & Extraction Handling
+    // -------------------------------------------------------------
+    window.handlePdfUpload = async function (input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.type !== "application/pdf") {
+          showAlert("error", "Please upload a valid PDF file.");
+          return;
+        }
+
+        isPdfFileRemoved = false;
+        await simulateUploadAsync("pdf");
+        document.getElementById("pdfPreviewWrapper").style.display = "block";
+        document.getElementById("pdfFileNameDisplay").innerText = file.name;
+
+        try {
+          if (!window.pdfjsLib) throw new Error("pdfjsLib is not loaded");
+          if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+          }
+
+          const fileURL = URL.createObjectURL(file);
+          const pdf = await pdfjsLib.getDocument(fileURL).promise;
+          const page = await pdf.getPage(1);
+
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          canvas.toBlob(
+            (blob) => {
+              extractedPdfCoverBlob = blob;
+              const imgUrl = URL.createObjectURL(blob);
+              document.getElementById("autoCoverPlaceholder").style.display = "none";
+              const imgEl = document.getElementById("autoCoverImg");
+              imgEl.src = imgUrl;
+              imgEl.style.display = "block";
+            },
+            "image/jpeg",
+            0.8,
+          );
+        } catch (err) {
+          console.error("PDF Extraction Failed:", err);
+          document.getElementById("autoCoverPlaceholder").innerText =
+            "Preview extraction failed. Existing or default cover will be used.";
+        }
+      }
+    };
+
+    window.removePdf = function (event) {
+      event.stopPropagation();
+      document.getElementById("pdfInput").value = "";
+      document.getElementById("pdfPreviewWrapper").style.display = "none";
+      document.getElementById("pdfContent").style.display = "block";
+
+      extractedPdfCoverBlob = null;
+      isPdfFileRemoved = true;
+
+      // Reset auto-cover preview if PDF removed
+      document.getElementById("autoCoverImg").style.display = "none";
+      document.getElementById("autoCoverImg").src = "";
+      document.getElementById("autoCoverPlaceholder").style.display = "block";
+      document.getElementById("autoCoverPlaceholder").innerText = "A preview will appear here once a PDF is uploaded.";
+    };
+
+    window.handleImageUpload = async function (input, idPrefix) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          isCustomCoverRemoved = false;
+          await simulateUploadAsync(idPrefix);
+          document.getElementById(idPrefix + "PreviewWrapper").style.display = "block";
+          document.getElementById(idPrefix + "PreviewImg").src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    };
+
+    window.removeImage = function (event, idPrefix) {
+      event.stopPropagation();
+      document.getElementById(idPrefix + "Input").value = "";
+      document.getElementById(idPrefix + "PreviewImg").src = "";
+      document.getElementById(idPrefix + "PreviewWrapper").style.display = "none";
+      document.getElementById(idPrefix + "Content").style.display = "block";
+      isCustomCoverRemoved = true;
+    };
+
+    // Drag and drop helper
+    function setupFileUploadDragAndDrop() {
+      const uploadAreas = document.querySelectorAll(".upload-area");
+      uploadAreas.forEach((area) => {
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            },
+            false,
+          );
+        });
+        ["dragenter", "dragover"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "var(--sapsri-red)";
+              area.style.backgroundColor = "#F9E7EC";
+            },
+            false,
+          );
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "#D6D6D6";
+              area.style.backgroundColor = "#FDF4F6";
+            },
+            false,
+          );
+        });
+        area.addEventListener(
+          "drop",
+          (e) => {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              const fileInput = area.querySelector('input[type="file"]');
+              if (fileInput) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          },
+          false,
+        );
+      });
+    }
+    setupFileUploadDragAndDrop();
+
+    // -------------------------------------------------------------
+    // 5. Submit Handling
+    // -------------------------------------------------------------
+    document.getElementById("editPublicationForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const activeBtn = e.submitter;
+      let targetStatus = currentStatus;
+
+      // Check which submit button was clicked
+      if (activeBtn && activeBtn.id === "secondaryActionBtn") {
+        targetStatus = activeBtn.dataset.targetStatus || currentStatus;
+      }
+
+      const originalBtnText = activeBtn.innerHTML;
+      activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
+      secondaryBtn.disabled = true;
+      saveBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append("id", publicationId);
+      formData.append("title", document.getElementById("pubTitle").value);
+      formData.append("category_id", document.getElementById("pubCategory").value);
+      formData.append("description", document.getElementById("pubDescription").value);
+      formData.append("status", targetStatus);
+
+      const isCustom = radioCustom.checked;
+      formData.append("is_custom_cover", isCustom ? 1 : 0);
+
+      // Track removal flags
+      formData.append("is_pdf_removed", isPdfFileRemoved ? 1 : 0);
+      formData.append("is_custom_cover_removed", isCustomCoverRemoved ? 1 : 0);
+
+      // PDF upload handling
+      const pdfInput = document.getElementById("pdfInput");
+      if (pdfInput.files[0]) {
+        formData.append("pdf_file", pdfInput.files[0]);
+      }
+
+      // Cover image upload handling according to chosen strategy
+      if (isCustom) {
+        const customInput = document.getElementById("pubCoverInput");
+        if (customInput.files[0]) {
+          formData.append("cover_image", customInput.files[0]);
+        }
+      } else {
+        // Auto strategy selected
+        if (extractedPdfCoverBlob) {
+          // Newly generated blob from a newly uploaded PDF
+          formData.append("cover_image", extractedPdfCoverBlob, "auto-cover.jpg");
+        }
+      }
+
+      try {
+        const response = await fetch("actions/publications/update-publication.php", {
+          method: "POST",
+          body: formData,
+        });
+
+        const rawText = await response.text();
+        try {
+          const result = JSON.parse(rawText);
+          if (result.success) {
+            showAlert("success", "Publication Updated Successfully!");
+            loadView("publications", "Publications");
+          } else {
+            console.error("Backend Error:", result.message);
+            showAlert("error", result.message || "Failed to update publication.");
+          }
+        } catch (err) {
+          console.error("Server Error: ", rawText);
+          showAlert("error", "A server error occurred. Check console for details.");
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("error", "A network error occurred. Check the server response.");
+      } finally {
+        secondaryBtn.disabled = false;
+        saveBtn.disabled = false;
         activeBtn.innerHTML = originalBtnText;
       }
     });

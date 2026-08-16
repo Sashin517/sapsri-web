@@ -22,7 +22,6 @@
   .pdf-filename { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); word-break: break-all; padding: 0 1rem; }
 </style>
 
-
 <!-- Top Header / Breadcrumb -->
 <div class="d-flex align-items-center justify-content-between mb-4 px-4 pt-4">
   <div class="d-flex align-items-center gap-2">
@@ -30,13 +29,15 @@
       <i data-lucide="arrow-left" style="width: 20px;"></i>
     </button>
     <span class="text-muted" style="font-size: 0.95rem;">Publications > </span> 
-    <span class="fw-bold fs-4">Create New Publication</span>
+    <span class="fw-bold fs-4">Edit Publication</span>
   </div>
 </div>
 
 <div class="px-4 pb-5">
-  <form id="createPublicationForm">
-    
+  <form id="editPublicationForm">
+    <!-- Hidden input to store publication ID -->
+    <input type="hidden" id="pubId" name="id" value="">
+
     <div class="section-card">
       <h4 class="fw-bold mb-4 fs-5">Publication Details</h4>
 
@@ -85,7 +86,8 @@
             </div>
             <button type="button" class="remove-img-btn" onclick="removePdf(event)"><i data-lucide="x"></i></button>
           </div>
-          <input type="file" id="pdfInput" class="d-none" accept="application/pdf" required onchange="handlePdfUpload(this)">
+          <!-- PDF input is not required by default in Edit mode since a file may already exist -->
+          <input type="file" id="pdfInput" class="d-none" accept="application/pdf" onchange="handlePdfUpload(this)">
         </div>
       </div>
 
@@ -104,7 +106,7 @@
         </div>
       </div>
 
-      <!-- Auto Extracted Preview (Read-Only) -->
+      <!-- Auto Extracted Preview -->
       <div class="mb-4" id="autoCoverSection">
         <label class="form-label fw-medium text-muted">Extracted Cover Preview</label>
         <div class="border rounded bg-light d-flex align-items-center justify-content-center" style="height: 240px; overflow: hidden;">
@@ -140,8 +142,8 @@
     <!-- Footer Actions -->
     <div class="d-flex justify-content-end gap-3 pb-4">
       <button type="button" class="btn btn-light border px-4" onclick="loadView('publications', 'Publications')">Cancel</button>
-      <button type="submit" id="draftBtn" class="btn btn-outline-danger px-4">Save as Draft</button>
-      <button type="submit" id="publishBtn" class="btn px-4 text-white" style="background: var(--sapsri-red);">Publish</button>
+      <button type="submit" id="secondaryActionBtn" class="btn btn-outline-danger px-4">Save as Draft</button>
+      <button type="submit" id="saveBtn" class="btn px-4 text-white" style="background: var(--sapsri-red);">Save</button>
     </div>
 
   </form>

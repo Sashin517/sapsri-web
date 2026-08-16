@@ -150,28 +150,28 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <div class="modal fade" id="universalDeleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-        
+
         <!-- Close Button -->
         <div class="modal-header border-bottom-0 pb-0 justify-content-end pt-3 px-3">
           <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal Body -->
         <div class="modal-body text-center px-4 pt-0 pb-4">
-          
+
           <!-- Warning Icon Circle -->
           <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 72px; height: 72px; background-color: #FFF3CD;">
             <i data-lucide="triangle-alert" style="width: 32px; height: 32px; color: #FFA000;"></i>
           </div>
-          
+
           <!-- Dynamic Text -->
           <h4 class="fw-bold mb-2 text-dark" id="deleteModalTitle" style="font-size: 1.25rem;">Delete Item</h4>
           <p class="text-muted mb-4" id="deleteModalText" style="font-size: 0.95rem;">Are you sure want to delete this item? It will delete permanently.</p>
-          
+
           <!-- Action Buttons -->
           <div class="d-flex gap-3">
             <button type="button" class="btn flex-grow-1 bg-white" data-bs-dismiss="modal" style="border-radius: 8px; font-weight: 500; padding: 0.7rem; border: 1px solid #ced4da; color: #212529;">Cancel</button>
-            
+
             <button type="button" class="btn flex-grow-1 text-white shadow-sm" id="confirmDeleteBtn" style="background-color: #C9184A; border-radius: 8px; font-weight: 500; padding: 0.7rem; border: none;">Yes, Delete</button>
           </div>
 
@@ -180,7 +180,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
     </div>
   </div>
 
-    <!-- Universal Alert Modal -->
+  <!-- Universal Alert Modal -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="alert" class="toast rounded-3 bg-white" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-body d-flex gap-3 p-3">
@@ -202,6 +202,11 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Quill Rich Text Editor -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <!-- PDF JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
 
   <!-- IMPORTANT: Pass PHP session variables safely to JavaScript -->
   <script>
