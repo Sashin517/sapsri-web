@@ -733,6 +733,39 @@ document.addEventListener('DOMContentLoaded', () => {
         window.galleryFilesArray = window.galleryFilesArray.filter(item => item.id !== id);
       };
 
+      // --- Drag and Drop Logic ---
+      function setupFileUploadDragAndDrop() {
+        const uploadAreas = document.querySelectorAll('.upload-area');
+        uploadAreas.forEach(area => {
+          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+          });
+          ['dragenter', 'dragover'].forEach(eventName => {
+            area.addEventListener(eventName, () => {
+              area.style.borderColor = 'var(--sapsri-red)';
+              area.style.backgroundColor = '#F9E7EC';
+            }, false);
+          });
+          ['dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, () => {
+              area.style.borderColor = '#D6D6D6';
+              area.style.backgroundColor = '#FDF4F6';
+            }, false);
+          });
+          area.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              const fileInput = area.querySelector('input[type="file"]');
+              if (fileInput) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }, false);
+        });
+      }
+      setupFileUploadDragAndDrop();
+
       document.getElementById('createProjectForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const activeBtn = e.submitter;
@@ -1007,6 +1040,39 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
+
+      // --- Drag and Drop Logic ---
+      function setupFileUploadDragAndDrop() {
+        const uploadAreas = document.querySelectorAll('.upload-area');
+        uploadAreas.forEach(area => {
+          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+          });
+          ['dragenter', 'dragover'].forEach(eventName => {
+            area.addEventListener(eventName, () => {
+              area.style.borderColor = 'var(--sapsri-red)';
+              area.style.backgroundColor = '#F9E7EC';
+            }, false);
+          });
+          ['dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, () => {
+              area.style.borderColor = '#D6D6D6';
+              area.style.backgroundColor = '#FDF4F6';
+            }, false);
+          });
+          area.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              const fileInput = area.querySelector('input[type="file"]');
+              if (fileInput) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }, false);
+        });
+      }
+      setupFileUploadDragAndDrop();
 
       document.getElementById('createPostForm').addEventListener('submit', async function(e) {
         e.preventDefault();
