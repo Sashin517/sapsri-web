@@ -104,7 +104,6 @@ try {
     $title = $_POST['title'] ?? 'Untitled';
     $phase = $_POST['phase'] ?? 'ongoing';
     $description = $_POST['full_description'] ?? '';
-    $status = $_POST['status'] ?? 'draft';
     $start_date = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
     $end_date = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
     
@@ -145,8 +144,16 @@ try {
         $cover_path = uploadFile($_FILES['cover_image'], $img_dir, 'cover_');
     }
 
-    $stmt = $conn->prepare("UPDATE projects SET title = ?, cover_image = ?, full_description = ?, status = ?, project_phase = ?, start_date = ?, end_date = ? WHERE id = ?");
-    $stmt->bind_param("sssssssi", $title, $cover_path, $description, $status, $phase, $start_date, $end_date, $project_id);
+    // Dynamic update check for `status`
+    if (array_key_exists('status', $_POST)) {
+        $status = $_POST['status'];
+        $stmt = $conn->prepare("UPDATE projects SET title = ?, cover_image = ?, full_description = ?, status = ?, project_phase = ?, start_date = ?, end_date = ? WHERE id = ?");
+        $stmt->bind_param("sssssssi", $title, $cover_path, $description, $status, $phase, $start_date, $end_date, $project_id);
+    } else {
+        $stmt = $conn->prepare("UPDATE projects SET title = ?, cover_image = ?, full_description = ?, project_phase = ?, start_date = ?, end_date = ? WHERE id = ?");
+        $stmt->bind_param("ssssssi", $title, $cover_path, $description, $phase, $start_date, $end_date, $project_id);
+    }
+    
     $stmt->execute();
     $stmt->close();
 

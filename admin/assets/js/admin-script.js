@@ -1390,6 +1390,21 @@ document.addEventListener("DOMContentLoaded", () => {
             data.project_media.forEach((media) => renderServerMediaItem(media));
           }
 
+          // 7. status
+          const status = project.status ?? null;
+          const statusBtn = document.getElementById("statusBtn");
+          if (!status) throw new Error("Expected field 'status' was not found.");
+
+          if (status === "draft" || status === "archived") {
+            statusBtn.textContent = "Publish";
+            statusBtn.dataset.action = "publish";
+          } else if (status === "published") {
+            statusBtn.textContent = "Archive";
+            statusBtn.dataset.action = "archive";
+          } else {
+            throw new Error("Invalid value for field 'status'.");
+          }
+
           if (window.lucide) lucide.createIcons();
         })
         .catch((err) => {
@@ -1403,14 +1418,19 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const activeBtn = e.submitter;
-      const projectSubmitStatus = activeBtn && activeBtn.id === "draftBtn" ? "draft" : "published";
+      let projectSubmitStatus = null;
+      if (activeBtn && activeBtn.id === "statusBtn") {
+        const action = activeBtn.dataset.action ?? null;
+        projectSubmitStatus = action === "archive" ? "archived" : "published";
+      }
+
       const originalBtnText = activeBtn ? activeBtn.innerHTML : "";
       if (activeBtn) activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
 
-      const dBtn = document.getElementById("draftBtn");
-      const pBtn = document.getElementById("publishBtn");
-      if (dBtn) dBtn.disabled = true;
-      if (pBtn) pBtn.disabled = true;
+      const statusBtn = document.getElementById("statusBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      if (statusBtn) saveBtn.disabled = true;
+      if (saveBtn) statusBtn.disabled = true;
 
       const formData = new FormData();
       formData.append("project_id", document.getElementById("projectId").value);
@@ -1424,7 +1444,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("start_date", document.getElementById("projectStartDate").value);
       formData.append("end_date", document.getElementById("projectEndDate").value);
       formData.append("full_description", quill ? quill.root.innerHTML : "");
-      formData.append("status", projectSubmitStatus);
+      if(projectSubmitStatus) formData.append("status", projectSubmitStatus);
 
       // Tracking Deleted Data payload
       formData.append("removed_items", JSON.stringify(removedItemTracker));
@@ -1518,8 +1538,8 @@ document.addEventListener("DOMContentLoaded", () => {
           activeBtn.disabled = false;
         }
       } finally {
-        if (dBtn) dBtn.disabled = false;
-        if (pBtn) pBtn.disabled = false;
+        if (statusBtn) statusBtn.disabled = false;
+        if (saveBtn) saveBtn.disabled = false;
       }
     });
   }

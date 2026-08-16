@@ -356,8 +356,8 @@
     <!-- Footer Actions -->
     <div class="d-flex justify-content-end gap-3 pb-4">
       <button type="button" class="btn btn-light border px-4" onclick="loadView('projects', 'Projects Management')">Cancel</button>
-      <button type="submit" id="draftBtn" class="btn btn-outline-danger px-4">Save as Draft</button>
-      <button type="submit" id="publishBtn" class="btn px-4 text-white" style="background: var(--sapsri-red);">Publish Project</button>
+      <button type="submit" id="statusBtn" class="btn btn-outline-danger px-4">--</button>
+      <button type="submit" id="saveBtn" class="btn px-4 text-white" style="background: var(--sapsri-red);">Save</button>
     </div>
 
   </form>
