@@ -303,7 +303,7 @@
     </div>
     <div class="text-end mb-5">
       <button type="button" class="btn btn-outline-red d-inline-flex gap-2 align-items-center" onclick="addStory()">
-        Add an other Story <i data-lucide="plus" style="width:16px;"></i>
+        <i data-lucide="plus" style="width:16px;"></i>Add Story
       </button>
     </div>
 

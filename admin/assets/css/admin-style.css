@@ -175,7 +175,7 @@ body {
 .top-navbar {
   height: 80px;
   background-color: var(--bg-light-gray);
-  padding: 0 2rem;
+  /* padding: 0 2rem; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -269,7 +269,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0 2rem 2rem 2rem;
+  /* margin: 0 2rem 2rem 2rem; */
   position: relative;
 }
 
@@ -396,9 +396,9 @@ body {
 }
 
 /* --- Dashboard Cards --- */
-.dashboard-container {
+/* .dashboard-container {
   padding: 0 2rem 2rem 2rem;
-}
+} */
 
 .kpi-card {
   background: #ffffff;
@@ -717,17 +717,17 @@ body {
     gap: 1rem;
   }
 
-  .dashboard-container {
+  /* .dashboard-container {
     padding: 0 1rem 1.5rem 1rem;
   }
 
   .top-navbar {
     padding: 0 1rem;
-  }
+  } */
 
-  .hero-banner {
+  /* .hero-banner {
     margin: 0 1rem 1.5rem 1rem;
-  }
+  } */
 }
 
 @media (max-width: 575px) {

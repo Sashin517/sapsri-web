@@ -92,7 +92,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <main class="main-content" id="main-content">
 
     <!-- Top Navbar -->
-    <header class="top-navbar">
+    <header class="top-navbar px-4">
       <h2 class="page-title" id="page-title">Dashboard</h2>
 
       <div class="d-flex align-items-center gap-3">
