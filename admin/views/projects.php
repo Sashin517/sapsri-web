@@ -1,7 +1,7 @@
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4 px-4 pt-4">
   <div>
-    <h1 class="mb-1 fw-bold fs-3">Manage all projects</h1>
+    <h1 class="mb-1 fw-bold fs-3">Manage Projects</h1>
     <p class="mb-0 text-muted" style="font-size: 0.95rem;">Manage your SAPSRI web content efficiently</p>
   </div>
   <button class="btn btn-create-project d-flex align-items-center gap-2" onclick="loadView('create-project', 'Create New Project')">

@@ -33,7 +33,7 @@
 </div>
 
 <div class="px-4 pb-5">
-  <form id="createPostForm">
+  <form id="editPostForm">
     
     <!-- Post Details -->
     <div class="section-card">

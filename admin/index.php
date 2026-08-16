@@ -63,12 +63,12 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link spa-link" data-view="projects" data-title="Projects Management">
+        <a href="#" class="nav-link spa-link" data-view="projects" data-title="Projects">
           <i data-lucide="folder"></i> <span class="nav-link-text">Projects</span>
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link spa-link" data-view="posts" data-title="Posts Management">
+        <a href="#" class="nav-link spa-link" data-view="posts" data-title="Posts">
           <i data-lucide="file-text"></i> <span class="nav-link-text">Posts</span>
         </a>
       </li>
@@ -78,7 +78,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link spa-link" data-view="users" data-title="User Management">
+        <a href="#" class="nav-link spa-link" data-view="users" data-title="Users">
           <i data-lucide="users"></i> <span class="nav-link-text">User Management</span>
         </a>
       </li>
