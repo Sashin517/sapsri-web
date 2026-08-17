@@ -73,7 +73,7 @@ function uploadFile($file, $target_dir, $prefix = '') {
 
         if ($image !== false && $image !== null) {
             $success = imagewebp($image, $target_file, 80);
-            imagedestroy($image);
+            unset($image);
             
             if ($success) {
                 return str_replace('../../../', '', $target_file);

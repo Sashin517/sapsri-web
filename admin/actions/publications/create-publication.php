@@ -74,7 +74,8 @@ function uploadFile($file, $target_dir, $prefix = '') {
         // Save the image as WebP with 80% quality
         if ($image !== false && $image !== null) {
             $success = imagewebp($image, $target_file, 80);
-            imagedestroy($image); // Free up server RAM
+            unset($image);
+            
             
             if ($success) {
                 return str_replace('../../../', '', $target_file);

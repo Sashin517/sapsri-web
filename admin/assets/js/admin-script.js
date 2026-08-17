@@ -318,18 +318,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const dpBtn = document.getElementById("dateDropdownBtn");
+    const customDateBtn = document.getElementById("customDateBtn");
+
+    // shoud be fixed. item class should set to active like projects.
     document.querySelectorAll(".date-filter").forEach((item) => {
       item.addEventListener("click", (e) => {
         e.preventDefault();
         const range = e.target.getAttribute("data-range");
         dpBtn.innerHTML = `${e.target.innerText} <i data-lucide="chevron-down" style="width: 16px;"></i>`;
         lucide.createIcons();
-        resetDateRangePicker();
+        resetDateRangePicker(customDateBtn);
         fetchDashboardStats(range);
       });
     });
 
-    const customDateBtn = document.getElementById("customDateBtn");
     if (customDateBtn) {
       customDateBtn.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -340,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
           $(customDateBtn).daterangepicker(
             {
               opens: "left",
+              drops: "auto"
             },
             function (start, end) {
               const startDate = start.format("YYYY-MM-DD");
@@ -360,24 +363,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fetchDashboardStats("today");
     loadRecentContent(1);
+  }
 
-    function resetDateRangePicker() {
-      if (typeof moment !== "undefined" && typeof $ !== "undefined") {
-        const today = moment();
-        const $button = $(customDateBtn);
-        const picker = $button.data("daterangepicker");
-        if (picker) {
-          picker.setStartDate(today);
-          picker.setEndDate(today);
-        }
+  function resetDateRangePicker(btn) {
+    if (typeof moment !== "undefined" && typeof $ !== "undefined") {
+      const today = moment();
+      const $button = $(btn);
+      const picker = $button.data("daterangepicker");
+      if (picker) {
+        picker.setStartDate(today);
+        picker.setEndDate(today);
       }
     }
   }
-
   // ==========================================
   // --- VIEW: PROJECTS LOGIC ---
   // ==========================================
-  function initProjectsScript() {
+  function initProjectsScript_Old() {
     window.loadProjects = function () {
       const tbody = document.getElementById("projects-tbody");
       if (!tbody) return;
@@ -428,6 +430,257 @@ document.addEventListener("DOMContentLoaded", () => {
             '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load projects.</td></tr>';
         });
     };
+    loadProjects();
+  }
+
+  function initProjectsScript() {
+    // State configuration
+    let state = {
+      search: "",
+      filter: "published", // Default selected button filter
+      dateRange: "today", // Default selected date range
+      startDate: "",
+      endDate: "",
+      page: 1,
+      limit: 10, // Default selected rows per page
+    };
+
+    let searchTimeout = null;
+
+    window.loadProjects = function () {
+      const tbody = document.getElementById("projects-tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML =
+        '<tr><td colspan="6" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading projects...</td></tr>';
+
+      const params = new URLSearchParams({
+        search: state.search,
+        filter: state.filter,
+        date_range: state.dateRange,
+        start_date: state.startDate,
+        end_date: state.endDate,
+        page: state.page,
+        limit: state.limit,
+      });
+
+      fetch(`actions/projects/fetch-projects.php?${params.toString()}`)
+        .then((res) => res.json())
+        .then((resData) => {
+          const projects = resData.projects || [];
+          const pagination = resData.pagination || { total_records: 0, total_pages: 1, current_page: 1, limit: 10 };
+
+          tbody.innerHTML = "";
+
+          if (projects.length === 0 || projects[0]?.error) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No projects found.</td></tr>';
+            renderPagination(pagination);
+            return;
+          }
+
+          projects.forEach((item) => {
+            let pillClass = (item.status || "").toLowerCase() === "published" ? "status-published" : "status-draft";
+            let createdDate = item.created_date ? item.created_date.split(" ")[0] : "N/A";
+            let phaseText =
+              (item.project_phase || "").toLowerCase() === "past"
+                ? '<span class="text-secondary fw-medium">Past</span>'
+                : '<span class="text-success fw-medium">Ongoing</span>';
+
+            const row = `
+            <tr>
+              <td class="fw-medium">${item.title}</td>
+              <td>${phaseText}</td>
+              <td><span class="status-pill ${pillClass}">${(item.status || "Draft").charAt(0).toUpperCase() + (item.status || "draft").slice(1)}</span></td>
+              <td>${item.project_lead || "System"}</td>
+              <td>${createdDate}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-light text-primary border-0 me-1 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
+                <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit" onclick="loadView('edit-project', 'Projects', {id: ${item.id}})"><i data-lucide="edit" style="width: 16px;"></i></button>
+                <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'project', 'actions/projects/delete-project.php', 'loadProjects')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
+              </td>
+            </tr>
+          `;
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+
+          if (window.lucide) {
+            lucide.createIcons();
+          }
+
+          renderPagination(pagination);
+        })
+        .catch((err) => {
+          console.error("Projects Fetch Error:", err);
+          tbody.innerHTML =
+            '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load projects.</td></tr>';
+        });
+    };
+
+    // Render pagination buttons and entries counter
+    function renderPagination(pagination) {
+      const container = document.getElementById("projects-pagination");
+      const infoText = document.getElementById("pagination-info-text");
+      if (!container) return;
+
+      const { total_records, total_pages, current_page, limit } = pagination;
+
+      // Update record summary
+      if (infoText) {
+        const start = total_records === 0 ? 0 : (current_page - 1) * limit + 1;
+        const end = Math.min(current_page * limit, total_records);
+        infoText.innerText = `Showing ${start}-${end} of ${total_records}`;
+      }
+
+      if (total_pages <= 1) {
+        container.innerHTML = "";
+        return;
+      }
+
+      let html = `<nav><ul class="pagination pagination-sm circle-pagination gap-1 mb-0">`;
+
+      // First Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link rounded-circle" onclick="changeProjectPage(1)"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+      </li>
+      `;
+
+      // Previous Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link rounded-circle" onclick="changeProjectPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+      </li>
+      `;
+
+      // Page Number Buttons
+      for (let i = 1; i <= total_pages; i++) {
+        if (i === 1 || i === total_pages || (i >= current_page - 1 && i <= current_page + 1)) {
+          html += `
+          <li class="page-item ${i === current_page ? "active" : ""}">
+            <button class="page-link rounded-circle" onclick="changeProjectPage(${i})">${i}</button>
+          </li>
+        `;
+        } else if (i === current_page - 2 || i === current_page + 2) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+      }
+
+      // Next Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link rounded-circle" onclick="changeProjectPage(${current_page + 1})"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+      </li>
+      `;
+
+      // Last Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link rounded-circle" onclick="changeProjectPage(${total_pages})"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+      </li>
+      `;
+
+      html += `</ul></nav>`;
+      container.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    // Page switcher attached to global scope
+    window.changeProjectPage = function (pageNumber) {
+      state.page = pageNumber;
+      loadProjects();
+    };
+
+    // Event Listener Bindings
+    const searchInput = document.getElementById("project-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          state.search = e.target.value.trim();
+          state.page = 1;
+          loadProjects();
+        }, 300);
+      });
+    }
+
+    const filterPills = document.querySelectorAll("#project-status-pills .filter-pill");
+    filterPills.forEach((pill) => {
+      pill.addEventListener("click", function () {
+        filterPills.forEach((p) => p.classList.remove("active"));
+        this.classList.add("active");
+        state.filter = this.getAttribute("data-filter");
+        state.page = 1;
+        loadProjects();
+      });
+    });
+
+    const dateOptions = document.querySelectorAll("#date-filter-options .dropdown-item");
+    const dateLabel = document.getElementById("date-filter-label");
+    const customDateItem = document.getElementById("customDateItem");
+
+    dateOptions.forEach((option) => {
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const selectedRange = this.getAttribute("data-range");
+        if (!selectedRange) return;
+        resetDateRangePicker(customDateItem);
+
+        if (selectedRange === "custom") {
+          e.stopPropagation();
+        } else {
+          dateOptions.forEach((opt) => opt.classList.remove("active"));
+          this.classList.add("active");
+
+          if (dateLabel) dateLabel.innerText = this.innerText;
+
+          state.dateRange = selectedRange;
+          state.startDate = "";
+          state.endDate = "";
+          state.page = 1;
+          loadProjects();
+        }
+      });
+    });
+
+    // date range picker
+    if (typeof $ !== "undefined") {
+      $(function () {
+        $(customDateItem).daterangepicker(
+          {
+            opens: "left",
+            drops: "auto",
+          },
+          function (start, end) {
+            const startDate = start?.format("YYYY-MM-DD") || "";
+            const endDate = end?.format("YYYY-MM-DD") || "";
+            dateLabel.textContent = `${startDate} - ${endDate}`;
+
+            state.startDate = startDate;
+            state.endDate = endDate;
+            state.dateRange = "custom";
+            state.page = 1;
+            loadProjects();
+          },
+        );
+        $(customDateItem).on("show.daterangepicker", function (ev, picker) {
+          picker.container.find(".drp-calendar").on("click", function (e) {
+            e.stopPropagation();
+          });
+        });
+      });
+    }
+
+    const rowsSelect = document.getElementById("projects-rows-per-page");
+    if (rowsSelect) {
+      rowsSelect.addEventListener("change", function () {
+        state.limit = parseInt(this.value, 10);
+        state.page = 1;
+        loadProjects();
+      });
+    }
+
+    // Execute initial load with default values
     loadProjects();
   }
 
@@ -1444,7 +1697,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("start_date", document.getElementById("projectStartDate").value);
       formData.append("end_date", document.getElementById("projectEndDate").value);
       formData.append("full_description", quill ? quill.root.innerHTML : "");
-      if(projectSubmitStatus) formData.append("status", projectSubmitStatus);
+      if (projectSubmitStatus) formData.append("status", projectSubmitStatus);
 
       // Tracking Deleted Data payload
       formData.append("removed_items", JSON.stringify(removedItemTracker));
