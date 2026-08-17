@@ -317,23 +317,49 @@ body {
   }
 }
 
-.circle-pagination {
-
+.projects-pagination {
   .page-item {
-    
     .page-link {
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
+      height: 100%;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      border-radius: 6px;
+      color: var(--text-dark);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
     }
 
     span {
-      border-radius: 50%;
+      border-radius: 6px;
     }
   }
 
+  .page-item.active {
+    .page-link {
+      background-color: var(--sapsri-red);
+      color: #ffffff;
+      border-color: var(--sapsri-red);
+    }
+  }
+
+  .page-item.disabled {
+    .page-link {
+      opacity: 0.5;
+      pointer-events: none;
+      background-color: var(--bg-light-gray);
+      color: var(--text-muted);
+      border-color: var(--border-color);
+    }
+  }
+
+  .page-item:hover:not(.active) {
+    .page-link {
+      background-color: var(--bg-light-gray);
+    }
+  }
 }
 
 .rows-select {
@@ -575,6 +601,11 @@ body {
 .status-draft {
   background-color: #fef3c7;
   color: #b45309;
+}
+
+.status-archived {
+  background-color: #f4d1e3;
+  color: #7a144c;
 }
 
 /* Custom Pagination */

@@ -423,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
           $(customDateBtn).daterangepicker(
             {
               opens: "left",
-              drops: "auto"
+              drops: "auto",
             },
             function (start, end) {
               const startDate = start.format("YYYY-MM-DD");
@@ -518,8 +518,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // State configuration
     let state = {
       search: "",
-      filter: "published", // Default selected button filter
-      dateRange: "today", // Default selected date range
+      filter: "all", // Default selected button filter
+      dateRange: "all_time", // Default selected date range
       startDate: "",
       endDate: "",
       page: 1,
@@ -560,7 +560,12 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           projects.forEach((item) => {
-            let pillClass = (item.status || "").toLowerCase() === "published" ? "status-published" : "status-draft";
+            let pillClass =
+              item.status.toLowerCase() === "published"
+                ? "status-published"
+                : item.status.toLowerCase() === "archived"
+                  ? "status-archived"
+                  : "status-draft";
             let createdDate = item.created_date ? item.created_date.split(" ")[0] : "N/A";
             let phaseText =
               (item.project_phase || "").toLowerCase() === "past"
@@ -574,10 +579,12 @@ document.addEventListener("DOMContentLoaded", () => {
               <td><span class="status-pill ${pillClass}">${(item.status || "Draft").charAt(0).toUpperCase() + (item.status || "draft").slice(1)}</span></td>
               <td>${item.project_lead || "System"}</td>
               <td>${createdDate}</td>
-              <td class="text-end">
-                <button class="btn btn-sm btn-light text-primary border-0 me-1 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
-                <button class="btn btn-sm btn-light text-warning border-0 me-1 shadow-sm" title="Edit" onclick="loadView('edit-project', 'Projects', {id: ${item.id}})"><i data-lucide="edit" style="width: 16px;"></i></button>
-                <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'project', 'actions/projects/delete-project.php', 'loadProjects')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
+              <td>
+                <div class="hstack gap-1 justify-content-end">
+                  <a href="/project-sedna/${item.project_phase}-project?id=${item.id}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light text-primary border-0 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></a>
+                  <button class="btn btn-sm btn-light text-warning border-0 shadow-sm" title="Edit" onclick="loadView('edit-project', 'Projects', {id: ${item.id}})"><i data-lucide="edit" style="width: 16px;"></i></button>
+                  <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'project', 'actions/projects/delete-project.php', 'loadProjects')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
+                </div>
               </td>
             </tr>
           `;
@@ -617,19 +624,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let html = `<nav><ul class="pagination pagination-sm circle-pagination gap-1 mb-0">`;
+      let html = `<nav><ul class="pagination pagination-sm projects-pagination gap-1 mb-0">`;
 
       // First Button
       html += `
       <li class="page-item ${current_page === 1 ? "disabled" : ""}">
-        <button class="page-link rounded-circle" onclick="changeProjectPage(1)"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+        <button class="page-link" onclick="changeProjectPage(1)"><i data-lucide="chevrons-left" style="width: 16px;"></i>First</button>
       </li>
       `;
 
       // Previous Button
       html += `
       <li class="page-item ${current_page === 1 ? "disabled" : ""}">
-        <button class="page-link rounded-circle" onclick="changeProjectPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+        <button class="page-link" onclick="changeProjectPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i>Back</button>
       </li>
       `;
 
@@ -638,7 +645,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (i === 1 || i === total_pages || (i >= current_page - 1 && i <= current_page + 1)) {
           html += `
           <li class="page-item ${i === current_page ? "active" : ""}">
-            <button class="page-link rounded-circle" onclick="changeProjectPage(${i})">${i}</button>
+            <button class="page-link" onclick="changeProjectPage(${i})">${i}</button>
           </li>
         `;
         } else if (i === current_page - 2 || i === current_page + 2) {
@@ -649,14 +656,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Next Button
       html += `
       <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
-        <button class="page-link rounded-circle" onclick="changeProjectPage(${current_page + 1})"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+        <button class="page-link" onclick="changeProjectPage(${current_page + 1})">Next<i data-lucide="chevron-right" style="width: 16px;"></i></button>
       </li>
       `;
 
       // Last Button
       html += `
       <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
-        <button class="page-link rounded-circle" onclick="changeProjectPage(${total_pages})"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+        <button class="page-link" onclick="changeProjectPage(${total_pages})">Last<i data-lucide="chevrons-right" style="width: 16px;"></i></button>
       </li>
       `;
 
@@ -687,8 +694,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterPills = document.querySelectorAll("#project-status-pills .filter-pill");
     filterPills.forEach((pill) => {
       pill.addEventListener("click", function () {
-        filterPills.forEach((p) => p.classList.remove("active"));
+        filterPills.forEach((p) => {
+          p.classList.remove("active");
+          p.querySelector("[data-lucide]").classList.add("d-none");
+        });
         this.classList.add("active");
+        this.querySelector("[data-lucide]").classList.remove("d-none");
         state.filter = this.getAttribute("data-filter");
         state.page = 1;
         loadProjects();

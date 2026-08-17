@@ -45,7 +45,7 @@ try {
 
     // Status/Phase filter
     $filterLower = strtolower($filter);
-    if ($filterLower === 'published' || $filterLower === 'draft') {
+    if ($filterLower === 'published' || $filterLower === 'draft' || $filterLower === 'archived') {
         $whereClauses[] = "LOWER(p.status) = ?";
         $params[] = $filterLower;
         $types .= 's';
@@ -54,6 +54,7 @@ try {
         $params[] = $filterLower;
         $types .= 's';
     }
+    // If $filterLower === 'all', no condition is added to $whereClauses for status or phase.
 
     // Date range filter
     $today = date('Y-m-d');
