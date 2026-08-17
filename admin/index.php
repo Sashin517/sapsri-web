@@ -217,7 +217,7 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   </script>
 
   <!-- EXTERNAL JS -->
-  <script src="assets/js/admin-script.js"></script>
+  <script src="assets/js/admin-script.js?v=1.1"></script>
 
 </body>
 
