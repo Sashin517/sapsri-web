@@ -30,13 +30,9 @@
                     <div class="col-12 text-center text-white">
 
                         <h1 class="fw-semibold display-2 mb-4">Policies and Publications</h1>
-                        <!-- <i class="fa-solid fa-circle-info mb-5" style="font-size: 80px;"></i> -->
                         <img src="./assets/icons/solar_documents-bold.svg" alt="documents-icon" class="mb-4">
-                        <!-- <p class="fs-5">
-                            Explore our research, case studies, and community development reports.
-                        </p> -->
+                        
                         <div class="hstack gap-3 flex-wrap justify-content-center mb-5">
-
                             <a class="btn btn-primary-yellow rounded-pill py-3 px-5 fw-semibold" href="#organisationalPolicies">
                                 Organisational policies
                             </a>
@@ -48,12 +44,11 @@
                             <a class="btn btn-primary-yellow rounded-pill py-3 px-5 fw-semibold" href="#reportsAndCaseStudies">
                                 Reports & Case Studies
                             </a>
-
                         </div>
 
                         <div class="input-group news-search m-auto" style="max-width: 400px;">
                             <input type="text" class="form-control rounded-start-pill bg-light-orange" style="padding: 12px 32px;"
-                                placeholder="Search..." aria-label="search" aria-describedby="button-addon2">
+                                placeholder="Search publications..." aria-label="search" aria-describedby="button-addon2">
                             <button class="btn rounded-end-pill" style="padding: 0 18px;" type="button" id="button-addon2">
                                 <i class="fa-solid fa-magnifying-glass mx-2"></i>
                             </button>
@@ -71,552 +66,12 @@
 
         <section class="publications__content">
 
+            <!-- DYNAMIC AJAX CONTAINER -->
             <div class="container mb-5" id="cardContainer">
-
-                <h2 id="organisationalPolicies">Organisational policies</h2>
-
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5" data-masonry='{"percentPosition": true }'>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Admin-Procedures-2021.webp" class="card-img-top rounded-top-4"
-                                alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Administrative Procedures (2021)
-                                </h4>
-
-                                <p class="card-text">
-                                    Administrative Procedures provide information to all staff for understanding the practices,
-                                    rules and regulations and employee benefits offered by SAPSRI.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-HR-policy-2021.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    HR Management Policy (2021)
-                                </h4>
-
-                                <p class="card-text">
-                                    HR policy provides an overview
-                                    of how SAPSRI functions and more importantly how employees must contribute to
-                                    the well-being of this effort and also contribute to building the desired organisational
-                                    culture, in the following manner.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRi-Finance-Policy-2018.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Finance policy and Procedures (2021)
-                                </h4>
-
-                                <p class="card-text">
-                                    The Financial Policy of SAPSRI is to maintain good accounting records based on generally accepted
-                                    standard accounting principles in Sri Lanka for non-profit Organizations registered under the Companies
-                                    Act No.07 of 2007.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Code-of-conduct-2021.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Cord of Conduct (2021)
-                                </h4>
-
-                                <p class="card-text">
-                                    This Code of Conduct outlines the conduct SAPSRI expects from its staff and any other person
-                                    who is employed, asked, and/or authorized to carry out work for, or represent, SAPSRI.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Gender-Policy.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Gender Policy
-                                </h4>
-
-                                <p class="card-text">
-                                    This Gender Policy is designed to ensure equal opportunities,
-                                    eliminate discrimination, and promote gender equity and inclusivity within our
-                                    organization.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
+                <div class="text-center py-5">
+                    <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <p class="mt-3 text-muted fw-medium">Loading Publications...</p>
                 </div>
-
-
-                <h2 id="annualReports">Annual Reports</h2>
-
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5" data-masonry='{"percentPosition": true }'>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/annual-report-2024-2025.webp" class="card-img-top rounded-top-4"
-                                alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2024-2025
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    Administrative Procedures provide information to all staff for understanding the practices,
-                                    rules and regulations and employee benefits offered by SAPSRI.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>29 Jan. 2026</time>
-                                <a href="./assets/media/docs/annual-report-2024-2025.pdf" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/annual-report-2024-2025.pdf"
-                                    class="btn btn-download z-3" download="Annual Report 2024-2025">
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Annual-Report-2023-24.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2023-2024
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    This Gender Policy is designed to ensure equal opportunities,
-                                    eliminate discrimination, and promote gender equity and inclusivity within our
-                                    organization.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Annual-Report-2022-23-Final-low-res.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2022-2023
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    This Code of Conduct outlines the conduct SAPSRI expects from its staff and any other person
-                                    who is employed, asked, and/or authorized to carry out work for, or represent, SAPSRI.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Annual-Report-2021-2022-low.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2021-2022
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    The Financial Policy of SAPSRI is to maintain good accounting records based on generally accepted
-                                    standard accounting principles in Sri Lanka for non-profit Organizations registered under the Companies
-                                    Act No.07 of 2007.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-Annual-Report-2020-21-Final-web.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2020-2021
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    HR policy provides an overview
-                                    of how SAPSRI functions and more importantly how employees must contribute to
-                                    the well-being of this effort and also contribute to building the desired organisational
-                                    culture, in the following manner.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-AR-2020-Final-low-res.webp" class="card-img-top rounded-top-4"
-                                alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Annual Report 2019-2020
-                                </h4>
-
-                                <!-- <p class="card-text">
-                                    Administrative Procedures provide information to all staff for understanding the practices,
-                                    rules and regulations and employee benefits offered by SAPSRI.
-                                </p> -->
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-
-                <h2 id="reportsAndCaseStudies">Reports & Case Studies</h2>
-
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5" data-masonry='{"percentPosition": true }'>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/LR-BOOK.webp" class="card-img-top rounded-top-4"
-                                alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Biodiversity Survey Report 2015
-                                </h4>
-
-                                <p class="card-text">
-                                    This inventory is a true testimony of amazingly vast and varied biodiversity in a
-                                    single village tank and in its immediate environment in the dry zone of Sri Lanka.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/SAPSRI-30years-book.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    30 Years of South Asia Partnership - Sri Lanka
-                                </h4>
-
-                                <p class="card-text">
-                                    Over the past 30 years, since its separate establishment in 1985, SAPSIRI
-                                    relationship with the government has remained very cordial.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/LCCRP-Final-Report-2009.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Local Capacity and Community Restoration Project Final Report
-                                </h4>
-
-                                <p class="card-text">
-                                    The duration of the project was originally intended to be three years from January
-                                    1, 2006, to December 31, 2008.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/trafficking-of-children-in-sri-lanka.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    The Sexual Abuse, Commercial Sexual Exploitation and Trafficking of Children in Sri
-                                    Lanka
-                                </h4>
-
-                                <p class="card-text">
-                                    The duration of the project was originally intended to be three years from January
-                                    1, 2006, to December 31, 2008.
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col">
-
-                        <div class="card publication-card rounded-4 bg-light-pink">
-
-                            <img src="./assets/media/img/pdf-covers/Trafiking-Book-2002-3.webp"
-                                class="card-img-top rounded-top-4" alt="...">
-
-                            <div class="card-body">
-
-                                <h4 class="card-title">
-                                    Trainers Manual for Stopping Human Taffiking
-                                </h4>
-
-                                <p class="card-text">
-                                    මානව කූට්ටනය වළකාලීම පිළිබදව පුහුණු කරන්නා සදහා අත්පොතක්
-                                </p>
-
-                            </div>
-
-                            <div class="card-footer hstack justify-content-between align-items-end">
-                                <time>12 July 2021</time>
-                                <a href="" class="wh-0 stretched-link"></a>
-                                <a href="./assets/media/docs/trafficking-of-children-in-sri-lanka.pdf"
-                                    class="btn btn-download z-3" download>
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
             </div>
 
         </section>
@@ -627,9 +82,7 @@
     <!-- footer -->
     <?php include "../includes/footer.php"; ?>
 
-
     <!-- Modal -->
-
     <div class="modal fade pdf-viewer-modal" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel"
         aria-hidden="true">
 
@@ -638,7 +91,6 @@
             <div class="modal-content bg-light-pink">
 
                 <div class="modal-header">
-
                     <h5 class="text-truncate">
                         <i class='fa-solid fa-file-lines'></i><span class="modal-title">Document Title</span>
                     </h5>
@@ -646,21 +98,17 @@
                     <button type="button" class="btn close-btn" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
-
                 </div>
 
                 <div class="modal-body">
-
                     <div>
                         <canvas id="pageCanvas"></canvas>
                     </div>
-
                 </div>
 
                 <div class="modal-footer justify-content-center justify-content-lg-between">
 
                     <div class="hstack gap-2">
-
                         <button class="btn btn-warning" id="pdfPrevPageBtn">
                             <i class="fa-solid fa-angle-left"></i>
                         </button>
@@ -670,7 +118,6 @@
                         <button class="btn btn-warning" id="pdfNextPageBtn">
                             <i class="fa-solid fa-angle-right"></i>
                         </button>
-
                     </div>
 
                     <a href="#" class="btn btn-pill btn-primary" id="publicationModalSaveBtn" download>
@@ -682,10 +129,158 @@
             </div>
         </div>
     </div>
+
+    <!-- Core Scripts -->
     <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./vendor/masonry/masonry.pkgd.min.js"></script>
     <script src="./assets/js/script.js"></script>
-</body>
 
+    <!-- AJAX DYNAMIC FETCH & FILTER LOGIC -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const cardContainer = document.getElementById("cardContainer");
+        const searchInput = document.querySelector(".news-search input");
+        const searchBtn = document.querySelector(".news-search button");
+        
+        let allPublications = [];
+
+        // Generates specific IDs to match the hardcoded quick-jump buttons in your hero
+        function generateSectionId(str) {
+            if (str === "Organisational policies") return "organisationalPolicies";
+            if (str === "Annual Reports") return "annualReports";
+            if (str === "Reports & Case Studies") return "reportsAndCaseStudies";
+            return str.replace(/\s+/g, '-').toLowerCase();
+        }
+
+        // Resolves paths efficiently for the subfolder environment
+        const cleanUrl = (url) => {
+            if (!url) return '#';
+            if (url.startsWith('../')) return '/project-sedna/' + url.substring(3);
+            if (!url.startsWith('/project-sedna/')) return '/project-sedna/' + url;
+            return url;
+        };
+
+        // 1. Fetch data from DB Endpoint
+        async function fetchPublications() {
+            try {
+                const response = await fetch('../includes/publications-data.php');
+                if (!response.ok) throw new Error("Network request failed");
+                
+                allPublications = await response.json();
+                renderPublications(allPublications);
+            } catch (error) {
+                console.error("AJAX Fetch Error:", error);
+                cardContainer.innerHTML = '<div class="alert alert-danger text-center m-5">Failed to load publications. Please try again later.</div>';
+            }
+        }
+
+        // 2. Render Cards to DOM
+        function renderPublications(data) {
+            cardContainer.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                cardContainer.innerHTML = '<div class="text-center py-5"><p class="text-muted fs-5 fw-medium">No publications found.</p></div>';
+                return;
+            }
+
+            // Group by category name dynamically
+            const groupedDocs = {};
+            data.forEach(pub => {
+                const cat = pub.category_name || 'Uncategorized';
+                if (!groupedDocs[cat]) groupedDocs[cat] = [];
+                groupedDocs[cat].push(pub);
+            });
+
+            // Loop through each category and inject its Header and Grid
+            for (const [category, pubs] of Object.entries(groupedDocs)) {
+                
+                const sectionId = generateSectionId(category);
+
+                // Inject Category Heading
+                const header = document.createElement('h2');
+                header.id = sectionId;
+                header.textContent = category;
+                cardContainer.appendChild(header);
+
+                // Inject Row Grid for Masonry
+                const grid = document.createElement('div');
+                grid.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5 masonry-grid';
+                
+                pubs.forEach(pub => {
+                    const col = document.createElement('div');
+                    col.className = 'col';
+
+                    // Format Date
+                    let displayDate = '';
+                    if (pub.publish_date) {
+                        const d = new Date(pub.publish_date);
+                        displayDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    }
+
+                    // Fallback to default Annual Report Cover if missing
+                    const coverImage = pub.cover_image ? cleanUrl(pub.cover_image) : '/project-sedna/assets/media/img/pdf-covers/annual-report-2024-2025.webp';
+                    const fileUrl = cleanUrl(pub.file_url);
+
+                    col.innerHTML = `
+                        <div class="card publication-card rounded-4 bg-light-pink h-100">
+                            <img src="${coverImage}" class="card-img-top rounded-top-4" alt="${pub.title}" style="height: 250px; object-fit: contain; background: #fff; padding: 5px;">
+                            <div class="card-body">
+                                <h4 class="card-title fs-5">${pub.title}</h4>
+                                ${pub.description ? `<p class="card-text">${pub.description}</p>` : ''}
+                            </div>
+                            <div class="card-footer hstack justify-content-between align-items-end mt-auto">
+                                <time>${displayDate}</time>
+                                <a href="${fileUrl}" class="wh-0 stretched-link" target="_blank"></a>
+                                <a href="${fileUrl}" class="btn btn-download z-3" download="${pub.title}.pdf">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+
+                cardContainer.appendChild(grid);
+            }
+
+            // Important: Trigger Bootstrap 5 Masonry dynamically after rendering
+            setTimeout(() => {
+                const grids = document.querySelectorAll('.masonry-grid');
+                grids.forEach(el => {
+                    if (typeof Masonry !== 'undefined') {
+                        new Masonry(el, { percentPosition: true });
+                    }
+                });
+            }, 100); // 100ms timeout ensures DOM is fully painted first
+        }
+
+        // 3. Search Filter Logic
+        function filterPublications() {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (!query) {
+                renderPublications(allPublications);
+                return;
+            }
+
+            const filteredResults = allPublications.filter(pub => {
+                const titleMatch = (pub.title || "").toLowerCase().includes(query);
+                const descMatch = (pub.description || "").toLowerCase().includes(query);
+                const catMatch = (pub.category_name || "").toLowerCase().includes(query);
+                return titleMatch || descMatch || catMatch;
+            });
+
+            renderPublications(filteredResults);
+        }
+
+        // Attach Search Listeners
+        searchInput.addEventListener('input', filterPublications);
+        searchBtn.addEventListener('click', filterPublications);
+
+        // Execute on load
+        fetchPublications();
+    });
+    </script>
+</body>
 </html>
