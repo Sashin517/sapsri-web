@@ -46,12 +46,17 @@
                             </a>
                         </div>
 
-                        <div class="input-group news-search m-auto" style="max-width: 400px;">
-                            <input type="text" class="form-control rounded-start-pill bg-light-orange" style="padding: 12px 32px;"
-                                placeholder="Search publications..." aria-label="search" aria-describedby="button-addon2">
-                            <button class="btn rounded-end-pill" style="padding: 0 18px;" type="button" id="button-addon2">
-                                <i class="fa-solid fa-magnifying-glass mx-2"></i>
-                            </button>
+                        <!-- Search Bar with Dropdown Container -->
+                        <div class="news-search m-auto position-relative" style="max-width: 400px;">
+                            <div class="input-group">
+                                <input type="text" id="pubSearchInput" class="form-control rounded-start-pill bg-light-orange" style="padding: 12px 32px;"
+                                    placeholder="Search publications..." aria-label="search" autocomplete="off">
+                                <button class="btn rounded-end-pill" style="padding: 0 18px;" type="button" id="pubSearchBtn">
+                                    <i class="fa-solid fa-magnifying-glass mx-2"></i>
+                                </button>
+                            </div>
+                            <!-- Dynamic Dropdown -->
+                            <div id="searchDropdown" class="search-dropdown w-100 text-start"></div>
                         </div>
 
                     </div>
@@ -136,22 +141,15 @@
     <script src="./vendor/masonry/masonry.pkgd.min.js"></script>
     <script src="./assets/js/script.js"></script>
 
-    <!-- AJAX DYNAMIC FETCH & FILTER LOGIC -->
+    <!-- AJAX DYNAMIC FETCH & DROPDOWN FILTER LOGIC -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const cardContainer = document.getElementById("cardContainer");
-        const searchInput = document.querySelector(".news-search input");
-        const searchBtn = document.querySelector(".news-search button");
+        const searchInput = document.getElementById("pubSearchInput");
+        const searchBtn = document.getElementById("pubSearchBtn");
+        const searchDropdown = document.getElementById("searchDropdown");
         
         let allPublications = [];
-
-        // Generates specific IDs to match the hardcoded quick-jump buttons in your hero
-        function generateSectionId(str) {
-            if (str === "Organisational policies") return "organisationalPolicies";
-            if (str === "Annual Reports") return "annualReports";
-            if (str === "Reports & Case Studies") return "reportsAndCaseStudies";
-            return str.replace(/\s+/g, '-').toLowerCase();
-        }
 
         // Resolves paths efficiently for the subfolder environment
         const cleanUrl = (url) => {
@@ -160,6 +158,14 @@
             if (!url.startsWith('/project-sedna/')) return '/project-sedna/' + url;
             return url;
         };
+
+        // Generates specific IDs to match the hardcoded quick-jump buttons in your hero
+        function generateSectionId(str) {
+            if (str === "Organisational policies") return "organisationalPolicies";
+            if (str === "Annual Reports") return "annualReports";
+            if (str === "Reports & Case Studies") return "reportsAndCaseStudies";
+            return str.replace(/\s+/g, '-').toLowerCase();
+        }
 
         // 1. Fetch data from DB Endpoint
         async function fetchPublications() {
@@ -175,7 +181,7 @@
             }
         }
 
-        // 2. Render Cards to DOM
+        // 2. Render Grid Cards to DOM
         function renderPublications(data) {
             cardContainer.innerHTML = '';
 
@@ -197,13 +203,11 @@
                 
                 const sectionId = generateSectionId(category);
 
-                // Inject Category Heading
                 const header = document.createElement('h2');
                 header.id = sectionId;
                 header.textContent = category;
                 cardContainer.appendChild(header);
 
-                // Inject Row Grid for Masonry
                 const grid = document.createElement('div');
                 grid.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-5 masonry-grid';
                 
@@ -211,14 +215,12 @@
                     const col = document.createElement('div');
                     col.className = 'col';
 
-                    // Format Date
                     let displayDate = '';
                     if (pub.publish_date) {
                         const d = new Date(pub.publish_date);
                         displayDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     }
 
-                    // Fallback to default Annual Report Cover if missing
                     const coverImage = pub.cover_image ? cleanUrl(pub.cover_image) : '/project-sedna/assets/media/img/pdf-covers/annual-report-2024-2025.webp';
                     const fileUrl = cleanUrl(pub.file_url);
 
@@ -244,41 +246,133 @@
                 cardContainer.appendChild(grid);
             }
 
-            // Important: Trigger Bootstrap 5 Masonry dynamically after rendering
+            // Initialize Masonry Grids
             setTimeout(() => {
-                const grids = document.querySelectorAll('.masonry-grid');
-                grids.forEach(el => {
-                    if (typeof Masonry !== 'undefined') {
-                        new Masonry(el, { percentPosition: true });
-                    }
+                document.querySelectorAll('.masonry-grid').forEach(el => {
+                    if (typeof Masonry !== 'undefined') new Masonry(el, { percentPosition: true });
                 });
-            }, 100); // 100ms timeout ensures DOM is fully painted first
+            }, 100); 
         }
 
-        // 3. Search Filter Logic
-        function filterPublications() {
-            const query = searchInput.value.toLowerCase().trim();
-            
-            if (!query) {
-                renderPublications(allPublications);
-                return;
-            }
+        // ==========================================
+        // 3. SEARCH & DROPDOWN LOGIC
+        // ==========================================
+        
+        const hideDropdown = () => searchDropdown.classList.remove('show');
+        const showDropdown = () => searchDropdown.classList.add('show');
 
-            const filteredResults = allPublications.filter(pub => {
+        // Close dropdown when clicking anywhere outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                hideDropdown();
+            }
+        });
+
+        // Filter Function 
+        function getFilteredResults(query) {
+            return allPublications.filter(pub => {
                 const titleMatch = (pub.title || "").toLowerCase().includes(query);
                 const descMatch = (pub.description || "").toLowerCase().includes(query);
                 const catMatch = (pub.category_name || "").toLowerCase().includes(query);
                 return titleMatch || descMatch || catMatch;
             });
-
-            renderPublications(filteredResults);
         }
 
-        // Attach Search Listeners
-        searchInput.addEventListener('input', filterPublications);
-        searchBtn.addEventListener('click', filterPublications);
+        // Run when User is Typing
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (!query) {
+                hideDropdown();
+                renderPublications(allPublications); // Reset grid back to normal
+                return;
+            }
 
-        // Execute on load
+            const filtered = getFilteredResults(query);
+            populateDropdown(filtered);
+        });
+
+        // Run when User clicks the Search Button
+        searchBtn.addEventListener('click', () => {
+            executeFullSearch();
+        });
+
+        // Run when User presses "Enter" on keyboard
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executeFullSearch();
+            }
+        });
+
+        // Fills the dropdown menu with items
+        function populateDropdown(results) {
+            searchDropdown.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchDropdown.innerHTML = '<div class="search-dropdown-empty">No matching publications found.</div>';
+            } else {
+                // Show up to 5 items in the dropdown
+                results.slice(0, 5).forEach(pub => {
+                    const item = document.createElement('div');
+                    item.className = 'search-dropdown-item';
+                    
+                    const coverImage = pub.cover_image ? cleanUrl(pub.cover_image) : '/project-sedna/assets/media/img/pdf-covers/annual-report-2024-2025.webp';
+                    
+                    item.innerHTML = `
+                        <img src="${coverImage}" class="search-dropdown-item-icon" alt="">
+                        <div class="search-dropdown-item-content">
+                            <div class="search-dropdown-item-title">${pub.title}</div>
+                            <div class="search-dropdown-item-description">${pub.category_name}</div>
+                        </div>
+                    `;
+                    
+                    // Click an item -> isolate just that item in the grid below
+                    item.addEventListener('click', () => {
+                        searchInput.value = pub.title;
+                        hideDropdown();
+                        renderPublications([pub]);
+                        
+                        // Scroll down to the grid container
+                        document.getElementById('cardContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                    
+                    searchDropdown.appendChild(item);
+                });
+                
+                // If there are more than 5 results, show a "View all" button inside the dropdown
+                if (results.length > 5) {
+                    const moreItem = document.createElement('div');
+                    moreItem.className = 'search-dropdown-empty fw-bold';
+                    moreItem.style.cursor = 'pointer';
+                    moreItem.style.color = 'var(--brand-crimson)';
+                    moreItem.textContent = `View all ${results.length} results...`;
+                    
+                    moreItem.addEventListener('click', () => {
+                        executeFullSearch();
+                    });
+                    searchDropdown.appendChild(moreItem);
+                }
+            }
+            showDropdown();
+        }
+
+        // Executes a full grid filter
+        function executeFullSearch() {
+            hideDropdown();
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (!query) {
+                renderPublications(allPublications);
+            } else {
+                const filtered = getFilteredResults(query);
+                renderPublications(filtered);
+                // Scroll down to results
+                document.getElementById('cardContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Trigger initial fetch
         fetchPublications();
     });
     </script>
