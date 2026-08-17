@@ -198,6 +198,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.loadView = loadView;
 
+  // ==========================================
+  // GLOBAL CHUNK UPLOADER (For Large Files)
+  // ==========================================
+  window.uploadedTempFiles = {}; // Store temp paths for form submission
+
+  async function uploadFileInChunks(file, idPrefix, fileKey) {
+    return new Promise((resolve, reject) => {
+      const contentDiv = document.getElementById(idPrefix + "Content");
+      const progressDiv = document.getElementById(idPrefix + "Progress");
+      const progressBar = document.getElementById(idPrefix + "ProgressBar");
+      const progressText = document.getElementById(idPrefix + "ProgressText");
+
+      if (!contentDiv || !progressDiv) return resolve(null);
+
+      // Show progress UI
+      contentDiv.style.display = "none";
+      progressDiv.style.display = "block";
+      progressBar.className = "progress-fill";
+      progressBar.style.width = "0%";
+      progressText.className = "upload-status-text";
+      progressText.innerText = `Uploading... 0%`;
+
+      const chunkSize = 2 * 1024 * 1024; // Slice into 2MB chunks
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      const uniqueFileName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      let currentChunk = 0;
+
+      function uploadNextChunk() {
+        const start = currentChunk * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", chunk);
+        formData.append("chunkIndex", currentChunk);
+        formData.append("totalChunks", totalChunks);
+        formData.append("fileName", uniqueFileName);
+
+        fetch("actions/upload-chunk.php", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (!data.success) throw new Error(data.message || "Chunk failed");
+
+          currentChunk++;
+          const progress = Math.round((currentChunk / totalChunks) * 100);
+          progressBar.style.width = progress + "%";
+          progressText.innerText = `Uploading... ${progress}%`;
+
+          if (currentChunk < totalChunks) {
+            uploadNextChunk(); // Call recursively until done
+          } else {
+            // Upload 100% Complete!
+            progressBar.classList.add("success");
+            progressText.classList.add("success");
+            progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Upload Complete!';
+            if (window.lucide) lucide.createIcons();
+            
+            // Save the server's temp path to our global object
+            window.uploadedTempFiles[fileKey] = data.temp_path; 
+
+            setTimeout(() => {
+              progressDiv.style.display = "none";
+              resolve(data.temp_path);
+            }, 800);
+          }
+        })
+        .catch(error => {
+          console.error("Upload Error:", error);
+          progressText.innerHTML = '<i data-lucide="x-circle" style="width:14px; color:red;"></i> Upload Failed!';
+          progressBar.style.backgroundColor = "#CB2045";
+          reject(error);
+        });
+      }
+
+      uploadNextChunk(); // Start the loop
+    });
+  }
+
   // --- SIDEBAR NAVIGATION HANDLER ---
   const navLinks = document.querySelectorAll(".spa-link");
 
@@ -2496,43 +2577,6 @@ document.addEventListener("DOMContentLoaded", () => {
       radioCustom.addEventListener("change", updateCoverUI);
     }
 
-    function simulateUploadAsync(idPrefix) {
-      return new Promise((resolve) => {
-        const contentDiv = document.getElementById(idPrefix + "Content");
-        const progressDiv = document.getElementById(idPrefix + "Progress");
-        const progressBar = document.getElementById(idPrefix + "ProgressBar");
-        const progressText = document.getElementById(idPrefix + "ProgressText");
-
-        if (!contentDiv || !progressDiv) return resolve();
-
-        contentDiv.style.display = "none";
-        progressDiv.style.display = "block";
-        progressBar.className = "progress-fill";
-        progressBar.style.width = "0%";
-        progressText.className = "upload-status-text";
-
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += Math.random() * 25;
-          if (progress >= 100) progress = 100;
-          progressBar.style.width = progress + "%";
-          progressText.innerText = `Uploading & Processing... ${Math.round(progress)}%`;
-
-          if (progress === 100) {
-            clearInterval(interval);
-            progressBar.classList.add("success");
-            progressText.classList.add("success");
-            progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Processing Complete!';
-            if (window.lucide) lucide.createIcons();
-            setTimeout(() => {
-              progressDiv.style.display = "none";
-              resolve();
-            }, 700);
-          }
-        }, 100);
-      });
-    }
-
     window.handlePdfUpload = async function (input) {
       if (input.files && input.files[0]) {
         const file = input.files[0];
@@ -2541,7 +2585,9 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        await simulateUploadAsync("pdf");
+        // --- NEW CHUNK UPLOAD CALL ---
+        await uploadFileInChunks(file, "pdf", "publication_pdf");
+        
         document.getElementById("pdfPreviewWrapper").style.display = "block";
         document.getElementById("pdfFileNameDisplay").innerText = file.name;
 
@@ -2686,8 +2732,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const isCustom = document.getElementById("coverCustom").checked;
       formData.append("is_custom_cover", isCustom ? 1 : 0);
 
-      const pdfInput = document.getElementById("pdfInput");
-      if (pdfInput.files[0]) formData.append("pdf_file", pdfInput.files[0]);
+      // Check if the chunk uploader saved a temporary path for our PDF
+      if (window.uploadedTempFiles["publication_pdf"]) {
+        formData.append("temp_pdf_path", window.uploadedTempFiles["publication_pdf"]);
+      }
 
       if (isCustom) {
         const customInput = document.getElementById("pubCoverInput");

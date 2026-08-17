@@ -106,11 +106,30 @@ try {
     date_default_timezone_set('Asia/Colombo');
     $publish_date = ($status === 'published') ? date('Y-m-d') : null;
 
-    // 1. Upload PDF File
+    // 1. Handle Assembled PDF File from Chunk Uploader
     $pdf_path = '';
-    if (isset($_FILES['pdf_file'])) {
-        $pdf_path = uploadFile($_FILES['pdf_file'], $doc_dir, 'pub_');
-        if (!$pdf_path) throw new Exception("Failed to upload PDF document.");
+    if (!empty($_POST['temp_pdf_path'])) {
+        // Path returned by JS is like 'media/temp/filename.pdf'
+        // This script is in admin/actions/publications/, so we go up 3 levels
+        $temp_file_path = '../../../' . $_POST['temp_pdf_path'];
+        
+        if (!file_exists($temp_file_path)) {
+            throw new Exception("Temporary PDF file not found. Please try uploading again.");
+        }
+
+        // Generate final filename
+        $ext = pathinfo($temp_file_path, PATHINFO_EXTENSION);
+        if (empty($ext)) $ext = 'pdf';
+        
+        $final_filename = 'pub_' . uniqid() . '.' . $ext;
+        $final_target = $doc_dir . $final_filename;
+        
+        // Move file from temporary directory to final publications directory
+        if (rename($temp_file_path, $final_target)) {
+            $pdf_path = str_replace('../../../', '', $final_target);
+        } else {
+            throw new Exception("Failed to move the assembled PDF document to its final destination.");
+        }
     } else {
         throw new Exception("PDF document is required.");
     }
