@@ -197,19 +197,22 @@
 
       <div class="mb-4">
         <label class="form-label fw-medium">Cover Image</label>
-        <div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
-          <div class="upload-content" id="galleryContent">
+        <div class="upload-area" id="coverUploadArea" onclick="document.getElementById('coverInput').click()">
+          <div class="upload-content" id="coverContent">
             <i data-lucide="upload" class="upload-icon"></i>
-            <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
+            <p class="mb-0 text-muted">Click to upload or drag and drop image<br><small>(recommended resolution, 1920x1080 px)</small></p>
           </div>
-          <!-- Progress Bar Elements -->
-          <div class="upload-progress-wrapper" id="galleryProgress" style="display:none;">
-            <div class="progress-bar-custom"><div class="progress-fill" id="galleryProgressBar"></div></div>
-            <div class="upload-status-text" id="galleryProgressText">Uploading... 0%</div>
+          <!-- NEW: Progress UI -->
+          <div class="upload-progress-wrapper" id="coverProgress">
+            <div class="progress-bar-custom"><div class="progress-fill" id="coverProgressBar"></div></div>
+            <div class="upload-status-text" id="coverProgressText">Uploading... 0%</div>
           </div>
-          <!-- Note the 'gallery' parameter added to the function call -->
-          <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this, 'gallery')">
-      </div>
+          <div class="image-preview-wrapper" id="coverPreviewWrapper">
+            <img src="" class="image-preview" id="coverPreviewImg">
+            <button type="button" class="remove-img-btn" onclick="removeImage(event, 'cover')"><i data-lucide="x"></i></button>
+          </div>
+          <input type="file" id="coverInput" class="d-none" accept="image/*" onchange="handleImageUpload(this, 'cover')">
+        </div>
       </div>
 
       <!-- Content Strategy Toggle -->
@@ -386,9 +389,16 @@
     <h4 class="fw-bold mb-3 fs-5 mt-5">Media Gallery (Relevant Photos)</h4>
     <div class="section-card">
       <div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
-        <i data-lucide="upload" class="upload-icon"></i>
-        <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
-        <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this)">
+        <div class="upload-content" id="galleryContent">
+          <i data-lucide="upload" class="upload-icon"></i>
+          <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
+        </div>
+        <!-- Progress Bar Elements -->
+        <div class="upload-progress-wrapper" id="galleryProgress" style="display:none;">
+          <div class="progress-bar-custom"><div class="progress-fill" id="galleryProgressBar"></div></div>
+          <div class="upload-status-text" id="galleryProgressText">Uploading... 0%</div>
+        </div>
+        <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this, 'gallery')">
       </div>
       <!-- Grid for dynamically added gallery previews -->
       <div class="row g-3" id="galleryPreviewContainer"></div>
