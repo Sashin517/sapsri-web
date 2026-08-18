@@ -317,7 +317,7 @@ body {
   }
 }
 
-.projects-pagination {
+.table-pagination {
   .page-item {
     .page-link {
       height: 100%;

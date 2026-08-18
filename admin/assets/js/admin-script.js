@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const chunkSize = 2 * 1024 * 1024; // Slice into 2MB chunks
       const totalChunks = Math.ceil(file.size / chunkSize);
-      const uniqueFileName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const uniqueFileName = Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
       let currentChunk = 0;
 
       function uploadNextChunk() {
@@ -238,41 +238,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fetch("actions/upload-chunk.php", {
           method: "POST",
-          body: formData
+          body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-          if (!data.success) throw new Error(data.message || "Chunk failed");
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.success) throw new Error(data.message || "Chunk failed");
 
-          currentChunk++;
-          const progress = Math.round((currentChunk / totalChunks) * 100);
-          progressBar.style.width = progress + "%";
-          progressText.innerText = `Uploading... ${progress}%`;
+            currentChunk++;
+            const progress = Math.round((currentChunk / totalChunks) * 100);
+            progressBar.style.width = progress + "%";
+            progressText.innerText = `Uploading... ${progress}%`;
 
-          if (currentChunk < totalChunks) {
-            uploadNextChunk(); // Call recursively until done
-          } else {
-            // Upload 100% Complete!
-            progressBar.classList.add("success");
-            progressText.classList.add("success");
-            progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Upload Complete!';
-            if (window.lucide) lucide.createIcons();
-            
-            // Save the server's temp path to our global object
-            window.uploadedTempFiles[fileKey] = data.temp_path; 
+            if (currentChunk < totalChunks) {
+              uploadNextChunk(); // Call recursively until done
+            } else {
+              // Upload 100% Complete!
+              progressBar.classList.add("success");
+              progressText.classList.add("success");
+              progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Upload Complete!';
+              if (window.lucide) lucide.createIcons();
 
-            setTimeout(() => {
-              progressDiv.style.display = "none";
-              resolve(data.temp_path);
-            }, 800);
-          }
-        })
-        .catch(error => {
-          console.error("Upload Error:", error);
-          progressText.innerHTML = '<i data-lucide="x-circle" style="width:14px; color:red;"></i> Upload Failed!';
-          progressBar.style.backgroundColor = "#CB2045";
-          reject(error);
-        });
+              // Save the server's temp path to our global object
+              window.uploadedTempFiles[fileKey] = data.temp_path;
+
+              setTimeout(() => {
+                progressDiv.style.display = "none";
+                resolve(data.temp_path);
+              }, 800);
+            }
+          })
+          .catch((error) => {
+            console.error("Upload Error:", error);
+            progressText.innerHTML = '<i data-lucide="x-circle" style="width:14px; color:red;"></i> Upload Failed!';
+            progressBar.style.backgroundColor = "#CB2045";
+            reject(error);
+          });
       }
 
       uploadNextChunk(); // Start the loop
@@ -624,7 +624,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let html = `<nav><ul class="pagination pagination-sm projects-pagination gap-1 mb-0">`;
+      let html = `<nav><ul class="pagination pagination-sm table-pagination gap-1 mb-0">`;
 
       // First Button
       html += `
@@ -633,7 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </li>
       `;
 
-      // Previous Button
+      // Back Button
       html += `
       <li class="page-item ${current_page === 1 ? "disabled" : ""}">
         <button class="page-link" onclick="changeProjectPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i>Back</button>
@@ -1892,7 +1892,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
   // --- VIEW: POSTS LOGIC ---
   // ==========================================
-  function initPostsScript() {
+  function initPostsScript_Old() {
     window.loadPosts = function () {
       const tbody = document.getElementById("posts-tbody");
       if (!tbody) return;
@@ -1941,6 +1941,276 @@ document.addEventListener("DOMContentLoaded", () => {
           tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load posts.</td></tr>';
         });
     };
+    loadPosts();
+  }
+
+  function initPostsScript() {
+    // State configuration
+    let state = {
+      search: "",
+      filter: "all", // Default selected button filter
+      dateRange: "all_time", // Default selected date range
+      startDate: "",
+      endDate: "",
+      page: 1,
+      limit: 10, // Default selected rows per page
+    };
+
+    let searchTimeout = null;
+
+    window.loadPosts = function () {
+      const tbody = document.getElementById("posts-tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading posts...</td></tr>';
+
+      const params = new URLSearchParams({
+        search: state.search,
+        filter: state.filter,
+        date_range: state.dateRange,
+        start_date: state.startDate,
+        end_date: state.endDate,
+        page: state.page,
+        limit: state.limit,
+      });
+
+      fetch(`actions/posts/fetch-posts.php?${params.toString()}`)
+        .then((res) => res.json())
+        .then((resData) => {
+          const posts = resData.posts || [];
+          const pagination = resData.pagination || { total_records: 0, total_pages: 1, current_page: 1, limit: 10 };
+
+          tbody.innerHTML = "";
+
+          if (posts.length === 0 || posts[0]?.error) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No posts found.</td></tr>';
+            renderPagination(pagination);
+            return;
+          }
+
+          posts.forEach((item) => {
+            let statusLower = (item.status || "").toLowerCase();
+            let pillClass =
+              statusLower === "published"
+                ? "status-published"
+                : statusLower === "archived"
+                  ? "status-archived"
+                  : "status-draft";
+
+            let pubDate = item.published_date
+              ? item.published_date.split(" ")[0]
+              : item.created_at
+                ? item.created_at.split(" ")[0]
+                : "N/A";
+
+            const row = `
+            <tr>
+              <td class="fw-medium">${item.title}</td>
+              <td>${item.post_lead || "System"}</td>
+              <td><span class="status-pill ${pillClass}">${(item.status || "Draft").charAt(0).toUpperCase() + (item.status || "draft").slice(1)}</span></td>
+              <td>${pubDate}</td>
+              <td class="text-end">
+                <div class="hstack gap-1 justify-content-end">
+                  <a href="/project-sedna/post?id=${item.id}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light text-primary border-0 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></a>
+                  <button class="btn btn-sm btn-light text-warning border-0 shadow-sm" title="Edit" onclick="loadView('edit-post', 'Posts', {id: ${item.id}})"><i data-lucide="edit" style="width: 16px;"></i></button>
+                  <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'post', 'actions/posts/delete-post.php', 'loadPosts')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+
+          if (window.lucide) {
+            lucide.createIcons();
+          }
+
+          renderPagination(pagination);
+        })
+        .catch((err) => {
+          console.error("Posts Fetch Error:", err);
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load posts.</td></tr>';
+        });
+    };
+
+    // Render pagination buttons and entries counter
+    function renderPagination(pagination) {
+      const container = document.getElementById("posts-pagination");
+      const infoText = document.getElementById("posts-pagination-info-text");
+      if (!container) return;
+
+      const { total_records, total_pages, current_page, limit } = pagination;
+
+      // Update record summary
+      if (infoText) {
+        const start = total_records === 0 ? 0 : (current_page - 1) * limit + 1;
+        const end = Math.min(current_page * limit, total_records);
+        infoText.innerText = `Showing ${start}-${end} of ${total_records}`;
+      }
+
+      if (total_pages <= 1) {
+        container.innerHTML = "";
+        return;
+      }
+
+      let html = `<nav><ul class="pagination pagination-sm table-pagination gap-1 mb-0">`;
+
+      // First Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link" onclick="changePostPage(1)"><i data-lucide="chevrons-left" style="width: 16px;"></i>First</button>
+      </li>
+    `;
+
+      // Back Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link" onclick="changePostPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i>Back</button>
+      </li>
+    `;
+
+      // Page Number Buttons
+      for (let i = 1; i <= total_pages; i++) {
+        if (i === 1 || i === total_pages || (i >= current_page - 1 && i <= current_page + 1)) {
+          html += `
+          <li class="page-item ${i === current_page ? "active" : ""}">
+            <button class="page-link" onclick="changePostPage(${i})">${i}</button>
+          </li>
+        `;
+        } else if (i === current_page - 2 || i === current_page + 2) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+      }
+
+      // Next Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link" onclick="changePostPage(${current_page + 1})">Next<i data-lucide="chevron-right" style="width: 16px;"></i></button>
+      </li>
+    `;
+
+      // Last Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link" onclick="changePostPage(${total_pages})">Last<i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+      </li>
+    `;
+
+      html += `</ul></nav>`;
+      container.innerHTML = html;
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    // Page switcher attached to global scope
+    window.changePostPage = function (pageNumber) {
+      state.page = pageNumber;
+      loadPosts();
+    };
+
+    // Event Listener Bindings
+    const searchInput = document.getElementById("post-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          state.search = e.target.value.trim();
+          state.page = 1;
+          loadPosts();
+        }, 300);
+      });
+    }
+
+    const filterPills = document.querySelectorAll("#post-status-pills .filter-pill");
+    filterPills.forEach((pill) => {
+      pill.addEventListener("click", function () {
+        filterPills.forEach((p) => {
+          p.classList.remove("active");
+          const icon = p.querySelector("[data-lucide]");
+          if (icon) icon.classList.add("d-none");
+        });
+        this.classList.add("active");
+        const icon = this.querySelector("[data-lucide]");
+        if (icon) icon.classList.remove("d-none");
+
+        state.filter = this.getAttribute("data-filter");
+        state.page = 1;
+        loadPosts();
+      });
+    });
+
+    const dateOptions = document.querySelectorAll("#date-filter-options .dropdown-item");
+    const dateLabel = document.getElementById("date-filter-label");
+    const customDateItem = document.getElementById("customDateItem");
+
+    dateOptions.forEach((option) => {
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const selectedRange = this.getAttribute("data-range");
+        if (!selectedRange) return;
+
+        if (typeof resetDateRangePicker === "function") {
+          resetDateRangePicker(customDateItem);
+        }
+
+        if (selectedRange === "custom") {
+          e.stopPropagation();
+        } else {
+          dateOptions.forEach((opt) => opt.classList.remove("active"));
+          this.classList.add("active");
+
+          if (dateLabel) dateLabel.innerText = this.innerText;
+
+          state.dateRange = selectedRange;
+          state.startDate = "";
+          state.endDate = "";
+          state.page = 1;
+          loadPosts();
+        }
+      });
+    });
+
+    // Date range picker initialization
+    if (typeof $ !== "undefined" && customDateItem) {
+      $(function () {
+        $(customDateItem).daterangepicker(
+          {
+            opens: "left",
+            drops: "auto",
+          },
+          function (start, end) {
+            const startDate = start?.format("YYYY-MM-DD") || "";
+            const endDate = end?.format("YYYY-MM-DD") || "";
+            if (dateLabel) dateLabel.textContent = `${startDate} - ${endDate}`;
+
+            state.startDate = startDate;
+            state.endDate = endDate;
+            state.dateRange = "custom";
+            state.page = 1;
+            loadPosts();
+          },
+        );
+        $(customDateItem).on("show.daterangepicker", function (ev, picker) {
+          picker.container.find(".drp-calendar").on("click", function (e) {
+            e.stopPropagation();
+          });
+        });
+      });
+    }
+
+    const rowsSelect = document.getElementById("posts-rows-per-page");
+    if (rowsSelect) {
+      rowsSelect.addEventListener("change", function () {
+        state.limit = parseInt(this.value, 10);
+        state.page = 1;
+        loadPosts();
+      });
+    }
+
+    // Execute initial load
     loadPosts();
   }
 
@@ -2535,6 +2805,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
+          console.log(pubs);
+
           pubs.forEach((item) => {
             let pillClass = (item.status || "").toLowerCase() === "published" ? "status-published" : "status-draft";
             const row = `
@@ -2598,7 +2870,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- NEW CHUNK UPLOAD CALL ---
         await uploadFileInChunks(file, "pdf", "publication_pdf");
-        
+
         document.getElementById("pdfPreviewWrapper").style.display = "block";
         document.getElementById("pdfFileNameDisplay").innerText = file.name;
 

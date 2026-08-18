@@ -20,11 +20,11 @@
         <!-- Search -->
         <div class="search-bar" style="width: 280px;">
           <i data-lucide="search"></i>
-          <input type="text" id="post-search-input" class="search-input" placeholder="Search Post Title...">
+          <input type="text" class="search-input" placeholder="Search Post Title...">
         </div>
 
         <!-- Status Filter Pills -->
-        <div class="d-flex gap-2" id="post-status-pills">
+        <div class="d-flex gap-2" id="project-status-pills">
           <button class="filter-pill active" data-filter="all">
             <i data-lucide="check" style="width: 16px;"></i> All
           </button>
@@ -66,7 +66,6 @@
       </div>
     </div>
 
-    <!-- Table -->
     <div class="table-responsive mb-0">
       <table class="table table-borderless align-middle mb-0">
         <thead>
@@ -85,22 +84,8 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Pagination Footer -->
-    <div class="p-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-muted fs-7">Rows:</span>
-        <select id="posts-rows-per-page" class="form-select form-select-sm rows-select">
-          <option value="10" selected>10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-        <span class="text-muted fs-7 ms-2" id="posts-pagination-info-text">Showing 0-0 of 0</span>
-      </div>
-
-      <div id="posts-pagination">
-        <!-- Dynamic pagination controls -->
-      </div>
+    <div class="p-4 border-top">
+      <div id="posts-pagination"></div>
     </div>
   </div>
 </div>
