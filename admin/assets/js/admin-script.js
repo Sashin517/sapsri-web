@@ -1776,53 +1776,75 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Media Gallery Handling
     window.galleryFilesArray = [];
-    window.handleGalleryUpload = function (input) {
+    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
+      
       if (input.files) {
-        Array.from(input.files).forEach((file) => {
+        // Use a for...of loop to await uploads sequentially
+        for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
-          window.galleryFilesArray.push({ id: uniqueId, file: file });
-
           const isVideo = file.type.startsWith("video/");
+
           const injectHTML = (src, showPlayBtn) => {
             const playBtnHTML = showPlayBtn
               ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
               : "";
             const colHTML = `
-                        <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
-                            <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
-                                <img src="${src}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${showPlayBtn ? 0.7 : 1};">
-                                ${playBtnHTML}
-                                <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 8px; right: 8px; border-radius: 50%; z-index: 10;" onclick="removeGalleryItem('${uniqueId}', '')">
-                                    <i data-lucide="x" style="width: 14px;"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
+                  <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
+                    <img src="${src}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${showPlayBtn ? 0.7 : 1};">
+                    ${playBtnHTML}
+                    <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 8px; right: 8px; border-radius: 50%; z-index: 10;" onclick="removeGalleryItem('${uniqueId}')">
+                      <i data-lucide="x" style="width: 14px;"></i>
+                    </button>
+                  </div>
+                </div>
+              `;
             container.insertAdjacentHTML("beforeend", colHTML);
             if (window.lucide) lucide.createIcons();
           };
 
           if (isVideo) {
+            // 1. Upload chunk immediately for video, wait for it to finish
+            const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
+            
+            // 2. Extract frame for thumbnail
             const video = document.createElement("video");
             video.preload = "metadata";
             video.src = URL.createObjectURL(file);
             video.onloadeddata = () => {
-              video.currentTime = 1;
+              video.currentTime = 1; // 1 second in
             };
             video.onseeked = () => {
               const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
+              canvas.width = video.videoWidth || 640;
+              canvas.height = video.videoHeight || 360;
               canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              injectHTML(canvas.toDataURL("image/jpeg"), true);
+              
+              canvas.toBlob((blob) => {
+                // Store tempPath instead of raw file
+                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
+                injectHTML(URL.createObjectURL(blob), true);
+              }, "image/jpeg", 0.85);
             };
           } else {
+            // It's an image, push the file directly to upload on submit
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
-        });
+        }
+      }
+      
+      // Reset Upload UI
+      const contentDiv = document.getElementById(idPrefix + "Content");
+      const progressDiv = document.getElementById(idPrefix + "Progress");
+      if (contentDiv && progressDiv) {
+         setTimeout(() => {
+             contentDiv.style.display = "block";
+             progressDiv.style.display = "none";
+         }, 1000);
       }
       input.value = "";
     };
@@ -2495,14 +2517,15 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(idPrefix + "Content").style.display = "block";
     };
 
-    window.handleGalleryUpload = function (input) {
+    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
+      
       if (input.files) {
-        Array.from(input.files).forEach((file) => {
+        // Use a for...of loop to await uploads sequentially
+        for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
-          window.galleryFilesArray.push({ id: uniqueId, file: file });
-
           const isVideo = file.type.startsWith("video/");
+
           const injectHTML = (src, showPlayBtn) => {
             const playBtnHTML = showPlayBtn
               ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
@@ -2519,29 +2542,50 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `;
             container.insertAdjacentHTML("beforeend", colHTML);
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
           };
 
           if (isVideo) {
+            // 1. Upload chunk immediately for video, wait for it to finish
+            const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
+            
+            // 2. Extract frame for thumbnail
             const video = document.createElement("video");
             video.preload = "metadata";
             video.src = URL.createObjectURL(file);
             video.onloadeddata = () => {
-              video.currentTime = 1;
+              video.currentTime = 1; // 1 second in
             };
             video.onseeked = () => {
               const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
+              canvas.width = video.videoWidth || 640;
+              canvas.height = video.videoHeight || 360;
               canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              injectHTML(canvas.toDataURL("image/jpeg"), true);
+              
+              canvas.toBlob((blob) => {
+                // Store tempPath instead of raw file
+                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
+                injectHTML(URL.createObjectURL(blob), true);
+              }, "image/jpeg", 0.85);
             };
           } else {
+            // It's an image, push the file directly to upload on submit
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
-        });
+        }
+      }
+      
+      // Reset Upload UI
+      const contentDiv = document.getElementById(idPrefix + "Content");
+      const progressDiv = document.getElementById(idPrefix + "Progress");
+      if (contentDiv && progressDiv) {
+         setTimeout(() => {
+             contentDiv.style.display = "block";
+             progressDiv.style.display = "none";
+         }, 1000);
       }
       input.value = "";
     };
@@ -2811,14 +2855,15 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(idPrefix + "Content").style.display = "block";
     };
 
-    window.handleGalleryUpload = function (input) {
+    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
+      
       if (input.files) {
-        Array.from(input.files).forEach((file) => {
+        // Use a for...of loop to await uploads sequentially
+        for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
-          window.galleryFilesArray.push({ id: uniqueId, file: file });
-
           const isVideo = file.type.startsWith("video/");
+
           const injectHTML = (src, showPlayBtn) => {
             const playBtnHTML = showPlayBtn
               ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
@@ -2835,29 +2880,50 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `;
             container.insertAdjacentHTML("beforeend", colHTML);
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
           };
 
           if (isVideo) {
+            // 1. Upload chunk immediately for video, wait for it to finish
+            const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
+            
+            // 2. Extract frame for thumbnail
             const video = document.createElement("video");
             video.preload = "metadata";
             video.src = URL.createObjectURL(file);
             video.onloadeddata = () => {
-              video.currentTime = 1;
+              video.currentTime = 1; // 1 second in
             };
             video.onseeked = () => {
               const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
+              canvas.width = video.videoWidth || 640;
+              canvas.height = video.videoHeight || 360;
               canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              injectHTML(canvas.toDataURL("image/jpeg"), true);
+              
+              canvas.toBlob((blob) => {
+                // Store tempPath instead of raw file
+                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
+                injectHTML(URL.createObjectURL(blob), true);
+              }, "image/jpeg", 0.85);
             };
           } else {
+            // It's an image, push the file directly to upload on submit
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
-        });
+        }
+      }
+      
+      // Reset Upload UI
+      const contentDiv = document.getElementById(idPrefix + "Content");
+      const progressDiv = document.getElementById(idPrefix + "Progress");
+      if (contentDiv && progressDiv) {
+         setTimeout(() => {
+             contentDiv.style.display = "block";
+             progressDiv.style.display = "none";
+         }, 1000);
       }
       input.value = "";
     };
