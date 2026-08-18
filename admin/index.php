@@ -29,6 +29,8 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/project-sedna/vendor/bootstrap/bootstrap-custom.css">
   <link rel="stylesheet" href="/project-sedna/vendor/daterangepicker/daterangepicker-bs5.css">
+  <!-- Load Mammoth.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->

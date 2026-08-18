@@ -261,8 +261,6 @@
       <div class="mb-3" id="manualDescSection">
         <label class="form-label fw-medium">Full Description</label>
         <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-        <!-- Load Mammoth.js Library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
         <div class="quill-resizer">
           <div id="editor"></div>
         </div>
