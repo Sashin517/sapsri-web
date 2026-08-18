@@ -838,6 +838,101 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         },
       });
+
+      // -------------------------------------------------------------
+      // Word Document Extractor Logic
+      // -------------------------------------------------------------
+      const radioManual = document.getElementById("descManual");
+      const radioWord = document.getElementById("descWord");
+      const manualSection = document.getElementById("manualDescSection");
+      const wordSection = document.getElementById("wordUploadSection");
+
+      // Toggle UI Elements
+      function updateDescUI() {
+        if (radioManual.checked) {
+          wordSection.style.display = "none";
+        } else {
+          wordSection.style.display = "block";
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+      
+      if (radioManual && radioWord) {
+        radioManual.addEventListener("change", updateDescUI);
+        radioWord.addEventListener("change", updateDescUI);
+      }
+
+      // Handle Upload and Extraction
+      window.handleWordUpload = function (input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+          return;
+        }
+
+        // Show Progress UI
+        const contentDiv = document.getElementById("wordContent");
+        const progressDiv = document.getElementById("wordProgress");
+        const progressBar = document.getElementById("wordProgressBar");
+        const progressText = document.getElementById("wordProgressText");
+
+        contentDiv.style.display = "none";
+        progressDiv.style.display = "block";
+        progressBar.className = "progress-fill";
+        progressBar.style.width = "60%";
+        progressText.className = "upload-status-text";
+        progressText.innerText = `Extracting Text...`;
+
+        // Read file into ArrayBuffer for Mammoth
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const arrayBuffer = event.target.result;
+          
+          // Execute Mammoth.js Parser
+          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+            .then(function(result) {
+              const html = result.value; // The pure, semantic HTML generated from Word
+              
+              // Finish Progress Bar
+              progressBar.style.width = "100%";
+              progressBar.classList.add("success");
+              progressText.classList.add("success");
+              progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Extraction Complete!';
+              if (window.lucide) lucide.createIcons();
+
+              setTimeout(() => {
+                // 1. Inject Extracted HTML directly into Quill Editor
+                quill.clipboard.dangerouslyPasteHTML(html);
+                
+                // 2. Programmatically switch the UI back to "Write Manually"
+                radioManual.checked = true;
+                updateDescUI();
+                
+                // 3. Reset the Upload Area for future use
+                input.value = "";
+                contentDiv.style.display = "block";
+                progressDiv.style.display = "none";
+                progressBar.classList.remove("success");
+                progressText.classList.remove("success");
+                progressBar.style.width = "0%";
+                
+                showAlert('success', 'Word document imported successfully! Please review formatting.');
+              }, 800);
+            })
+            .catch(function(err) {
+              console.error("Mammoth Parse Error:", err);
+              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              contentDiv.style.display = "block";
+              progressDiv.style.display = "none";
+              input.value = "";
+            });
+        };
+        
+        reader.readAsArrayBuffer(file);
+      };
+
     }
 
     function simulateUpload(idPrefix, callback) {
@@ -1294,6 +1389,96 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         },
       });
+
+      // -------------------------------------------------------------
+      // Word Document Extractor Logic (Edit Project)
+      // -------------------------------------------------------------
+      const radioManual = document.getElementById("descManual");
+      const radioWord = document.getElementById("descWord");
+      const manualSection = document.getElementById("manualDescSection");
+      const wordSection = document.getElementById("wordUploadSection");
+
+      // Toggle UI Elements
+      function updateDescUI() {
+        if (radioManual.checked) {
+          wordSection.style.display = "none";
+        } else {
+          wordSection.style.display = "block";
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+      
+      if (radioManual && radioWord) {
+        radioManual.addEventListener("change", updateDescUI);
+        radioWord.addEventListener("change", updateDescUI);
+      }
+
+      // Handle Upload and Extraction
+      window.handleWordUpload = function (input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+          return;
+        }
+
+        // Show Progress UI
+        const contentDiv = document.getElementById("wordContent");
+        const progressDiv = document.getElementById("wordProgress");
+        const progressBar = document.getElementById("wordProgressBar");
+        const progressText = document.getElementById("wordProgressText");
+
+        contentDiv.style.display = "none";
+        progressDiv.style.display = "block";
+        progressBar.className = "progress-fill";
+        progressBar.style.width = "60%";
+        progressText.className = "upload-status-text";
+        progressText.innerText = `Extracting Text...`;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const arrayBuffer = event.target.result;
+          
+          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+            .then(function(result) {
+              const html = result.value; 
+              
+              progressBar.style.width = "100%";
+              progressBar.classList.add("success");
+              progressText.classList.add("success");
+              progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Extraction Complete!';
+              if (window.lucide) lucide.createIcons();
+
+              setTimeout(() => {
+                // Overwrite the Quill Editor with the new Word HTML
+                quill.clipboard.dangerouslyPasteHTML(html);
+                
+                radioManual.checked = true;
+                updateDescUI();
+                
+                input.value = "";
+                contentDiv.style.display = "block";
+                progressDiv.style.display = "none";
+                progressBar.classList.remove("success");
+                progressText.classList.remove("success");
+                progressBar.style.width = "0%";
+                
+                showAlert('success', 'Word document imported successfully! Existing text has been replaced.');
+              }, 800);
+            })
+            .catch(function(err) {
+              console.error("Mammoth Parse Error:", err);
+              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              contentDiv.style.display = "block";
+              progressDiv.style.display = "none";
+              input.value = "";
+            });
+        };
+        
+        reader.readAsArrayBuffer(file);
+      };
+
     }
 
     // Single/Main Image Handling Functions
@@ -2364,6 +2549,101 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         },
       });
+
+      // -------------------------------------------------------------
+      // Word Document Extractor Logic (Create Post)
+      // -------------------------------------------------------------
+      const radioManual = document.getElementById("descManual");
+      const radioWord = document.getElementById("descWord");
+      const manualSection = document.getElementById("manualDescSection");
+      const wordSection = document.getElementById("wordUploadSection");
+
+      // Toggle UI Elements
+      function updateDescUI() {
+        if (radioManual.checked) {
+          wordSection.style.display = "none";
+        } else {
+          wordSection.style.display = "block";
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+      
+      if (radioManual && radioWord) {
+        radioManual.addEventListener("change", updateDescUI);
+        radioWord.addEventListener("change", updateDescUI);
+      }
+
+      // Handle Upload and Extraction
+      window.handleWordUpload = function (input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+          return;
+        }
+
+        // Show Progress UI
+        const contentDiv = document.getElementById("wordContent");
+        const progressDiv = document.getElementById("wordProgress");
+        const progressBar = document.getElementById("wordProgressBar");
+        const progressText = document.getElementById("wordProgressText");
+
+        contentDiv.style.display = "none";
+        progressDiv.style.display = "block";
+        progressBar.className = "progress-fill";
+        progressBar.style.width = "60%";
+        progressText.className = "upload-status-text";
+        progressText.innerText = `Extracting Text...`;
+
+        // Read file into ArrayBuffer for Mammoth
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const arrayBuffer = event.target.result;
+          
+          // Execute Mammoth.js Parser
+          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+            .then(function(result) {
+              const html = result.value; 
+              
+              // Finish Progress Bar
+              progressBar.style.width = "100%";
+              progressBar.classList.add("success");
+              progressText.classList.add("success");
+              progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Extraction Complete!';
+              if (window.lucide) lucide.createIcons();
+
+              setTimeout(() => {
+                // 1. Inject Extracted HTML directly into Quill Editor
+                quill.clipboard.dangerouslyPasteHTML(html);
+                
+                // 2. Programmatically switch the UI back to "Write Manually"
+                radioManual.checked = true;
+                updateDescUI();
+                
+                // 3. Reset the Upload Area for future use
+                input.value = "";
+                contentDiv.style.display = "block";
+                progressDiv.style.display = "none";
+                progressBar.classList.remove("success");
+                progressText.classList.remove("success");
+                progressBar.style.width = "0%";
+                
+                showAlert('success', 'Word document imported successfully! Please review formatting.');
+              }, 800);
+            })
+            .catch(function(err) {
+              console.error("Mammoth Parse Error:", err);
+              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              contentDiv.style.display = "block";
+              progressDiv.style.display = "none";
+              input.value = "";
+            });
+        };
+        
+        reader.readAsArrayBuffer(file);
+      };
+
     }
 
     document.getElementById("createPostForm").addEventListener("submit", async function (e) {
@@ -2589,6 +2869,92 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         },
       });
+
+      // -------------------------------------------------------------
+      // Word Document Extractor Logic (Edit Post)
+      // -------------------------------------------------------------
+      const radioManual = document.getElementById("descManual");
+      const radioWord = document.getElementById("descWord");
+      const manualSection = document.getElementById("manualDescSection");
+      const wordSection = document.getElementById("wordUploadSection");
+
+      function updateDescUI() {
+        if (radioManual.checked) {
+          wordSection.style.display = "none";
+        } else {
+          wordSection.style.display = "block";
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+      
+      if (radioManual && radioWord) {
+        radioManual.addEventListener("change", updateDescUI);
+        radioWord.addEventListener("change", updateDescUI);
+      }
+
+      window.handleWordUpload = function (input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+          return;
+        }
+
+        const contentDiv = document.getElementById("wordContent");
+        const progressDiv = document.getElementById("wordProgress");
+        const progressBar = document.getElementById("wordProgressBar");
+        const progressText = document.getElementById("wordProgressText");
+
+        contentDiv.style.display = "none";
+        progressDiv.style.display = "block";
+        progressBar.className = "progress-fill";
+        progressBar.style.width = "60%";
+        progressText.className = "upload-status-text";
+        progressText.innerText = `Extracting Text...`;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const arrayBuffer = event.target.result;
+          
+          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+            .then(function(result) {
+              const html = result.value; 
+              
+              progressBar.style.width = "100%";
+              progressBar.classList.add("success");
+              progressText.classList.add("success");
+              progressText.innerHTML = '<i data-lucide="check-circle" style="width:14px;"></i> Extraction Complete!';
+              if (window.lucide) lucide.createIcons();
+
+              setTimeout(() => {
+                quill.clipboard.dangerouslyPasteHTML(html);
+                
+                radioManual.checked = true;
+                updateDescUI();
+                
+                input.value = "";
+                contentDiv.style.display = "block";
+                progressDiv.style.display = "none";
+                progressBar.classList.remove("success");
+                progressText.classList.remove("success");
+                progressBar.style.width = "0%";
+                
+                showAlert('success', 'Word document imported successfully! Existing text has been replaced.');
+              }, 800);
+            })
+            .catch(function(err) {
+              console.error("Mammoth Parse Error:", err);
+              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              contentDiv.style.display = "block";
+              progressDiv.style.display = "none";
+              input.value = "";
+            });
+        };
+        
+        reader.readAsArrayBuffer(file);
+      };
+
     }
 
     document.getElementById("editPostForm").addEventListener("submit", async function (e) {

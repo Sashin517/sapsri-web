@@ -217,9 +217,52 @@
         </div>
       </div>
 
+      <!-- Content Strategy Toggle -->
       <div class="mb-3">
+        <label class="form-label fw-medium">Content Strategy</label>
+        <div class="d-flex gap-4 p-3 border rounded bg-light">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="descStrategy" id="descManual" value="manual" checked>
+            <label class="form-check-label fw-medium" for="descManual">Write Manually</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="descStrategy" id="descWord" value="word">
+            <label class="form-check-label fw-medium" for="descWord">Import from Word (.docx)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Word Upload Section (Hidden by Default) -->
+      <div class="mb-4" id="wordUploadSection" style="display: none;">
+        <div class="alert border-0 mb-3" style="background-color: #E8F4FD; color: #0C4A6E;" role="alert">
+          <h6 class="fw-bold mb-2"><i data-lucide="info" style="width: 18px; margin-top:-2px;"></i> Note on Word Imports</h6>
+          <p class="small mb-2">Importing a Word document will <strong>replace the current text</strong> in the editor. This tool extracts only your <strong>clean text, headings, and lists</strong>.</p>
+          <ul class="small mb-0 ps-3">
+            <li><strong>Upload your .docx file</strong> below.</li>
+            <li><strong>Review your text</strong> in the editor once it imports, and adjust any spacing if needed.</li>
+            <li><strong>Upload images separately</strong> using the Media Gallery below (embedded Word images are ignored).</li>
+          </ul>
+        </div>
+        
+        <div class="upload-area" id="wordUploadArea" onclick="document.getElementById('wordInput').click()">
+          <div class="upload-content" id="wordContent">
+            <i data-lucide="file-text" class="upload-icon"></i>
+            <p class="mb-0 text-muted">Click to upload or drag and drop your .docx file</p>
+          </div>
+          <div class="upload-progress-wrapper" id="wordProgress">
+            <div class="progress-bar-custom"><div class="progress-fill" id="wordProgressBar"></div></div>
+            <div class="upload-status-text" id="wordProgressText">Extracting Text... 0%</div>
+          </div>
+          <input type="file" id="wordInput" class="d-none" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleWordUpload(this)">
+        </div>
+      </div>
+
+      <!-- Quill Editor Section -->
+      <div class="mb-3" id="manualDescSection">
         <label class="form-label fw-medium">Full Description</label>
         <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <!-- Load Mammoth.js Library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
         <div class="quill-resizer">
           <div id="editor"></div>
         </div>
