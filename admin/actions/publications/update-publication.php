@@ -10,14 +10,14 @@ $img_dir = '../../../assets/media/img/publications/';
 if (!file_exists($doc_dir)) mkdir($doc_dir, 0777, true);
 if (!file_exists($img_dir)) mkdir($img_dir, 0777, true);
 
-// Helper function to upload files (PDFs moved directly, images converted to WebP)
+// Helper function to upload files (PDFs handled elsewhere now, images converted to WebP)
 function uploadFile($file, $target_dir, $prefix = '') {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) return null;
     
     $mime = mime_content_type($file['tmp_name']);
     $is_pdf = ($mime === 'application/pdf');
 
-    // 1. PDF Handling
+    // 1. PDF Handling (Kept as fallback just in case, though chunker bypasses this)
     if ($is_pdf) {
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         if (empty($ext)) $ext = 'pdf';
@@ -128,19 +128,37 @@ try {
         $publish_date = null;
     }
 
-    // Process PDF Document
+    // Process PDF Document (Using the assembled chunk temp path)
     $is_pdf_removed = isset($_POST['is_pdf_removed']) && $_POST['is_pdf_removed'] == '1';
     $pdf_path = $existing['file_url'];
 
-    if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
-        $new_pdf = uploadFile($_FILES['pdf_file'], $doc_dir, 'pub_');
-        if (!$new_pdf) throw new Exception("Failed to upload new PDF document.");
+    if (!empty($_POST['temp_pdf_path'])) {
+        // Path returned by JS is like 'media/temp/filename.pdf'
+        $temp_file_path = '../../../' . $_POST['temp_pdf_path'];
         
-        // Remove old PDF file from disk
-        if (!empty($existing['file_url']) && file_exists('../../../' . $existing['file_url'])) {
-            @unlink('../../../' . $existing['file_url']);
+        if (!file_exists($temp_file_path)) {
+            throw new Exception("Temporary PDF file not found. Please try uploading again.");
         }
-        $pdf_path = $new_pdf;
+
+        // Generate final filename
+        $ext = pathinfo($temp_file_path, PATHINFO_EXTENSION);
+        if (empty($ext)) $ext = 'pdf';
+        
+        $final_filename = 'pub_' . uniqid() . '.' . $ext;
+        $final_target = $doc_dir . $final_filename;
+        
+        // Move file from temporary directory to final publications directory
+        if (rename($temp_file_path, $final_target)) {
+            $new_pdf = str_replace('../../../', '', $final_target);
+            
+            // Remove old PDF file from disk
+            if (!empty($existing['file_url']) && file_exists('../../../' . $existing['file_url'])) {
+                @unlink('../../../' . $existing['file_url']);
+            }
+            $pdf_path = $new_pdf;
+        } else {
+            throw new Exception("Failed to move the assembled PDF document to its final destination.");
+        }
     } else if ($is_pdf_removed) {
         if (!empty($existing['file_url']) && file_exists('../../../' . $existing['file_url'])) {
             @unlink('../../../' . $existing['file_url']);

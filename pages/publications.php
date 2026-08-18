@@ -170,7 +170,8 @@
         // 1. Fetch data from DB Endpoint
         async function fetchPublications() {
             try {
-                const response = await fetch('../includes/publications-data.php');
+                // FIXED PATH: Replaced relative '../includes' with absolute path to bypass .htaccess rewrite issues
+                const response = await fetch('/project-sedna/includes/publications-data.php');
                 if (!response.ok) throw new Error("Network request failed");
                 
                 allPublications = await response.json();
