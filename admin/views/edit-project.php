@@ -275,21 +275,19 @@
       <h5 class="fw-bold mb-3 fs-6">Section One</h5>
       <div class="mb-4">
         <label class="form-label fw-medium">Metrics Image</label>
-        <div class="upload-area" onclick="document.getElementById('sec1Input').click()">
-          <div class="upload-content" id="sec1Content">
+        <div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
+          <div class="upload-content" id="galleryContent">
             <i data-lucide="upload" class="upload-icon"></i>
-            <p class="mb-0 text-muted">Click to upload or drag and drop image<br><small>(1920x1080 px)</small></p>
+            <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
           </div>
-          <div class="upload-progress-wrapper" id="sec1Progress" style="display:none;">
-            <div class="progress-bar-custom"><div class="progress-fill" id="sec1ProgressBar"></div></div>
-            <div class="upload-status-text" id="sec1ProgressText">Uploading... 0%</div>
+          <!-- Progress Bar Elements -->
+          <div class="upload-progress-wrapper" id="galleryProgress" style="display:none;">
+            <div class="progress-bar-custom"><div class="progress-fill" id="galleryProgressBar"></div></div>
+            <div class="upload-status-text" id="galleryProgressText">Uploading... 0%</div>
           </div>
-          <div class="image-preview-wrapper" id="sec1PreviewWrapper" style="display:none;">
-            <img src="" class="image-preview" id="sec1PreviewImg">
-            <button type="button" class="remove-img-btn" onclick="removeImage(event, 'sec1')"><i data-lucide="x"></i></button>
-          </div>
-          <input type="file" id="sec1Input" class="d-none" accept="image/*" onchange="handleImageUpload(this, 'sec1')">
-        </div>
+          <!-- Note the 'gallery' parameter added to the function call -->
+          <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this, 'gallery')">
+      </div>
       </div>
 
       <h6 class="fw-bold mb-3 fs-6">Metrics</h6>

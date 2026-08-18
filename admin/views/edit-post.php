@@ -133,10 +133,18 @@
     <!-- Media Gallery -->
     <h4 class="fw-bold mb-3 fs-5 mt-5">Media Gallery</h4>
     <div class="section-card">
-      <div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
-        <i data-lucide="upload" class="upload-icon"></i>
-        <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
-        <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this)">
+      <<div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
+        <div class="upload-content" id="galleryContent">
+          <i data-lucide="upload" class="upload-icon"></i>
+          <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
+        </div>
+        <!-- Progress Bar Elements -->
+        <div class="upload-progress-wrapper" id="galleryProgress" style="display:none;">
+          <div class="progress-bar-custom"><div class="progress-fill" id="galleryProgressBar"></div></div>
+          <div class="upload-status-text" id="galleryProgressText">Uploading... 0%</div>
+        </div>
+        <!-- Note the 'gallery' parameter added to the function call -->
+        <input type="file" id="galleryInput" class="d-none" accept="image/*,video/*" multiple onchange="handleGalleryUpload(this, 'gallery')">
       </div>
       <div class="row g-3" id="galleryPreviewContainer"></div>
     </div>
