@@ -1,4 +1,4 @@
-# SAPSRI - Official Website
+# SAPSRI - Official NGO Website
 
 ## Overview
 
