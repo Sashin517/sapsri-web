@@ -41,7 +41,7 @@ try {
         while ($row = mysqli_fetch_assoc($pub_result)) {
             $pub_id = intval($row['id']);
 
-            $pub_data[$pub_id] = [
+            $pub_data[] = [
                 'id' => $pub_id,
                 'title' => $row['title'] ?? '',
                 'description' => $row['description'] ?? '',

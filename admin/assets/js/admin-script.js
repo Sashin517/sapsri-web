@@ -1742,10 +1742,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (status === "draft" || status === "archived") {
             statusBtn.textContent = "Publish";
-            statusBtn.dataset.action = "publish";
+            statusBtn.dataset.action = "published";
           } else if (status === "published") {
             statusBtn.textContent = "Archive";
-            statusBtn.dataset.action = "archive";
+            statusBtn.dataset.action = "archived";
           } else {
             throw new Error("Invalid value for field 'status'.");
           }
@@ -1766,7 +1766,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let projectSubmitStatus = null;
       if (activeBtn && activeBtn.id === "statusBtn") {
         const action = activeBtn.dataset.action ?? null;
-        projectSubmitStatus = action === "archive" ? "archived" : "published";
+        projectSubmitStatus = action === "archived" ? "archived" : "published";
       }
 
       const originalBtnText = activeBtn ? activeBtn.innerHTML : "";
@@ -2595,6 +2595,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const activeBtn = e.submitter;
       let postSubmitStatus = activeBtn && activeBtn.id === "statusBtn" ? activeBtn.dataset.action : null;
+      console.log(postSubmitStatus);
 
       const originalBtnText = activeBtn.innerHTML;
       activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
@@ -2764,11 +2765,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const statusBtn = document.getElementById("statusBtn");
         if (status === "draft" || status === "archived") {
-          statusBtn.dataset.action = "publish";
+          statusBtn.dataset.action = "published";
           statusBtn.textContent = "Publish";
           statusBtn.classList.remove("d-none");
         } else if (status === "published") {
-          statusBtn.dataset.action = "archive";
+          statusBtn.dataset.action = "archived";
           statusBtn.textContent = "Archive";
           statusBtn.classList.remove("d-none");
         } else {

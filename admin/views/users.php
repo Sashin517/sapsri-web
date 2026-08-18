@@ -12,7 +12,7 @@
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-3 px-4 pt-4">
   <div>
-    <h1 class="mb-1 fw-bold fs-3">User Management</h1>
+    <h1 class="mb-1 fw-bold fs-3">Manage Users</h1>
     <p class="mb-0 text-muted" style="font-size: 0.95rem;">Manage admins, roles, and access requests</p>
   </div>
   <button class="btn btn-create-project d-flex align-items-center gap-2" onclick="openCreateRoleModal()">
