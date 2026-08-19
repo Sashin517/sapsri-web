@@ -105,19 +105,63 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" id="viewModalEl">
+<div class="modal fade" tabindex="-1" id="viewModalEl">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Modal body text goes here.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Download</button>
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-body p-4 position-relative">
+                <button type="button" class="btn-close position-absolute shadow-none" style="top: 16px; right: 16px;" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="container-fluid px-0">
+                    <div class="row">
+                        <div class="col-12 col-md-auto order-1 order-md-0">
+                            <div class="card publication-card rounded-4 bg-light-pink" style="min-width: 12rem;">
+                                <img src="" class="card-img-top rounded-top-4" alt="" style="height: 250px; object-fit: contain; background: #fff; padding: 5px;">
+                                <div class="card-body">
+                                    <h4 class="card-title fs-5">--</h4>
+                                    <p class="card-text">--</p>
+                                </div>
+                                <div class="card-footer hstack justify-content-between align-items-end mt-auto border-top-0 bg-transparent">
+                                    <time>--</time>
+
+                                    <a href="#" class="wh-0 stretched-link"></a>
+
+                                    <a href="#" class="btn btn-download z-3" download="">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 640" fill="currentColor"><!--!Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                                            <path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 306.7L246.6 265.3C234.1 252.8 213.8 252.8 201.3 265.3C188.8 277.8 188.8 298.1 201.3 310.6L297.3 406.6C309.8 419.1 330.1 419.1 342.6 406.6L438.6 310.6C451.1 298.1 451.1 277.8 438.6 265.3C426.1 252.8 405.8 252.8 393.3 265.3L352 306.7L352 96zM160 384C124.7 384 96 412.7 96 448L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 448C544 412.7 515.3 384 480 384L433.1 384L376.5 440.6C345.3 471.8 294.6 471.8 263.4 440.6L206.9 384L160 384zM464 440C477.3 440 488 450.7 488 464C488 477.3 477.3 488 464 488C450.7 488 440 477.3 440 464C440 450.7 450.7 440 464 440z" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col w-100">
+                            <div class="form-floating mb-3 mt-2">
+                                <textarea class="form-control-plaintext" placeholder="Title" id="pubTitle" readonly style="height: auto; field-sizing: content;"></textarea>
+                                <label for="pubTitle">Title</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control-plaintext" placeholder="Category" id="pubCategory" readonly style="height: auto; field-sizing: content;"></textarea>
+                                <label for="pubCategory">Category</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control-plaintext" placeholder="Description" id="pubDescription" readonly style="height: auto; field-sizing: content;"></textarea>
+                                <label for="pubDescription">Description</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" readonly class="form-control-plaintext" id="pubDate" placeholder="Publish Date">
+                                <label for="pubDate">Publish Date</label>
+                            </div>
+
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input type="text" readonly class="form-control-plaintext" id="pubStatus" placeholder="Status">
+                                <label for="pubStatus">Status</label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -854,6 +854,60 @@ body {
   text-align: center;
 }
 
+/* publication card */
+.bg-light-pink {
+  background-color: #f1ebee;
+}
+.publication-card {
+  border: none;
+  /* cursor: pointer; */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-out;
+
+  .card-body {
+    .card-title {
+      color: #313131;
+      text-transform: uppercase;
+    }
+
+    .card-text {
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+  }
+
+  .card-footer {
+    time {
+      font-size: 0.8rem;
+      color: grey;
+      font-style: italic;
+    }
+
+    .btn-download {
+      background-color: rgba(255, 0, 0, 0.1);
+      color: #a20a35;
+      padding-inline: 0.5rem;
+      border-radius: 50%;
+    }
+
+    .btn-download:hover {
+      background-color: #a20a35;
+      color: white;
+    }
+
+    .btn-download:active {
+      background-color: rgba(255, 0, 0, 0.1);
+      color: #a20a35;
+      border-color: #a20a35;
+    }
+  }
+}
+
+.publication-card:hover {
+  transform: translateY(-5px) scale(1.005);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 /* --- Responsive Queries --- */
 @media (max-width: 991px) {
   .sidebar {

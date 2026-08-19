@@ -3459,6 +3459,70 @@ document.addEventListener("DOMContentLoaded", () => {
       limit: 10, // Default selected rows per page
     };
 
+    let publications = [];
+
+    window.viewPublication = (id) => {
+      const modalEl = document.getElementById("viewModalEl");
+      const modal = viewModalEl ? new bootstrap.Modal(viewModalEl) : null;
+
+      if (!modal || !id) {
+        showAlert("error", "Something went wrong");
+        return;
+      }
+
+      const publication = publications.find((item) => item.id === id);
+
+      if (!publication) {
+        showAlert("error", "Something went wrong");
+        return;
+      }
+
+      const coverImage = publication.cover_image ?? null;
+      const title = publication.title ?? null;
+      const category = publication.category ?? null;
+      const description = publication.description ?? null;
+      const publishDate = publication.publish_date ?? null;
+      const formattedDate = publishDate
+        ? new Intl.DateTimeFormat("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }).format(new Date(publishDate))
+        : null;
+      const status = publication.status ?? null;
+      const fileUrl = publication.file_url ?? null;
+
+      const cardImg = modalEl.querySelector(".card-img-top");
+      const cardTitle = modalEl.querySelector(".card-title");
+      const cardText = modalEl.querySelector(".card-text");
+      const cardTime = modalEl.querySelector("time");
+      const cardLink = modalEl.querySelector(".stretched-link");
+      const cardDownloadBtn = modalEl.querySelector(".btn-download");
+
+      if (cardImg) cardImg.src = coverImage ? coverImage : "";
+      if (cardTitle) cardTitle.textContent = title ? title : "N/A";
+      if (cardText) cardText.textContent = description ? description : "N/A";
+      if (cardTime) cardTime.textContent = formattedDate ? formattedDate : "N/A";
+      if (cardLink) cardLink.href = fileUrl ? fileUrl : "#";
+      if (cardDownloadBtn) cardDownloadBtn.href = fileUrl ? fileUrl : "#";
+      if (cardDownloadBtn) cardDownloadBtn.setAttribute("download", title ? `${title}.pdf` : "");
+
+      const titleTxt = modalEl.querySelector("#pubTitle");
+      const categoryTxt = modalEl.querySelector("#pubCategory");
+      const descriptionTxt = modalEl.querySelector("#pubDescription");
+      const dateTxt = modalEl.querySelector("#pubDate");
+      const statusTxt = modalEl.querySelector("#pubStatus");
+
+      if (titleTxt) titleTxt.value = title ? title : "N/A";
+      if (categoryTxt) categoryTxt.value = category ? category : "N/A";
+      if (descriptionTxt) descriptionTxt.value = description ? description : "N/A";
+      if (dateTxt) dateTxt.value = formattedDate ? formattedDate : "N/A";
+      if (statusTxt) statusTxt.value = status ? status.charAt(0).toUpperCase() + status.slice(1) : "N/A";
+
+      console.log(publication);
+      modal.show();
+    };
+
     let searchTimeout = null;
 
     window.loadPublications = function () {
@@ -3493,6 +3557,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
+          publications = pubs;
+
           pubs.forEach((item) => {
             let statusLower = (item.status || "").toLowerCase();
             let pillClass =
@@ -3510,7 +3576,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <td>${item.uploaded_by_name || "System"}</td>
               <td class="text-end">
                 <div class="hstack gap-1 justify-content-end">
-                  <button class="btn btn-sm btn-light text-primary border-0 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
+                  <button class="btn btn-sm btn-light text-primary border-0 shadow-sm" title="View" onclick="viewPublication(${item.id});"><i data-lucide="eye" style="width: 16px;"></i></button>
                   <button class="btn btn-sm btn-light text-warning border-0 shadow-sm" title="Edit" onclick="loadView('edit-publication', 'Publications', { id: ${item.id} });"><i data-lucide="edit" style="width: 16px;"></i></button>
                   <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'publication', 'actions/publications/delete-publication.php', 'loadPublications')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
                 </div>
