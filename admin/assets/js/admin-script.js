@@ -856,7 +856,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (window.lucide) lucide.createIcons();
       }
-      
+
       if (radioManual && radioWord) {
         radioManual.addEventListener("change", updateDescUI);
         radioWord.addEventListener("change", updateDescUI);
@@ -866,9 +866,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.handleWordUpload = function (input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        
-        if (!file.name.toLowerCase().endsWith('.docx')) {
-          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+
+        if (!file.name.toLowerCase().endsWith(".docx")) {
+          showAlert("error", "Please upload a valid modern Word document (.docx).");
           return;
         }
 
@@ -887,14 +887,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Read file into ArrayBuffer for Mammoth
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           const arrayBuffer = event.target.result;
-          
+
           // Execute Mammoth.js Parser
-          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-            .then(function(result) {
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (result) {
               const html = result.value; // The pure, semantic HTML generated from Word
-              
+
               // Finish Progress Bar
               progressBar.style.width = "100%";
               progressBar.classList.add("success");
@@ -905,11 +906,11 @@ document.addEventListener("DOMContentLoaded", () => {
               setTimeout(() => {
                 // 1. Inject Extracted HTML directly into Quill Editor
                 quill.clipboard.dangerouslyPasteHTML(html);
-                
+
                 // 2. Programmatically switch the UI back to "Write Manually"
                 radioManual.checked = true;
                 updateDescUI();
-                
+
                 // 3. Reset the Upload Area for future use
                 input.value = "";
                 contentDiv.style.display = "block";
@@ -917,22 +918,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 progressBar.classList.remove("success");
                 progressText.classList.remove("success");
                 progressBar.style.width = "0%";
-                
-                showAlert('success', 'Word document imported successfully! Please review formatting.');
+
+                showAlert("success", "Word document imported successfully! Please review formatting.");
               }, 800);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               console.error("Mammoth Parse Error:", err);
-              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              showAlert("error", "Failed to extract text. The document may be corrupted or password-protected.");
               contentDiv.style.display = "block";
               progressDiv.style.display = "none";
               input.value = "";
             });
         };
-        
+
         reader.readAsArrayBuffer(file);
       };
-
     }
 
     function simulateUpload(idPrefix, callback) {
@@ -1161,7 +1161,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
+            const playBtnHTML = showPlayBtn
+              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
+              : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -1180,13 +1182,15 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isVideo) {
             // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
-            
+
             // AWAIT the canvas extraction to guarantee the thumbnail exists
             const thumbBlob = await new Promise((resolve) => {
               const video = document.createElement("video");
               video.preload = "metadata";
               video.src = URL.createObjectURL(file);
-              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onloadeddata = () => {
+                video.currentTime = 1;
+              };
               video.onseeked = () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth || 640;
@@ -1197,22 +1201,30 @@ document.addEventListener("DOMContentLoaded", () => {
               video.onerror = () => resolve(null); // Failsafe
             });
 
-            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            window.galleryFilesArray.push({
+              id: uniqueId,
+              tempPath: tempPath,
+              thumbBlob: thumbBlob,
+              type: "video",
+              fileName: file.name,
+            });
             if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
-            
           } else {
-            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: "image" });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
         }
       }
-      
+
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
+        setTimeout(() => {
+          contentDiv.style.display = "block";
+          progressDiv.style.display = "none";
+        }, 1000);
       }
       input.value = "";
     };
@@ -1221,6 +1233,58 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(id).remove();
       window.galleryFilesArray = window.galleryFilesArray.filter((item) => item.id !== id);
     };
+
+    // --- Drag and Drop Logic ---
+    function setupFileUploadDragAndDrop() {
+      const uploadAreas = document.querySelectorAll(".upload-area");
+      uploadAreas.forEach((area) => {
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            },
+            false,
+          );
+        });
+        ["dragenter", "dragover"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "var(--sapsri-red)";
+              area.style.backgroundColor = "#F9E7EC";
+            },
+            false,
+          );
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "#D6D6D6";
+              area.style.backgroundColor = "#FDF4F6";
+            },
+            false,
+          );
+        });
+        area.addEventListener(
+          "drop",
+          (e) => {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              const fileInput = area.querySelector('input[type="file"]');
+              if (fileInput) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          },
+          false,
+        );
+      });
+    }
+    setupFileUploadDragAndDrop();
 
     document.getElementById("createProjectForm").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -1433,7 +1497,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (window.lucide) lucide.createIcons();
       }
-      
+
       if (radioManual && radioWord) {
         radioManual.addEventListener("change", updateDescUI);
         radioWord.addEventListener("change", updateDescUI);
@@ -1443,9 +1507,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.handleWordUpload = function (input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        
-        if (!file.name.toLowerCase().endsWith('.docx')) {
-          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+
+        if (!file.name.toLowerCase().endsWith(".docx")) {
+          showAlert("error", "Please upload a valid modern Word document (.docx).");
           return;
         }
 
@@ -1463,13 +1527,14 @@ document.addEventListener("DOMContentLoaded", () => {
         progressText.innerText = `Extracting Text...`;
 
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           const arrayBuffer = event.target.result;
-          
-          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-            .then(function(result) {
-              const html = result.value; 
-              
+
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (result) {
+              const html = result.value;
+
               progressBar.style.width = "100%";
               progressBar.classList.add("success");
               progressText.classList.add("success");
@@ -1479,32 +1544,31 @@ document.addEventListener("DOMContentLoaded", () => {
               setTimeout(() => {
                 // Overwrite the Quill Editor with the new Word HTML
                 quill.clipboard.dangerouslyPasteHTML(html);
-                
+
                 radioManual.checked = true;
                 updateDescUI();
-                
+
                 input.value = "";
                 contentDiv.style.display = "block";
                 progressDiv.style.display = "none";
                 progressBar.classList.remove("success");
                 progressText.classList.remove("success");
                 progressBar.style.width = "0%";
-                
-                showAlert('success', 'Word document imported successfully! Existing text has been replaced.');
+
+                showAlert("success", "Word document imported successfully! Existing text has been replaced.");
               }, 800);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               console.error("Mammoth Parse Error:", err);
-              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              showAlert("error", "Failed to extract text. The document may be corrupted or password-protected.");
               contentDiv.style.display = "block";
               progressDiv.style.display = "none";
               input.value = "";
             });
         };
-        
+
         reader.readAsArrayBuffer(file);
       };
-
     }
 
     // Single/Main Image Handling Functions
@@ -1777,7 +1841,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
+            const playBtnHTML = showPlayBtn
+              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
+              : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -1796,13 +1862,15 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isVideo) {
             // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
-            
+
             // AWAIT the canvas extraction to guarantee the thumbnail exists
             const thumbBlob = await new Promise((resolve) => {
               const video = document.createElement("video");
               video.preload = "metadata";
               video.src = URL.createObjectURL(file);
-              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onloadeddata = () => {
+                video.currentTime = 1;
+              };
               video.onseeked = () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth || 640;
@@ -1813,22 +1881,30 @@ document.addEventListener("DOMContentLoaded", () => {
               video.onerror = () => resolve(null); // Failsafe
             });
 
-            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            window.galleryFilesArray.push({
+              id: uniqueId,
+              tempPath: tempPath,
+              thumbBlob: thumbBlob,
+              type: "video",
+              fileName: file.name,
+            });
             if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
-            
           } else {
-            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: "image" });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
         }
       }
-      
+
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
+        setTimeout(() => {
+          contentDiv.style.display = "block";
+          progressDiv.style.display = "none";
+        }, 1000);
       }
       input.value = "";
     };
@@ -1877,7 +1953,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // 1. Populate Core Project Details
           const project = data.project;
-          console.log(project);
           document.getElementById("projectTitle").value = project.title || "";
           if (quill && project.full_description) {
             quill.clipboard.dangerouslyPasteHTML(project.full_description);
@@ -2079,14 +2154,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Newly added Gallery Files
       window.galleryFilesArray.forEach((item, index) => {
-        if (item.type === 'video') {
-            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
-            formData.append(`gallery_videos_names[${index}]`, item.fileName);
-            if (item.thumbBlob) {
-                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
-            }
+        if (item.type === "video") {
+          formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+          formData.append(`gallery_videos_names[${index}]`, item.fileName);
+          if (item.thumbBlob) {
+            formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+          }
         } else {
-            formData.append(`gallery_files[${index}]`, item.file);
+          formData.append(`gallery_files[${index}]`, item.file);
         }
       });
 
@@ -2510,7 +2585,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.galleryFilesArray = [];
-    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
+    window.handleGalleryUpload = async function (input, idPrefix = "gallery") {
       const container = document.getElementById("galleryPreviewContainer");
 
       if (input.files) {
@@ -2519,7 +2594,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
+            const playBtnHTML = showPlayBtn
+              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
+              : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -2538,13 +2615,15 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isVideo) {
             // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
-            
+
             // AWAIT the canvas extraction to guarantee the thumbnail exists
             const thumbBlob = await new Promise((resolve) => {
               const video = document.createElement("video");
               video.preload = "metadata";
               video.src = URL.createObjectURL(file);
-              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onloadeddata = () => {
+                video.currentTime = 1;
+              };
               video.onseeked = () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth || 640;
@@ -2555,22 +2634,30 @@ document.addEventListener("DOMContentLoaded", () => {
               video.onerror = () => resolve(null); // Failsafe
             });
 
-            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            window.galleryFilesArray.push({
+              id: uniqueId,
+              tempPath: tempPath,
+              thumbBlob: thumbBlob,
+              type: "video",
+              fileName: file.name,
+            });
             if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
-            
           } else {
-            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: "image" });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
         }
       }
-      
+
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
+        setTimeout(() => {
+          contentDiv.style.display = "block";
+          progressDiv.style.display = "none";
+        }, 1000);
       }
       input.value = "";
     };
@@ -2630,7 +2717,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (window.lucide) lucide.createIcons();
       }
-      
+
       if (radioManual && radioWord) {
         radioManual.addEventListener("change", updateDescUI);
         radioWord.addEventListener("change", updateDescUI);
@@ -2640,9 +2727,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.handleWordUpload = function (input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        
-        if (!file.name.toLowerCase().endsWith('.docx')) {
-          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+
+        if (!file.name.toLowerCase().endsWith(".docx")) {
+          showAlert("error", "Please upload a valid modern Word document (.docx).");
           return;
         }
 
@@ -2661,14 +2748,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Read file into ArrayBuffer for Mammoth
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           const arrayBuffer = event.target.result;
-          
+
           // Execute Mammoth.js Parser
-          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-            .then(function(result) {
-              const html = result.value; 
-              
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (result) {
+              const html = result.value;
+
               // Finish Progress Bar
               progressBar.style.width = "100%";
               progressBar.classList.add("success");
@@ -2679,11 +2767,11 @@ document.addEventListener("DOMContentLoaded", () => {
               setTimeout(() => {
                 // 1. Inject Extracted HTML directly into Quill Editor
                 quill.clipboard.dangerouslyPasteHTML(html);
-                
+
                 // 2. Programmatically switch the UI back to "Write Manually"
                 radioManual.checked = true;
                 updateDescUI();
-                
+
                 // 3. Reset the Upload Area for future use
                 input.value = "";
                 contentDiv.style.display = "block";
@@ -2691,23 +2779,74 @@ document.addEventListener("DOMContentLoaded", () => {
                 progressBar.classList.remove("success");
                 progressText.classList.remove("success");
                 progressBar.style.width = "0%";
-                
-                showAlert('success', 'Word document imported successfully! Please review formatting.');
+
+                showAlert("success", "Word document imported successfully! Please review formatting.");
               }, 800);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               console.error("Mammoth Parse Error:", err);
-              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              showAlert("error", "Failed to extract text. The document may be corrupted or password-protected.");
               contentDiv.style.display = "block";
               progressDiv.style.display = "none";
               input.value = "";
             });
         };
-        
+
         reader.readAsArrayBuffer(file);
       };
-
     }
+
+    // --- Drag and Drop Logic ---
+    function setupFileUploadDragAndDrop() {
+      const uploadAreas = document.querySelectorAll(".upload-area");
+      uploadAreas.forEach((area) => {
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            },
+            false,
+          );
+        });
+        ["dragenter", "dragover"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "var(--sapsri-red)";
+              area.style.backgroundColor = "#F9E7EC";
+            },
+            false,
+          );
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            () => {
+              area.style.borderColor = "#D6D6D6";
+              area.style.backgroundColor = "#FDF4F6";
+            },
+            false,
+          );
+        });
+        area.addEventListener(
+          "drop",
+          (e) => {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              const fileInput = area.querySelector('input[type="file"]');
+              if (fileInput) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          },
+          false,
+        );
+      });
+    }
+    setupFileUploadDragAndDrop();
 
     document.getElementById("createPostForm").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -2734,14 +2873,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (coverInput.files[0]) formData.append("cover_image", coverInput.files[0]);
 
       window.galleryFilesArray.forEach((item, index) => {
-        if (item.type === 'video') {
-            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
-            formData.append(`gallery_videos_names[${index}]`, item.fileName);
-            if (item.thumbBlob) {
-                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
-            }
+        if (item.type === "video") {
+          formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+          formData.append(`gallery_videos_names[${index}]`, item.fileName);
+          if (item.thumbBlob) {
+            formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+          }
         } else {
-            formData.append(`gallery_files[${index}]`, item.file);
+          formData.append(`gallery_files[${index}]`, item.file);
         }
       });
 
@@ -2849,7 +2988,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.galleryFilesArray = [];
-    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
+    window.handleGalleryUpload = async function (input, idPrefix = "gallery") {
       const container = document.getElementById("galleryPreviewContainer");
 
       if (input.files) {
@@ -2858,7 +2997,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
+            const playBtnHTML = showPlayBtn
+              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
+              : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -2877,13 +3018,15 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isVideo) {
             // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
-            
+
             // AWAIT the canvas extraction to guarantee the thumbnail exists
             const thumbBlob = await new Promise((resolve) => {
               const video = document.createElement("video");
               video.preload = "metadata";
               video.src = URL.createObjectURL(file);
-              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onloadeddata = () => {
+                video.currentTime = 1;
+              };
               video.onseeked = () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth || 640;
@@ -2894,22 +3037,30 @@ document.addEventListener("DOMContentLoaded", () => {
               video.onerror = () => resolve(null); // Failsafe
             });
 
-            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            window.galleryFilesArray.push({
+              id: uniqueId,
+              tempPath: tempPath,
+              thumbBlob: thumbBlob,
+              type: "video",
+              fileName: file.name,
+            });
             if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
-            
           } else {
-            window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
+            window.galleryFilesArray.push({ id: uniqueId, file: file, type: "image" });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
             reader.readAsDataURL(file);
           }
         }
       }
-      
+
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
+        setTimeout(() => {
+          contentDiv.style.display = "block";
+          progressDiv.style.display = "none";
+        }, 1000);
       }
       input.value = "";
     };
@@ -2972,7 +3123,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (window.lucide) lucide.createIcons();
       }
-      
+
       if (radioManual && radioWord) {
         radioManual.addEventListener("change", updateDescUI);
         radioWord.addEventListener("change", updateDescUI);
@@ -2981,9 +3132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.handleWordUpload = function (input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        
-        if (!file.name.toLowerCase().endsWith('.docx')) {
-          showAlert('error', 'Please upload a valid modern Word document (.docx).');
+
+        if (!file.name.toLowerCase().endsWith(".docx")) {
+          showAlert("error", "Please upload a valid modern Word document (.docx).");
           return;
         }
 
@@ -3000,13 +3151,14 @@ document.addEventListener("DOMContentLoaded", () => {
         progressText.innerText = `Extracting Text...`;
 
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           const arrayBuffer = event.target.result;
-          
-          mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-            .then(function(result) {
-              const html = result.value; 
-              
+
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (result) {
+              const html = result.value;
+
               progressBar.style.width = "100%";
               progressBar.classList.add("success");
               progressText.classList.add("success");
@@ -3015,32 +3167,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
               setTimeout(() => {
                 quill.clipboard.dangerouslyPasteHTML(html);
-                
+
                 radioManual.checked = true;
                 updateDescUI();
-                
+
                 input.value = "";
                 contentDiv.style.display = "block";
                 progressDiv.style.display = "none";
                 progressBar.classList.remove("success");
                 progressText.classList.remove("success");
                 progressBar.style.width = "0%";
-                
-                showAlert('success', 'Word document imported successfully! Existing text has been replaced.');
+
+                showAlert("success", "Word document imported successfully! Existing text has been replaced.");
               }, 800);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               console.error("Mammoth Parse Error:", err);
-              showAlert('error', 'Failed to extract text. The document may be corrupted or password-protected.');
+              showAlert("error", "Failed to extract text. The document may be corrupted or password-protected.");
               contentDiv.style.display = "block";
               progressDiv.style.display = "none";
               input.value = "";
             });
         };
-        
+
         reader.readAsArrayBuffer(file);
       };
-
     }
 
     document.getElementById("editPostForm").addEventListener("submit", async function (e) {
@@ -3080,14 +3231,14 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("is_cover_deleted", isCoverDeleted);
 
       window.galleryFilesArray.forEach((item, index) => {
-        if (item.type === 'video') {
-            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
-            formData.append(`gallery_videos_names[${index}]`, item.fileName);
-            if (item.thumbBlob) {
-                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
-            }
+        if (item.type === "video") {
+          formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+          formData.append(`gallery_videos_names[${index}]`, item.fileName);
+          if (item.thumbBlob) {
+            formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+          }
         } else {
-            formData.append(`gallery_files[${index}]`, item.file);
+          formData.append(`gallery_files[${index}]`, item.file);
         }
       });
 
@@ -3778,9 +3929,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(err);
         showAlert("error", "A network error occurred. Check the server response.");
       } finally {
-        if(draftBtn) draftBtn.disabled = false;
-        if(publishBtn) publishBtn.disabled = false;
-        if(activeBtn) activeBtn.innerHTML = originalBtnText;
+        if (draftBtn) draftBtn.disabled = false;
+        if (publishBtn) publishBtn.disabled = false;
+        if (activeBtn) activeBtn.innerHTML = originalBtnText;
       }
     });
   }
@@ -4165,9 +4316,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(err);
         showAlert("error", "A network error occurred. Check the server response.");
       } finally {
-        if(secondaryBtn) secondaryBtn.disabled = false;
-        if(saveBtn) saveBtn.disabled = false;
-        if(activeBtn) activeBtn.innerHTML = originalBtnText;
+        if (secondaryBtn) secondaryBtn.disabled = false;
+        if (saveBtn) saveBtn.disabled = false;
+        if (activeBtn) activeBtn.innerHTML = originalBtnText;
       }
     });
   }
