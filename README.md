@@ -1,8 +1,44 @@
-# SAPSRI - Official NGO Website
+<div align="center">
+  <img src="sapsri-logo.png" alt="SAPSRI Logo" height="100">
+  
+  # SAPSRI - Official NGO Website
+</div>
 
 ## Overview
 
 The official website for **[SAPSRI]**, built to showcase the organization's mission, programs, and impact, while giving the team an easy way to manage content — news, events, and media — through a custom admin panel. Built with plain PHP and MySQL for lightweight, low-maintenance hosting.
+
+---
+
+## 📋 Task Tracker & Roadmap
+
+**Priority Key:** 
+🔴 High Priority (Critical) | 🟠 Medium Priority (Enhancement) | 🟡 Low Priority (UI/UX Polish)
+
+**Status Key:** 
+✅ Implemented | ⏳ Ongoing | ❌ Not Started
+
+### 🛠️ Admin Side Implementation
+*   🔴 **Preview projects and posts creation:** ✅ Implemented
+*   🔴 **Role Based Access Implementation:** ❌ Not Started *(High Complexity)*
+*   🔴 **Admin Account page creation:** ❌ Not Started *(Medium Complexity)*
+*   🔴 **Admin Publications custom image upload progress, preview, and saving fix:** ❌ Not Started *(High Complexity)*
+*   🟠 **All drag & drop features implement:** ❌ Not Started *(Medium Complexity)*
+*   🟡 **Admin Main dashboard search function implementation:** ❌ Not Started *(Medium Complexity)*
+*   🟡 **Notifications admin showing implementation:** ❌ Not Started *(High Complexity)*
+*   🟡 **Users online realtime dot status:** ❌ Not Started *(High Complexity)*
+
+### 🌐 User Side Implementation
+*   🔴 **SEO optimization by keywords (All Pages):** ❌ Not Started *(Medium Complexity)*
+*   🔴 **Impact Areas related projects retrieve from DB:** ❌ Not Started *(Medium Complexity)*
+*   🟠 **Publications PDF viewer implementation:** ❌ Not Started *(Low/Medium Complexity)*
+*   🟡 **Home Latest News Card centering issue (when few exist):** ❌ Not Started *(Low Complexity)*
+*   🟡 **Footer social media icons spacing issue (except home page):** ❌ Not Started *(Low Complexity)*
+
+### 📝 Content Update
+*   🔴 **Real content update for projects and publications:** ❌ Not Started *(Low Complexity)*
+
+---
 
 ## Project Architecture
 
