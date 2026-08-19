@@ -41,8 +41,9 @@
     .login-image-container::before {
       content: "";
       position: absolute;
+      border-radius: 20px;
       inset: 0;
-      background-image: url('assets/img/sapsri-fluid-bg.png');
+      background-image: url('assets/img/sapsri-fluid-bg.webp');
       background-size: cover;
       background-position: center;
       transform: scaleY(-1);
