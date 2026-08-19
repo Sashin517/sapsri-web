@@ -20,7 +20,7 @@
         <!-- Search -->
         <div class="search-bar" style="width: 280px;">
           <i data-lucide="search"></i>
-          <input type="text" id="post-search-input" class="search-input" placeholder="Search Post Title...">
+          <input type="text" id="post-search-input" class="search-input" placeholder="Search Title...">
         </div>
 
         <!-- Status Filter Pills -->

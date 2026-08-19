@@ -741,7 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $(customDateItem).daterangepicker(
           {
             opens: "left",
-            drops: "auto",
+            drops: "up",
           },
           function (start, end) {
             const startDate = start?.format("YYYY-MM-DD") || "";
@@ -1152,9 +1152,9 @@ document.addEventListener("DOMContentLoaded", () => {
     addStory();
 
     window.galleryFilesArray = [];
-    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
+    window.handleGalleryUpload = async function (input, idPrefix = "gallery") {
       const container = document.getElementById("galleryPreviewContainer");
-      
+
       if (input.files) {
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
@@ -1284,18 +1284,18 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("lead_linkedin", document.getElementById("leadLinkedin").value);
 
       window.galleryFilesArray.forEach((item, index) => {
-        if (item.type === 'video') {
-            // Send the temporary path created by chunk uploader
-            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
-            // Send original file name for extension mapping
-            formData.append(`gallery_videos_names[${index}]`, item.fileName);
-            // Send the canvas-extracted thumbnail
-            if (item.thumbBlob) {
-                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
-            }
+        if (item.type === "video") {
+          // Send the temporary path created by chunk uploader
+          formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+          // Send original file name for extension mapping
+          formData.append(`gallery_videos_names[${index}]`, item.fileName);
+          // Send the canvas-extracted thumbnail
+          if (item.thumbBlob) {
+            formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+          }
         } else {
-            // Send standard image file
-            formData.append(`gallery_files[${index}]`, item.file);
+          // Send standard image file
+          formData.append(`gallery_files[${index}]`, item.file);
         }
       });
 
@@ -1768,9 +1768,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Media Gallery Handling
     window.galleryFilesArray = [];
-    window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
+    window.handleGalleryUpload = async function (input, idPrefix = "gallery") {
       const container = document.getElementById("galleryPreviewContainer");
-      
+
       if (input.files) {
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
@@ -2412,7 +2412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $(customDateItem).daterangepicker(
           {
             opens: "left",
-            drops: "auto",
+            drops: "up",
           },
           function (start, end) {
             const startDate = start?.format("YYYY-MM-DD") || "";
@@ -2512,7 +2512,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.galleryFilesArray = [];
     window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
-      
+
       if (input.files) {
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
@@ -2851,7 +2851,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.galleryFilesArray = [];
     window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
-      
+
       if (input.files) {
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
@@ -3246,7 +3246,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
   // --- VIEW: PUBLICATIONS LOGIC ---
   // ==========================================
-  function initPublicationsScript() {
+  function initPublicationsScript_Old() {
     window.loadPublications = function () {
       const tbody = document.getElementById("publications-tbody");
       if (!tbody) return;
@@ -3293,6 +3293,272 @@ document.addEventListener("DOMContentLoaded", () => {
             '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load publications.</td></tr>';
         });
     };
+    loadPublications();
+  }
+
+  function initPublicationsScript() {
+    // State configuration
+    let state = {
+      search: "",
+      filter: "all", // Default selected status filter
+      dateRange: "all_time", // Default selected date range
+      startDate: "",
+      endDate: "",
+      page: 1,
+      limit: 10, // Default selected rows per page
+    };
+
+    let searchTimeout = null;
+
+    window.loadPublications = function () {
+      const tbody = document.getElementById("publications-tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading publications...</td></tr>';
+
+      const params = new URLSearchParams({
+        search: state.search,
+        filter: state.filter,
+        date_range: state.dateRange,
+        start_date: state.startDate,
+        end_date: state.endDate,
+        page: state.page,
+        limit: state.limit,
+      });
+
+      fetch(`actions/publications/fetch-publications.php?${params.toString()}`)
+        .then((res) => res.json())
+        .then((resData) => {
+          const pubs = resData.publications || [];
+          const pagination = resData.pagination || { total_records: 0, total_pages: 1, current_page: 1, limit: 10 };
+
+          tbody.innerHTML = "";
+
+          if (pubs.length === 0 || pubs[0]?.error) {
+            tbody.innerHTML =
+              '<tr><td colspan="5" class="text-center text-muted py-4">No publications found.</td></tr>';
+            renderPagination(pagination);
+            return;
+          }
+
+          pubs.forEach((item) => {
+            let statusLower = (item.status || "").toLowerCase();
+            let pillClass =
+              statusLower === "published"
+                ? "status-published"
+                : statusLower === "archived"
+                  ? "status-archived"
+                  : "status-draft";
+
+            const row = `
+            <tr>
+              <td class="fw-medium">${item.title}</td>
+              <td>${item.category || "Uncategorized"}</td>
+              <td><span class="status-pill ${pillClass}">${(item.status || "Draft").charAt(0).toUpperCase() + (item.status || "draft").slice(1)}</span></td>
+              <td>${item.uploaded_by_name || "System"}</td>
+              <td class="text-end">
+                <div class="hstack gap-1 justify-content-end">
+                  <button class="btn btn-sm btn-light text-primary border-0 shadow-sm" title="View"><i data-lucide="eye" style="width: 16px;"></i></button>
+                  <button class="btn btn-sm btn-light text-warning border-0 shadow-sm" title="Edit" onclick="loadView('edit-publication', 'Publications', { id: ${item.id} });"><i data-lucide="edit" style="width: 16px;"></i></button>
+                  <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Delete" onclick="openDeleteModal(${item.id}, '${(item.title || "").replace(/'/g, "\\'")}', 'publication', 'actions/publications/delete-publication.php', 'loadPublications')"><i data-lucide="trash-2" style="width: 16px;"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+
+          if (window.lucide) {
+            lucide.createIcons();
+          }
+
+          renderPagination(pagination);
+        })
+        .catch((err) => {
+          console.error("Publications Fetch Error:", err);
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load publications.</td></tr>';
+        });
+    };
+
+    // Render pagination buttons and entries counter
+    function renderPagination(pagination) {
+      const container = document.getElementById("publications-pagination");
+      const infoText = document.getElementById("publications-pagination-info-text");
+      if (!container) return;
+
+      const { total_records, total_pages, current_page, limit } = pagination;
+
+      // Update record summary
+      if (infoText) {
+        const start = total_records === 0 ? 0 : (current_page - 1) * limit + 1;
+        const end = Math.min(current_page * limit, total_records);
+        infoText.innerText = `Showing ${start}-${end} of ${total_records}`;
+      }
+
+      if (total_pages <= 1) {
+        container.innerHTML = "";
+        return;
+      }
+
+      let html = `<nav><ul class="pagination pagination-sm table-pagination gap-1 mb-0">`;
+
+      // First Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link" onclick="changePublicationPage(1)"><i data-lucide="chevrons-left" style="width: 16px;"></i>First</button>
+      </li>
+    `;
+
+      // Back Button
+      html += `
+      <li class="page-item ${current_page === 1 ? "disabled" : ""}">
+        <button class="page-link" onclick="changePublicationPage(${current_page - 1})"><i data-lucide="chevron-left" style="width: 16px;"></i>Back</button>
+      </li>
+    `;
+
+      // Page Number Buttons
+      for (let i = 1; i <= total_pages; i++) {
+        if (i === 1 || i === total_pages || (i >= current_page - 1 && i <= current_page + 1)) {
+          html += `
+          <li class="page-item ${i === current_page ? "active" : ""}">
+            <button class="page-link" onclick="changePublicationPage(${i})">${i}</button>
+          </li>
+        `;
+        } else if (i === current_page - 2 || i === current_page + 2) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+      }
+
+      // Next Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link" onclick="changePublicationPage(${current_page + 1})">Next<i data-lucide="chevron-right" style="width: 16px;"></i></button>
+      </li>
+    `;
+
+      // Last Button
+      html += `
+      <li class="page-item ${current_page === total_pages ? "disabled" : ""}">
+        <button class="page-link" onclick="changePublicationPage(${total_pages})">Last<i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+      </li>
+    `;
+
+      html += `</ul></nav>`;
+      container.innerHTML = html;
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    // Page switcher attached to global scope
+    window.changePublicationPage = function (pageNumber) {
+      state.page = pageNumber;
+      loadPublications();
+    };
+
+    // Event Listener Bindings
+    const searchInput = document.getElementById("publication-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          state.search = e.target.value.trim();
+          state.page = 1;
+          loadPublications();
+        }, 300);
+      });
+    }
+
+    const filterPills = document.querySelectorAll("#publication-status-pills .filter-pill");
+    filterPills.forEach((pill) => {
+      pill.addEventListener("click", function () {
+        filterPills.forEach((p) => {
+          p.classList.remove("active");
+          const icon = p.querySelector("[data-lucide]");
+          if (icon) icon.classList.add("d-none");
+        });
+        this.classList.add("active");
+        const icon = this.querySelector("[data-lucide]");
+        if (icon) icon.classList.remove("d-none");
+
+        state.filter = this.getAttribute("data-filter");
+        state.page = 1;
+        loadPublications();
+      });
+    });
+
+    const dateOptions = document.querySelectorAll("#pub-date-filter-options .dropdown-item");
+    const dateLabel = document.getElementById("pub-date-filter-label");
+    const customDateItem = document.getElementById("pubCustomDateItem");
+
+    dateOptions.forEach((option) => {
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const selectedRange = this.getAttribute("data-range");
+        if (!selectedRange) return;
+
+        if (typeof resetDateRangePicker === "function") {
+          resetDateRangePicker(customDateItem);
+        }
+
+        if (selectedRange === "custom") {
+          e.stopPropagation();
+        } else {
+          dateOptions.forEach((opt) => opt.classList.remove("active"));
+          this.classList.add("active");
+
+          if (dateLabel) dateLabel.innerText = this.innerText;
+
+          state.dateRange = selectedRange;
+          state.startDate = "";
+          state.endDate = "";
+          state.page = 1;
+          loadPublications();
+        }
+      });
+    });
+
+    // Date range picker initialization
+    if (typeof $ !== "undefined" && customDateItem) {
+      $(function () {
+        $(customDateItem).daterangepicker(
+          {
+            opens: "left",
+            drops: "up",
+          },
+          function (start, end) {
+            const startDate = start?.format("YYYY-MM-DD") || "";
+            const endDate = end?.format("YYYY-MM-DD") || "";
+            if (dateLabel) dateLabel.textContent = `${startDate} - ${endDate}`;
+
+            state.startDate = startDate;
+            state.endDate = endDate;
+            state.dateRange = "custom";
+            state.page = 1;
+            loadPublications();
+          },
+        );
+        $(customDateItem).on("show.daterangepicker", function (ev, picker) {
+          picker.container.find(".drp-calendar").on("click", function (e) {
+            e.stopPropagation();
+          });
+        });
+      });
+    }
+
+    const rowsSelect = document.getElementById("publications-rows-per-page");
+    if (rowsSelect) {
+      rowsSelect.addEventListener("change", function () {
+        state.limit = parseInt(this.value, 10);
+        state.page = 1;
+        loadPublications();
+      });
+    }
+
+    // Execute initial load
     loadPublications();
   }
 
@@ -3460,12 +3726,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("createPublicationForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const activeBtn = e.submitter;
+      const draftBtn = document.getElementById("draftBtn");
+      const publishBtn = document.getElementById("publishBtn");
       const status = activeBtn && activeBtn.id === "draftBtn" ? "draft" : "published";
 
       const originalBtnText = activeBtn.innerHTML;
       activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
-      document.getElementById("draftBtn").disabled = true;
-      document.getElementById("publishBtn").disabled = true;
+      draftBtn.disabled = true;
+      publishBtn.disabled = true;
 
       const formData = new FormData();
       formData.append("title", document.getElementById("pubTitle").value);
@@ -3510,9 +3778,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(err);
         showAlert("error", "A network error occurred. Check the server response.");
       } finally {
-        document.getElementById("draftBtn").disabled = false;
-        document.getElementById("publishBtn").disabled = false;
-        activeBtn.innerHTML = originalBtnText;
+        if(draftBtn) draftBtn.disabled = false;
+        if(publishBtn) publishBtn.disabled = false;
+        if(activeBtn) activeBtn.innerHTML = originalBtnText;
       }
     });
   }
@@ -3897,9 +4165,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(err);
         showAlert("error", "A network error occurred. Check the server response.");
       } finally {
-        secondaryBtn.disabled = false;
-        saveBtn.disabled = false;
-        activeBtn.innerHTML = originalBtnText;
+        if(secondaryBtn) secondaryBtn.disabled = false;
+        if(saveBtn) saveBtn.disabled = false;
+        if(activeBtn) activeBtn.innerHTML = originalBtnText;
       }
     });
   }

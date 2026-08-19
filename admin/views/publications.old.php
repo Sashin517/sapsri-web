@@ -9,7 +9,6 @@
   </button>
 </div>
 
-<!-- Main Container -->
 <div class="px-4 pb-4">
   <div class="content-card card-edge-table h-100 mb-0">
     <div class="projects-filter-bar d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -20,11 +19,11 @@
         <!-- Search -->
         <div class="search-bar" style="width: 280px;">
           <i data-lucide="search"></i>
-          <input type="text" id="publication-search-input" class="search-input" placeholder="Search Title or Category...">
+          <input type="text" id="post-search-input" class="search-input" placeholder="Search Title or Category...">
         </div>
 
         <!-- Status Filter Pills -->
-        <div class="d-flex gap-2" id="publication-status-pills">
+        <div class="d-flex gap-2" id="post-status-pills">
           <button class="filter-pill active" data-filter="all">
             <i data-lucide="check" style="width: 16px;"></i> All
           </button>
@@ -41,11 +40,11 @@
 
         <!-- Date Filter Dropdown -->
         <div class="dropdown date-filter-dropdown position-relative">
-          <button class="btn btn-light border d-flex align-items-center gap-2 rounded-3 fw-medium bg-white" type="button" id="pubDateFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
-            <span id="pub-date-filter-label">All Time</span>
+          <button class="btn btn-light border d-flex align-items-center gap-2 rounded-3 fw-medium bg-white" type="button" id="dateFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+            <span id="date-filter-label">All Time</span>
             <i data-lucide="chevron-down" style="width: 16px;"></i>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="pubDateFilterDropdown" id="pub-date-filter-options">
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="dateFilterDropdown" id="date-filter-options">
             <li><a class="dropdown-item" href="#" data-range="today">Today</a></li>
             <li><a class="dropdown-item" href="#" data-range="yesterday">Yesterday</a></li>
             <li><a class="dropdown-item" href="#" data-range="last_week">Last Week</a></li>
@@ -56,7 +55,7 @@
               <hr class="dropdown-divider">
             </li>
             <li>
-              <div id="pubCustomDateItem" class="dropdown-item d-flex justify-content-between align-items-center" data-range="custom">
+              <div id="customDateItem" class="dropdown-item d-flex justify-content-between align-items-center" data-range="custom">
                 <span>Custom</span>
                 <i data-lucide="chevron-right" style="width: 16px;"></i>
               </div>
@@ -66,7 +65,6 @@
       </div>
     </div>
 
-    <!-- Table -->
     <div class="table-responsive mb-0">
       <table class="table table-borderless align-middle mb-0">
         <thead>
@@ -85,22 +83,8 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Pagination Footer -->
-    <div class="p-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-muted fs-7">Rows:</span>
-        <select id="publications-rows-per-page" class="form-select form-select-sm rows-select">
-          <option value="10" selected>10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-        <span class="text-muted fs-7 ms-2" id="publications-pagination-info-text">Showing 0-0 of 0</span>
-      </div>
-
-      <div id="publications-pagination">
-        <!-- Dynamic pagination controls -->
-      </div>
+    <div class="p-4 border-top">
+      <div id="publications-pagination"></div>
     </div>
   </div>
 </div>
