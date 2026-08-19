@@ -91,49 +91,62 @@
     <?php include "../includes/footer.php"; ?>
 
     <!-- Modal -->
-    <div class="modal fade pdf-viewer-modal" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel"
-        aria-hidden="true">
-
+    <div class="modal fade pdf-viewer-modal" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel" aria-hidden="true">
+        
+        <!-- UPGRADED: Kept the modal-fullscreen class for maximum reading space -->
         <div class="modal-dialog modal-fullscreen">
-
+            
+            <!-- ORIGINAL THEME: Retained your light-pink background -->
             <div class="modal-content bg-light-pink">
-
+                
                 <div class="modal-header">
                     <h5 class="text-truncate">
                         <i class='fa-solid fa-file-lines'></i><span class="modal-title">Document Title</span>
                     </h5>
 
+                    <!-- ORIGINAL THEME: Retained your custom close-btn class -->
                     <button type="button" class="btn close-btn" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div class="modal-body bg-dark d-flex justify-content-center align-items-center">
-                    <div>
-                        <canvas id="pageCanvas"></canvas>
+                <!-- NEW CAPABILITY: Figma-style Drag Container -->
+                <div class="modal-body p-0 drag-container position-relative" id="pdfDragContainer">
+                    <div class="pdf-canvas-wrapper d-flex justify-content-center align-items-center gap-3 w-100 h-100" id="pdfCanvasWrapper">
+                        <!-- Left Canvas (Even Pages) -->
+                        <canvas id="pageCanvasLeft" class="shadow-sm"></canvas>
+                        <!-- Right Canvas (Odd Pages / Cover) -->
+                        <canvas id="pageCanvasRight" class="shadow-sm"></canvas>
                     </div>
                 </div>
 
+                <!-- ORIGINAL THEME: Retained your original footer styling and alignment -->
                 <div class="modal-footer justify-content-center justify-content-lg-between">
+                    
+                    <!-- Zoom Controls -->
+                    <div class="hstack gap-2">
+                        <button class="btn btn-warning" id="pdfZoomOutBtn"><i class="fa-solid fa-minus"></i></button>
+                        <span class="fw-bold" id="pdfZoomLevel" style="width: 50px; text-align: center;">100%</span>
+                        <button class="btn btn-warning" id="pdfZoomInBtn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
 
+                    <!-- Pagination Controls -->
                     <div class="hstack gap-2">
                         <button class="btn btn-warning" id="pdfPrevPageBtn">
                             <i class="fa-solid fa-angle-left"></i>
                         </button>
-
                         <span>Page: <span id="pdfPageNum"></span> / <span id="pdfPageCount"></span></span>
-
                         <button class="btn btn-warning" id="pdfNextPageBtn">
                             <i class="fa-solid fa-angle-right"></i>
                         </button>
                     </div>
 
+                    <!-- Download Button -->
                     <a href="#" class="btn btn-pill btn-primary" id="publicationModalSaveBtn" download>
                         Download <i class="fa-solid fa-download"></i>
                     </a>
 
                 </div>
-
             </div>
         </div>
     </div>
