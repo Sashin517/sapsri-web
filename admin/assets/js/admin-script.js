@@ -3459,10 +3459,6 @@ document.addEventListener("DOMContentLoaded", () => {
       limit: 10, // Default selected rows per page
     };
 
-    const viewModalEl = document.getElementById("viewModalEl");
-    if(viewModal) 
-
-
     let searchTimeout = null;
 
     window.loadPublications = function () {
