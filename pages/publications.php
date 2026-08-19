@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="./assets/css/style.css">
     <!-- font awesome v7 -->
     <script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous"></script>
+    <!-- pdfjs-viewer-element -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 </head>
 
 <body>
@@ -91,7 +94,7 @@
     <div class="modal fade pdf-viewer-modal" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel"
         aria-hidden="true">
 
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-fullscreen">
 
             <div class="modal-content bg-light-pink">
 
@@ -105,7 +108,7 @@
                     </button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body bg-dark d-flex justify-content-center align-items-center">
                     <div>
                         <canvas id="pageCanvas"></canvas>
                     </div>
@@ -234,7 +237,10 @@
                             </div>
                             <div class="card-footer hstack justify-content-between align-items-end mt-auto">
                                 <time>${displayDate}</time>
-                                <a href="${fileUrl}" class="wh-0 stretched-link" target="_blank"></a>
+                                
+                                <!-- SIMPLIFIED LINK HERE -->
+                                <a href="#" class="wh-0 stretched-link"></a>
+                                
                                 <a href="${fileUrl}" class="btn btn-download z-3" download="${pub.title}.pdf">
                                     <i class="fa-solid fa-download"></i>
                                 </a>
@@ -377,5 +383,6 @@
         fetchPublications();
     });
     </script>
+    <script type="module" src="./assets/js/pdf.viewer.js"></script>
 </body>
 </html>
