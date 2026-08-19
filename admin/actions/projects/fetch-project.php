@@ -84,8 +84,8 @@ try {
             $project_metrics[] = [
                 'id' => intval($row['id']),
                 'section_number' => $row['section_number'] ?? '',
-                'section_image' => "/project-sedna/" . $row['section_image'] ?? '',
-                'icon_image' => "/project-sedna/" . $row['icon_image'] ?? '',
+                'section_image' => $row['section_image'] ? "/project-sedna/" . $row['section_image'] : '',
+                'icon_image' => $row['icon_image'] ? "/project-sedna/" . $row['icon_image'] : '',
                 'metric_value' => $row['metric_value'] ?? '',
                 'metric_label' => $row['metric_label'] ?? ''
             ];
@@ -106,7 +106,7 @@ try {
             $project_success_stories[] = [
                 'id' => intval($row['id']),
                 'subject_name' => $row['subject_name'] ?? '',
-                'subject_image' => "/project-sedna/" . $row['subject_image'] ?? '',
+                'subject_image' => $row['subject_image'] ? "/project-sedna/" . $row['subject_image'] : '',
                 'subject_description' => $row['subject_description'] ?? ''
             ];
         }
@@ -127,7 +127,7 @@ try {
                 'id' => intval($row['id']),
                 'name' => $row['name'] ?? '',
                 'role_designation' => $row['role_designation'] ?? '',
-                'profile_photo' => "/project-sedna/" . $row['profile_photo'] ?? '',
+                'profile_photo' => $row['profile_photo'] ? "/project-sedna/" . $row['profile_photo'] : '',
                 'linkedin_profile' => $row['linkedin_profile'] ?? ''
             ];
         }
@@ -148,8 +148,8 @@ try {
             $project_media[] = [
                 'id' => intval($row['id']),
                 'media_type' => $row['media_type'] ?? 'image',
-                'media_url' => "/project-sedna/" . $row['media_url'] ?? '',
-                'thumbnail_url' => $row['thumbnail_url'] ?? '',
+                'media_url' => $row['media_url'] ? "/project-sedna/" . $row['media_url'] : '',
+                'thumbnail_url' => $row['thumbnail_url'] ? "/project-sedna/" . $row['thumbnail_url'] : '',
                 'created_at' => $row['created_at'] ?? ''
             ];
         }
@@ -160,7 +160,7 @@ try {
         'project' => [
             'id' => intval($project_row['id']),
             'title' => $project_row['title'] ?? '',
-            'cover_image' => "/project-sedna/" . $project_row['cover_image'] ?? '',
+            'cover_image' => $project_row['cover_image'] ? "/project-sedna/" . $project_row['cover_image'] : '',
             'full_description' => $project_row['full_description'] ?? '',
             'status' => $project_row['status'] ?? '',
             'project_phase' => $project_row['project_phase'] ?? '',

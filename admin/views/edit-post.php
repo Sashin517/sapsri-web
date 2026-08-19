@@ -133,7 +133,7 @@
     <!-- Media Gallery -->
     <h4 class="fw-bold mb-3 fs-5 mt-5">Media Gallery</h4>
     <div class="section-card">
-      <<div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
+      <div class="upload-area mb-3" onclick="document.getElementById('galleryInput').click()">
         <div class="upload-content" id="galleryContent">
           <i data-lucide="upload" class="upload-icon"></i>
           <p class="mb-0 text-muted">Click to upload or drag and drop images/videos</p>
