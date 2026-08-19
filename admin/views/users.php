@@ -131,7 +131,7 @@
   </div>
 </div>
 
-<!-- Custom CSS for the Role Modal (Can be moved to your main stylesheet later) -->
+<!-- Custom CSS for the Role Modal -->
 <style>
     .sapsri-checkbox:checked {
         background-color: var(--sapsri-red, #A20A35) !important;
@@ -157,7 +157,7 @@
         text-align: left;
     }
     .modal-xl-custom {
-        max-width: 800px;
+        max-width: 900px; /* Increased to fit the new Archive column */
     }
 </style>
 
@@ -188,16 +188,17 @@
 
             <div class="mb-2">
                 <label class="form-label fw-medium text-dark mb-3">Permission Matrix</label>
-                <div class="border permission-matrix-table">
-                    <table class="table mb-0">
+                <div class="border permission-matrix-table table-responsive">
+                    <table class="table mb-0 text-nowrap">
                         <thead>
                             <tr>
                                 <th>Module</th>
                                 <th>View</th>
-                                <th>Create</th>
+                                <th>Create / Accept</th>
                                 <th>Edit</th>
-                                <th>Delete/Suspend</th>
+                                <th>Delete / Suspend</th>
                                 <th>Publish</th>
+                                <th>Archive</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -206,14 +207,21 @@
                             $modules = ['Dashboard', 'Projects', 'Posts', 'Publications', 'Users'];
                             foreach($modules as $module): 
                                 $mod_key = strtolower($module);
+                                
+                                // Logic mapping directly to image_2a516b.png crossed-out items
+                                $disable_edit = ($module === 'Dashboard') ? 'disabled' : '';
+                                $disable_delete = ($module === 'Dashboard') ? 'disabled' : '';
+                                $disable_publish = ($module === 'Dashboard' || $module === 'Users') ? 'disabled' : '';
+                                $disable_archive = ($module === 'Dashboard' || $module === 'Users') ? 'disabled' : '';
                             ?>
                             <tr>
                                 <td class="fw-medium text-secondary"><?= $module ?></td>
                                 <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][view]" value="1"></td>
                                 <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][create]" value="1"></td>
-                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][edit]" value="1"></td>
-                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][delete]" value="1"></td>
-                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][publish]" value="1"></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][edit]" value="1" <?= $disable_edit ?>></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][delete]" value="1" <?= $disable_delete ?>></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][publish]" value="1" <?= $disable_publish ?>></td>
+                                <td class="text-center"><input class="form-check-input sapsri-checkbox fs-5 shadow-sm" type="checkbox" name="permissions[<?= $mod_key ?>][archive]" value="1" <?= $disable_archive ?>></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
