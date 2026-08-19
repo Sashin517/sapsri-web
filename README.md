@@ -31,12 +31,12 @@ The official website for **[SAPSRI]**, built to showcase the organization's miss
 ### 🌐 User Side Implementation
 *   🔴 **SEO optimization by keywords (All Pages):** ❌ Not Started *(Medium Complexity)*
 *   🔴 **Impact Areas related projects retrieve from DB:** ❌ Not Started *(Medium Complexity)*
-*   🟠 **Publications PDF viewer implementation:** ❌ Not Started *(Low/Medium Complexity)*
+*   🟠 **Publications PDF viewer implementation:** ❌ ✅ Implemented *(Low/Medium Complexity)*
 *   🟡 **Home Latest News Card centering issue (when few exist):** ❌ Not Started *(Low Complexity)*
 *   🟡 **Footer social media icons spacing issue (except home page):** ❌ Not Started *(Low Complexity)*
 
 ### 📝 Content Update
-*   🔴 **Real content update for projects and publications:** ❌ Not Started *(Low Complexity)*
+*   🔴 **Real content update for projects and publications:** ❌ ⏳ Ongoing *(Low Complexity)*
 
 ---
 
