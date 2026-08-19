@@ -461,20 +461,22 @@ try {
         $stmt->close();
     }
 
-    // -------------------------------------------------------------
+// -------------------------------------------------------------
     // 7. MEDIA GALLERY (DELETIONS & NEW UPLOADS)
     // -------------------------------------------------------------
     if (!empty($removedItems['removedMediaIds'])) {
         foreach ($removedItems['removedMediaIds'] as $m_id) {
             $m_id_int = intval($m_id);
             if ($m_id_int > 0) {
-                $stmt = $conn->prepare("SELECT media_url FROM project_media WHERE id = ? AND project_id = ?");
+                // Select both media and thumbnail to delete physical files
+                $stmt = $conn->prepare("SELECT media_url, thumbnail_url FROM project_media WHERE id = ? AND project_id = ?");
                 $stmt->bind_param("ii", $m_id_int, $project_id);
                 $stmt->execute();
                 $media_res = $stmt->get_result()->fetch_assoc();
                 $stmt->close();
 
                 deletePhysicalFile($media_res['media_url'] ?? null);
+                deletePhysicalFile($media_res['thumbnail_url'] ?? null);
 
                 $stmt = $conn->prepare("DELETE FROM project_media WHERE id = ? AND project_id = ?");
                 $stmt->bind_param("ii", $m_id_int, $project_id);
@@ -484,6 +486,7 @@ try {
         }
     }
 
+    // --- A. HANDLE STANDARD IMAGES ---
     if (isset($_FILES['gallery_files'])) {
         $total = count($_FILES['gallery_files']['name']);
         for ($i = 0; $i < $total; $i++) {
@@ -496,18 +499,45 @@ try {
             ];
             
             if ($file['error'] === UPLOAD_ERR_OK) {
-                $is_video = strpos($file['type'], 'video/') === 0;
-                $target = $is_video ? $vid_dir : $img_dir;
-                $type_enum = $is_video ? 'video' : 'image';
-                
-                $media_path = uploadFile($file, $target, "gal_");
+                $media_path = uploadFile($file, $img_dir, "gal_");
                 
                 if ($media_path) {
-                    $stmt = $conn->prepare("INSERT INTO project_media (project_id, media_type, media_url) VALUES (?, ?, ?)");
-                    $stmt->bind_param("iss", $project_id, $type_enum, $media_path);
+                    $stmt = $conn->prepare("INSERT INTO project_media (project_id, media_type, media_url, thumbnail_url) VALUES (?, 'image', ?, NULL)");
+                    $stmt->bind_param("is", $project_id, $media_path);
                     $stmt->execute();
                     $stmt->close();
                 }
+            }
+        }
+    }
+
+    // --- B. HANDLE CHUNKED VIDEOS & THUMBNAILS ---
+    if (isset($_POST['gallery_videos_temp'])) {
+        foreach ($_POST['gallery_videos_temp'] as $index => $tempPath) {
+            if (empty($tempPath)) continue;
+
+            $actualTempPath = '../../../' . ltrim($tempPath, '/'); 
+            $originalName = $_POST['gallery_videos_names'][$index] ?? 'video.mp4';
+            $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+            $uniqueVideoName = 'gal_vid_' . uniqid() . '.' . $ext;
+            $finalVideoPath = $vid_dir . $uniqueVideoName;
+
+            if (file_exists($actualTempPath) && rename($actualTempPath, $finalVideoPath)) {
+                $mediaUrlForDb = str_replace('../../../', '', $finalVideoPath);
+                $thumbUrlForDb = NULL;
+
+                if (isset($_FILES['gallery_thumbnails']['tmp_name'][$index]) && !empty($_FILES['gallery_thumbnails']['tmp_name'][$index])) {
+                    $thumbUniqueName = 'thumb_' . uniqid() . '.jpg';
+                    $thumbDestPath = $img_dir . $thumbUniqueName;
+                    if (move_uploaded_file($_FILES['gallery_thumbnails']['tmp_name'][$index], $thumbDestPath)) {
+                        $thumbUrlForDb = str_replace('../../../', '', $thumbDestPath);
+                    }
+                }
+
+                $stmt = $conn->prepare("INSERT INTO project_media (project_id, media_type, media_url, thumbnail_url) VALUES (?, 'video', ?, ?)");
+                $stmt->bind_param("iss", $project_id, $mediaUrlForDb, $thumbUrlForDb);
+                $stmt->execute();
+                $stmt->close();
             }
         }
     }

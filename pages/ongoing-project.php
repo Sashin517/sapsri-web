@@ -65,6 +65,9 @@
             opacity: 1 !important;
         }
     </style>
+    <!-- GLightbox CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 </head>
 
 <body>
@@ -167,19 +170,6 @@
     <!-- footer -->
     <?php include "../includes/footer.php"; ?>
 
-    <!-- Image Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content bg-transparent border-0">
-                <div class="modal-body p-0 text-center">
-                    <div class="position-relative d-inline-block">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        <img src="" class="img-fluid rounded" id="modalImage" alt="Full-screen image">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="./assets/js/translation.js"></script>
     <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
@@ -381,16 +371,24 @@
                         const thumbUrl = resolvePath(media.thumbnail_url || media.url);
                         const targetUrl = resolvePath(media.url);
                         
-                        const overlayHtml = isVideo ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="bi bi-play-fill"></i></div>` : '';
+                        const overlayHtml = isVideo ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; z-index: 5;"><i class="bi bi-play-fill"></i></div>` : '';
 
                         galleryContainer.insertAdjacentHTML('beforeend', `
                             <div class="col-md-4 rel-img">
-                                <a href="#" class="d-block position-relative h-100 w-100" onclick="openModal('${targetUrl}', ${isVideo}); return false;">
-                                    <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item">
+                                <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="project-gallery">
+                                    <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item" style="opacity: ${isVideo ? '0.85' : '1'};">
                                     ${overlayHtml}
                                 </a>
                             </div>
                         `);
+                    });
+
+                    // Initialize GLightbox
+                    GLightbox({
+                        selector: '.glightbox',
+                        touchNavigation: true,
+                        loop: true,
+                        autoplayVideos: true
                     });
                 }
 
@@ -403,33 +401,6 @@
                 document.getElementById('loading-container').innerHTML = `<h2 class="text-danger">Failed to load project data.</h2><p class="text-muted">${error.message}</p><a href="ongoing-projects" class="btn btn-dark mt-3">Go Back</a>`;
             }
         });
-
-        // Simple modal opener
-        function openModal(url, isVideo) {
-            const modalBody = document.querySelector('#imageModal .modal-body .position-relative');
-            
-            // Clear existing content except the close button
-            Array.from(modalBody.children).forEach(child => {
-                if (!child.classList.contains('btn-close')) {
-                    child.remove();
-                }
-            });
-
-            if (isVideo) {
-                modalBody.insertAdjacentHTML('beforeend', `
-                    <video controls autoplay class="w-100 rounded shadow-lg" style="max-height: 85vh;">
-                        <source src="${url}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                `);
-            } else {
-                modalBody.insertAdjacentHTML('beforeend', `
-                    <img src="${url}" class="img-fluid rounded shadow-lg" style="max-height: 85vh; object-fit: contain;">
-                `);
-            }
-            
-            new bootstrap.Modal(document.getElementById('imageModal')).show();
-        }
 
         // Stop video playing when modal is closed
         document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {

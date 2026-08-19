@@ -78,6 +78,9 @@
             color: #fff;
         }
     </style>
+    <!-- GLightbox CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 </head>
 
 <body>
@@ -135,24 +138,6 @@
     <!-- footer -->
     <?php include "../includes/footer.php"; ?>
     
-    <!-- relavant image full screen show -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content bg-transparent border-0">
-
-                <div class="modal-body p-0 text-center">
-
-                    <div class="position-relative d-inline-block">
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                        <img src="" class="img-fluid" id="modalImage" alt="Full-screen image">
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
     <script>
         // This JavaScript waits for the entire page (including images and other resources) to load.
         window.onload = async function() {
@@ -234,9 +219,9 @@
                 const sectionTitle = document.querySelector(".relevant-photos h3");
                 let currentIndex = 0;
                 const imagesPerLoad = 3;
-                
-                // 1. Filter gallery images using the exact DB enum "image"
-                const galleryImages = post.post_media ? post.post_media.filter(m => m.type === "image") : [];
+
+                // 1. Include ALL gallery media (images and videos)
+                const galleryMedia = post.post_media ? post.post_media.filter(m => m.type === "image" || m.type === "video") : [];
                 
                 // 2. Map the Cover Image directly from the JSON structure
                 let imgUrl = './assets/media/img/thumbnails/default.webp';
@@ -264,7 +249,7 @@
                 document.querySelector('.post-content .row .col-lg-8').innerHTML = post.content;
                 
                 // If NO images — hide everything
-                if (galleryImages.length === 0) {
+                if (galleryMedia.length === 0) {
                     sectionTitle.style.display = "none";
                     showMoreBtn.style.display = "none";
                     revImages.innerHTML = "";
@@ -272,22 +257,40 @@
                     return;
                 }
                 
-                // Render next set of images (3 at a time)
+                // Render next set of media (3 at a time)
                 function loadImages() {
-                    const nextImages = galleryImages.slice(currentIndex, currentIndex + imagesPerLoad);
-                    nextImages.forEach(img => {
+                    const nextMedia = galleryMedia.slice(currentIndex, currentIndex + imagesPerLoad);
+                    nextMedia.forEach(media => {
+                        const isVideo = media.type === 'video';
+                        // Handle DB paths
+                        let thumbUrl = media.thumbnail_url ? media.thumbnail_url : media.url;
+                        if (!thumbUrl.startsWith('.')) thumbUrl = './' + thumbUrl; // Ensure path correctness
+                        let targetUrl = media.url;
+                        if (!targetUrl.startsWith('.')) targetUrl = './' + targetUrl;
+                        
+                        const overlayHtml = isVideo ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; z-index: 5;"><i class="bi bi-play-fill"></i></div>` : '';
+
                         const html = `
                             <div class="col-md-4 rel-img">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                    <img src="${img.url}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100">
+                                <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="post-gallery">
+                                    <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" style="opacity: ${isVideo ? '0.85' : '1'};">
+                                    ${overlayHtml}
                                 </a>
                             </div>
                         `;
                         revImages.insertAdjacentHTML("beforeend", html);
                     });
                     currentIndex += imagesPerLoad;
-                    // If all images loaded → hide button
-                    if (currentIndex >= galleryImages.length) {
+                    
+                    // Re-initialize GLightbox for newly added elements
+                    if (window.glightboxInstance) {
+                        window.glightboxInstance.reload();
+                    } else {
+                        window.glightboxInstance = GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true, autoplayVideos: true });
+                    }
+
+                    // If all media loaded → hide button
+                    if (currentIndex >= galleryMedia.length) {
                         showMoreBtn.style.display = "none";
                     }
                 }

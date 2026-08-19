@@ -1156,15 +1156,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("galleryPreviewContainer");
       
       if (input.files) {
-        // Use a for...of loop to await uploads sequentially
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn
-              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
-              : "";
+            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -1181,30 +1178,29 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           if (isVideo) {
-            // 1. Upload chunk immediately for video, wait for it to finish
+            // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
             
-            // 2. Extract frame for thumbnail
-            const video = document.createElement("video");
-            video.preload = "metadata";
-            video.src = URL.createObjectURL(file);
-            video.onloadeddata = () => {
-              video.currentTime = 1; // 1 second in
-            };
-            video.onseeked = () => {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth || 640;
-              canvas.height = video.videoHeight || 360;
-              canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              
-              canvas.toBlob((blob) => {
-                // Store tempPath instead of raw file
-                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
-                injectHTML(URL.createObjectURL(blob), true);
-              }, "image/jpeg", 0.85);
-            };
+            // AWAIT the canvas extraction to guarantee the thumbnail exists
+            const thumbBlob = await new Promise((resolve) => {
+              const video = document.createElement("video");
+              video.preload = "metadata";
+              video.src = URL.createObjectURL(file);
+              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 360;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+              };
+              video.onerror = () => resolve(null); // Failsafe
+            });
+
+            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
+            
           } else {
-            // It's an image, push the file directly to upload on submit
             window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
@@ -1213,14 +1209,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // Reset Upload UI
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => {
-             contentDiv.style.display = "block";
-             progressDiv.style.display = "none";
-         }, 1000);
+         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
       }
       input.value = "";
     };
@@ -1780,15 +1772,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("galleryPreviewContainer");
       
       if (input.files) {
-        // Use a for...of loop to await uploads sequentially
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn
-              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
-              : "";
+            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -1805,30 +1794,29 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           if (isVideo) {
-            // 1. Upload chunk immediately for video, wait for it to finish
+            // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
             
-            // 2. Extract frame for thumbnail
-            const video = document.createElement("video");
-            video.preload = "metadata";
-            video.src = URL.createObjectURL(file);
-            video.onloadeddata = () => {
-              video.currentTime = 1; // 1 second in
-            };
-            video.onseeked = () => {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth || 640;
-              canvas.height = video.videoHeight || 360;
-              canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              
-              canvas.toBlob((blob) => {
-                // Store tempPath instead of raw file
-                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
-                injectHTML(URL.createObjectURL(blob), true);
-              }, "image/jpeg", 0.85);
-            };
+            // AWAIT the canvas extraction to guarantee the thumbnail exists
+            const thumbBlob = await new Promise((resolve) => {
+              const video = document.createElement("video");
+              video.preload = "metadata";
+              video.src = URL.createObjectURL(file);
+              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 360;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+              };
+              video.onerror = () => resolve(null); // Failsafe
+            });
+
+            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
+            
           } else {
-            // It's an image, push the file directly to upload on submit
             window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
@@ -1837,14 +1825,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // Reset Upload UI
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => {
-             contentDiv.style.display = "block";
-             progressDiv.style.display = "none";
-         }, 1000);
+         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
       }
       input.value = "";
     };
@@ -2094,8 +2078,16 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("lead_linkedin", document.getElementById("leadLinkedin").value);
 
       // Newly added Gallery Files
-      window.galleryFilesArray.forEach((item) => {
-        formData.append(`gallery_files[]`, item.file);
+      window.galleryFilesArray.forEach((item, index) => {
+        if (item.type === 'video') {
+            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+            formData.append(`gallery_videos_names[${index}]`, item.fileName);
+            if (item.thumbBlob) {
+                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+            }
+        } else {
+            formData.append(`gallery_files[${index}]`, item.file);
+        }
       });
 
       try {
@@ -2517,19 +2509,17 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(idPrefix + "Content").style.display = "block";
     };
 
+    window.galleryFilesArray = [];
     window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
       
       if (input.files) {
-        // Use a for...of loop to await uploads sequentially
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn
-              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
-              : "";
+            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -2546,30 +2536,29 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           if (isVideo) {
-            // 1. Upload chunk immediately for video, wait for it to finish
+            // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
             
-            // 2. Extract frame for thumbnail
-            const video = document.createElement("video");
-            video.preload = "metadata";
-            video.src = URL.createObjectURL(file);
-            video.onloadeddata = () => {
-              video.currentTime = 1; // 1 second in
-            };
-            video.onseeked = () => {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth || 640;
-              canvas.height = video.videoHeight || 360;
-              canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              
-              canvas.toBlob((blob) => {
-                // Store tempPath instead of raw file
-                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
-                injectHTML(URL.createObjectURL(blob), true);
-              }, "image/jpeg", 0.85);
-            };
+            // AWAIT the canvas extraction to guarantee the thumbnail exists
+            const thumbBlob = await new Promise((resolve) => {
+              const video = document.createElement("video");
+              video.preload = "metadata";
+              video.src = URL.createObjectURL(file);
+              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 360;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+              };
+              video.onerror = () => resolve(null); // Failsafe
+            });
+
+            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
+            
           } else {
-            // It's an image, push the file directly to upload on submit
             window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
@@ -2578,14 +2567,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // Reset Upload UI
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => {
-             contentDiv.style.display = "block";
-             progressDiv.style.display = "none";
-         }, 1000);
+         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
       }
       input.value = "";
     };
@@ -2748,8 +2733,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const coverInput = document.getElementById("coverInput");
       if (coverInput.files[0]) formData.append("cover_image", coverInput.files[0]);
 
-      window.galleryFilesArray.forEach((item) => {
-        formData.append(`gallery_files[]`, item.file);
+      window.galleryFilesArray.forEach((item, index) => {
+        if (item.type === 'video') {
+            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+            formData.append(`gallery_videos_names[${index}]`, item.fileName);
+            if (item.thumbBlob) {
+                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+            }
+        } else {
+            formData.append(`gallery_files[${index}]`, item.file);
+        }
       });
 
       try {
@@ -2855,19 +2848,17 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(idPrefix + "Content").style.display = "block";
     };
 
+    window.galleryFilesArray = [];
     window.handleGalleryUpload = async function (input, idPrefix = 'gallery') {
       const container = document.getElementById("galleryPreviewContainer");
       
       if (input.files) {
-        // Use a for...of loop to await uploads sequentially
         for (const file of Array.from(input.files)) {
           const uniqueId = "gal_" + Math.random().toString(36).substr(2, 9);
           const isVideo = file.type.startsWith("video/");
 
           const injectHTML = (src, showPlayBtn) => {
-            const playBtnHTML = showPlayBtn
-              ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>`
-              : "";
+            const playBtnHTML = showPlayBtn ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : "";
             const colHTML = `
                 <div class="col-xl-3 col-lg-4 col-md-6" id="${uniqueId}">
                   <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
@@ -2884,30 +2875,29 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           if (isVideo) {
-            // 1. Upload chunk immediately for video, wait for it to finish
+            // Upload chunk immediately
             const tempPath = await uploadFileInChunks(file, idPrefix, uniqueId);
             
-            // 2. Extract frame for thumbnail
-            const video = document.createElement("video");
-            video.preload = "metadata";
-            video.src = URL.createObjectURL(file);
-            video.onloadeddata = () => {
-              video.currentTime = 1; // 1 second in
-            };
-            video.onseeked = () => {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth || 640;
-              canvas.height = video.videoHeight || 360;
-              canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-              
-              canvas.toBlob((blob) => {
-                // Store tempPath instead of raw file
-                window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: blob, type: 'video', fileName: file.name });
-                injectHTML(URL.createObjectURL(blob), true);
-              }, "image/jpeg", 0.85);
-            };
+            // AWAIT the canvas extraction to guarantee the thumbnail exists
+            const thumbBlob = await new Promise((resolve) => {
+              const video = document.createElement("video");
+              video.preload = "metadata";
+              video.src = URL.createObjectURL(file);
+              video.onloadeddata = () => { video.currentTime = 1; };
+              video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 360;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
+              };
+              video.onerror = () => resolve(null); // Failsafe
+            });
+
+            window.galleryFilesArray.push({ id: uniqueId, tempPath: tempPath, thumbBlob: thumbBlob, type: 'video', fileName: file.name });
+            if (thumbBlob) injectHTML(URL.createObjectURL(thumbBlob), true);
+            
           } else {
-            // It's an image, push the file directly to upload on submit
             window.galleryFilesArray.push({ id: uniqueId, file: file, type: 'image' });
             const reader = new FileReader();
             reader.onload = (e) => injectHTML(e.target.result, false);
@@ -2916,14 +2906,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // Reset Upload UI
       const contentDiv = document.getElementById(idPrefix + "Content");
       const progressDiv = document.getElementById(idPrefix + "Progress");
       if (contentDiv && progressDiv) {
-         setTimeout(() => {
-             contentDiv.style.display = "block";
-             progressDiv.style.display = "none";
-         }, 1000);
+         setTimeout(() => { contentDiv.style.display = "block"; progressDiv.style.display = "none"; }, 1000);
       }
       input.value = "";
     };
@@ -3093,8 +3079,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (coverImage) formData.append("cover_image", coverImage);
       formData.append("is_cover_deleted", isCoverDeleted);
 
-      window.galleryFilesArray.forEach((item) => {
-        formData.append(`gallery_files[]`, item.file);
+      window.galleryFilesArray.forEach((item, index) => {
+        if (item.type === 'video') {
+            formData.append(`gallery_videos_temp[${index}]`, item.tempPath);
+            formData.append(`gallery_videos_names[${index}]`, item.fileName);
+            if (item.thumbBlob) {
+                formData.append(`gallery_thumbnails[${index}]`, item.thumbBlob, `thumb_${index}.jpg`);
+            }
+        } else {
+            formData.append(`gallery_files[${index}]`, item.file);
+        }
       });
 
       window.galleryFilesDeletedArray.forEach((item) => {

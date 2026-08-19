@@ -185,18 +185,25 @@ try {
         }
     }
 
-    // Delete specific files from `post_media` table if requested
+    // -------------------------------------------------------------
+    // MEDIA GALLERY DELETIONS
+    // -------------------------------------------------------------
     if (!empty($_POST['gallery_files_deleted']) && is_array($_POST['gallery_files_deleted'])) {
         $deleted_ids = array_map('intval', $_POST['gallery_files_deleted']);
         $in_clause = implode(',', $deleted_ids);
         
         if (!empty($in_clause)) {
-            // Delete physical files
-            $res = $conn->query("SELECT media_url FROM post_media WHERE id IN ($in_clause) AND post_id = $post_id");
+            // Delete physical files (both media and thumbnail)
+            $res = $conn->query("SELECT media_url, thumbnail_url FROM post_media WHERE id IN ($in_clause) AND post_id = $post_id");
             while ($row = $res->fetch_assoc()) {
-                $file_to_delete = '../../../' . $row['media_url'];
-                if (file_exists($file_to_delete)) {
-                    unlink($file_to_delete);
+                $file_to_delete = '../../../' . ltrim($row['media_url'] ?? '', '/');
+                if (!empty($row['media_url']) && file_exists($file_to_delete) && is_file($file_to_delete)) {
+                    @unlink($file_to_delete);
+                }
+
+                $thumb_to_delete = '../../../' . ltrim($row['thumbnail_url'] ?? '', '/');
+                if (!empty($row['thumbnail_url']) && file_exists($thumb_to_delete) && is_file($thumb_to_delete)) {
+                    @unlink($thumb_to_delete);
                 }
             }
 
@@ -205,7 +212,37 @@ try {
         }
     }
 
-    // Handle New Media Gallery Uploads
+// -------------------------------------------------------------
+    // MEDIA GALLERY DELETIONS
+    // -------------------------------------------------------------
+    if (!empty($_POST['gallery_files_deleted']) && is_array($_POST['gallery_files_deleted'])) {
+        $deleted_ids = array_map('intval', $_POST['gallery_files_deleted']);
+        $in_clause = implode(',', $deleted_ids);
+        
+        if (!empty($in_clause)) {
+            // Delete physical files (both media and thumbnail)
+            $res = $conn->query("SELECT media_url, thumbnail_url FROM post_media WHERE id IN ($in_clause) AND post_id = $post_id");
+            while ($row = $res->fetch_assoc()) {
+                $file_to_delete = '../../../' . ltrim($row['media_url'] ?? '', '/');
+                if (!empty($row['media_url']) && file_exists($file_to_delete) && is_file($file_to_delete)) {
+                    @unlink($file_to_delete);
+                }
+
+                $thumb_to_delete = '../../../' . ltrim($row['thumbnail_url'] ?? '', '/');
+                if (!empty($row['thumbnail_url']) && file_exists($thumb_to_delete) && is_file($thumb_to_delete)) {
+                    @unlink($thumb_to_delete);
+                }
+            }
+
+            // Delete database rows
+            $conn->query("DELETE FROM post_media WHERE id IN ($in_clause) AND post_id = $post_id");
+        }
+    }
+
+    // -------------------------------------------------------------
+    // MEDIA GALLERY (NEW UPLOADS)
+    // -------------------------------------------------------------
+    // --- A. HANDLE STANDARD IMAGES ---
     if (isset($_FILES['gallery_files'])) {
         $total = count($_FILES['gallery_files']['name']);
         for ($i = 0; $i < $total; $i++) {
@@ -217,21 +254,50 @@ try {
                 'size' => $_FILES['gallery_files']['size'][$i]
             ];
             
-            $is_video = strpos($file['type'], 'video/') === 0;
-            $target = $is_video ? $vid_dir : $img_dir;
-            $type_enum = $is_video ? 'video' : 'image';
-            
-            $media_path = uploadFile($file, $target, "gal_");
-            
-            if ($media_path) {
-                $stmt = $conn->prepare("INSERT INTO post_media (post_id, media_type, media_url) VALUES (?, ?, ?)");
-                $stmt->bind_param("iss", $post_id, $type_enum, $media_path);
+            if ($file['error'] === UPLOAD_ERR_OK) {
+                $media_path = uploadFile($file, $img_dir, "gal_");
+                
+                if ($media_path) {
+                    $stmt = $conn->prepare("INSERT INTO post_media (post_id, media_type, media_url, thumbnail_url) VALUES (?, 'image', ?, NULL)");
+                    $stmt->bind_param("is", $post_id, $media_path);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
+        }
+    }
+
+    // --- B. HANDLE CHUNKED VIDEOS & THUMBNAILS ---
+    if (isset($_POST['gallery_videos_temp'])) {
+        foreach ($_POST['gallery_videos_temp'] as $index => $tempPath) {
+            if (empty($tempPath)) continue;
+
+            $actualTempPath = '../../../' . ltrim($tempPath, '/'); 
+            $originalName = $_POST['gallery_videos_names'][$index] ?? 'video.mp4';
+            $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+            $uniqueVideoName = 'gal_vid_' . uniqid() . '.' . $ext;
+            $finalVideoPath = $vid_dir . $uniqueVideoName;
+
+            if (file_exists($actualTempPath) && rename($actualTempPath, $finalVideoPath)) {
+                $mediaUrlForDb = str_replace('../../../', '', $finalVideoPath);
+                $thumbUrlForDb = NULL;
+
+                if (isset($_FILES['gallery_thumbnails']['tmp_name'][$index]) && !empty($_FILES['gallery_thumbnails']['tmp_name'][$index])) {
+                    $thumbUniqueName = 'thumb_' . uniqid() . '.jpg';
+                    $thumbDestPath = $img_dir . $thumbUniqueName;
+                    if (move_uploaded_file($_FILES['gallery_thumbnails']['tmp_name'][$index], $thumbDestPath)) {
+                        $thumbUrlForDb = str_replace('../../../', '', $thumbDestPath);
+                    }
+                }
+
+                $stmt = $conn->prepare("INSERT INTO post_media (post_id, media_type, media_url, thumbnail_url) VALUES (?, 'video', ?, ?)");
+                $stmt->bind_param("iss", $post_id, $mediaUrlForDb, $thumbUrlForDb);
                 $stmt->execute();
                 $stmt->close();
             }
         }
     }
-
+    
     mysqli_commit($conn);
     echo json_encode(['success' => true]);
 
