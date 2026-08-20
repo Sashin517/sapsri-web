@@ -966,3 +966,9 @@ body {
     font-size: 0.85rem;
   }
 }
+
+@media (min-width: 768px) {
+  .publication-card {
+    max-width: 12rem;
+  }
+}

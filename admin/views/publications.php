@@ -108,7 +108,7 @@
 <div class="modal fade" tabindex="-1" id="viewModalEl">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 rounded-4">
-            <div class="modal-body p-4 position-relative">
+            <div class="modal-body p-4 position-relative" style="scrollbar-width: thin;">
                 <button type="button" class="btn-close position-absolute shadow-none" style="top: 16px; right: 16px;" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="container-fluid px-0">
                     <div class="row">
