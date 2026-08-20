@@ -66,7 +66,7 @@
         <div class="upload-area" id="coverUploadArea" onclick="document.getElementById('coverInput').click()">
           <div class="upload-content" id="coverContent">
             <i data-lucide="upload" class="upload-icon"></i>
-            <p class="mb-0 text-muted">Click to upload or drag and drop image<br><small>(recommended resolution, 1920x1080 px)</small></p>
+            <p class="mb-0 text-muted">Click to upload or drag and drop image<br><small>(recommended resolution, 1307x535 px)</small></p>
           </div>
           <div class="upload-progress-wrapper" id="coverProgress">
             <div class="progress-bar-custom"><div class="progress-fill" id="coverProgressBar"></div></div>
