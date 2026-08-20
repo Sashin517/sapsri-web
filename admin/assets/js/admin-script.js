@@ -3518,8 +3518,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (descriptionTxt) descriptionTxt.value = description ? description : "N/A";
       if (dateTxt) dateTxt.value = formattedDate ? formattedDate : "N/A";
       if (statusTxt) statusTxt.value = status ? status.charAt(0).toUpperCase() + status.slice(1) : "N/A";
-
-      console.log(publication);
+      
       modal.show();
     };
 
