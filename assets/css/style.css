@@ -1103,11 +1103,9 @@ section.publications__content {
     height: 100%;
     cursor: grab;
 }
-
 .drag-container:active {
     cursor: grabbing;
 }
-
 .pdf-canvas-wrapper {
     min-width: max-content;
     min-height: max-content;
