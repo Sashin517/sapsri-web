@@ -1,3 +1,6 @@
+<!-- Load FontAwesome Globally -->
+<script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous"></script>
+
 <header class="sticky-top bg-body-header">
     <!-- Hide Google Translate Banner -->
     <style>

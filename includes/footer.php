@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-12 text-center text-lg-end">
+                    <div class="col-12 d-flex justify-content-center justify-content-lg-end gap-2 mt-3 mt-lg-0">
                         <a href="#" class="text-decoration-none">
                             <i class="fa-brands fa-whatsapp fa-lg text-crimson"></i>
                         </a>
