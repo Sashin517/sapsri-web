@@ -260,7 +260,7 @@ body {
 /* --- Hero Banner --- */
 .hero-banner {
   background-color: var(--sapsri-red);
-  background-image: url("../img/sapsri-fluid-bg.png");
+  background-image: url("../img/sapsri-fluid-bg.webp");
   background-size: cover;
   background-position: center;
   border-radius: 12px;

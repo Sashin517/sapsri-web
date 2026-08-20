@@ -112,7 +112,7 @@
                 <button type="button" class="btn-close position-absolute shadow-none" style="top: 16px; right: 16px;" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="container-fluid px-0">
                     <div class="row">
-                        <div class="col-12 col-md-auto col-lg-auto col-xl-auto col-xxl-auto order-1 order-md-0 order-lg-0 order-xl-0 order-xxl-0">
+                        <div class="col-sm-12 col-md-auto order-1 order-md-0 order-sm-1 order-md-0">
                             <div class="card publication-card rounded-4 bg-light-pink" style="min-width: 12rem;">
                                 <img src="" class="card-img-top rounded-top-4" alt="" style="height: 250px; object-fit: contain; background: #fff; padding: 5px;">
                                 <div class="card-body">
