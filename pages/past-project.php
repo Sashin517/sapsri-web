@@ -196,12 +196,20 @@
                     const sec1Container = document.getElementById('sec1-items');
                     sec1Metrics.forEach(m => {
                         if(!m.label && !m.value) return; // Skip empty rows
-                        const iconSrc = m.icon_image ? resolvePath(m.icon_image) : './assets/icons/two-people.svg';
-                        sec1Container.insertAdjacentHTML('beforeend', `
-                            <div class="d-flex align-items-center gap-3 py-3 w-100">
+                        
+                        let iconHtml = '';
+                        if (m.icon_image && m.icon_image.trim() !== '') {
+                            const iconSrc = resolvePath(m.icon_image);
+                            iconHtml = `
                                 <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
                                     <img src="${iconSrc}" alt="" class="img-fluid" style="width: 44px; height: 44px;">
                                 </div>
+                            `;
+                        }
+
+                        sec1Container.insertAdjacentHTML('beforeend', `
+                            <div class="d-flex align-items-center gap-3 py-3 w-100">
+                                ${iconHtml}
                                 <div>
                                     <h3 class="fw-semibold text-crimson">${m.value}</h3>
                                     <h4 class="fw-semibold text-dark-emphasis">${m.label}</h4>
@@ -268,12 +276,20 @@
                     const sec2Container = document.getElementById('sec2-items');
                     sec2Metrics.forEach(m => {
                         if(!m.label && !m.value) return; 
-                        const iconSrc = m.icon_image ? resolvePath(m.icon_image) : './assets/icons/fluent_location-48-filled.svg';
-                        sec2Container.insertAdjacentHTML('beforeend', `
-                            <div class="d-flex align-items-center gap-3 py-3 w-100 flex-md-row-reverse flex-row">
+                        
+                        let iconHtml = '';
+                        if (m.icon_image && m.icon_image.trim() !== '') {
+                            const iconSrc = resolvePath(m.icon_image);
+                            iconHtml = `
                                 <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
                                     <img src="${iconSrc}" alt="" class="img-fluid" style="width: 44px; height: 44px; filter: invert(1);">
                                 </div>
+                            `;
+                        }
+
+                        sec2Container.insertAdjacentHTML('beforeend', `
+                            <div class="d-flex align-items-center gap-3 py-3 w-100 flex-md-row-reverse flex-row">
+                                ${iconHtml}
                                 <div class="text-start text-md-end">
                                     <h3 class="fw-semibold text-crimson">${m.label}</h3>
                                     <h4 class="fw-semibold text-dark-emphasis">${m.value}</h4>
@@ -355,7 +371,7 @@
         });
 
         // Stop video playing when modal is closed
-        document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('imageModal')?.addEventListener('hidden.bs.modal', function () {
             const video = this.querySelector('video');
             if (video) video.pause();
         });
