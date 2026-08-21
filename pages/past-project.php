@@ -161,8 +161,8 @@
                 // =====================================
                 // 1. POPULATE HEADER & BASIC INFO
                 // =====================================
-                document.title = `${project.title} - SAPSRI`;
-                document.getElementById('proj-title').innerText = project.title;
+                document.title = `${project.title || 'Project'} - SAPSRI`;
+                document.getElementById('proj-title').innerText = project.title || 'Untitled Project';
                 document.getElementById('proj-cover').src = resolvePath(project.cover_image);
                 
                 // Keep the exact structural spacing for description from the template
@@ -179,13 +179,16 @@
                 // =====================================
                 // 2. METRICS SECTION 1
                 // =====================================
-                const sec1Metrics = project.metrics.filter(m => m.section == '1');
+                const sec1MetricsRaw = project.metrics ? project.metrics.filter(m => m.section == '1') : [];
+                // ONLY keep metrics that have a label OR a value (filters out empty entries)
+                const sec1Metrics = sec1MetricsRaw.filter(m => (m.label && m.label.trim() !== '') || (m.value && m.value.trim() !== ''));
+
                 if (sec1Metrics.length > 0) {
                     document.getElementById('metrics-sec-1-wrapper').classList.remove('d-none');
                     document.getElementById('metrics-sec-1-wrapper').classList.add('d-flex');
                     
                     // Set Section Image (fallback to first available if needed)
-                    const sec1Img = sec1Metrics.find(m => m.section_image && m.section_image !== '')?.section_image;
+                    const sec1Img = sec1MetricsRaw.find(m => m.section_image && m.section_image.trim() !== '')?.section_image;
                     if (sec1Img) {
                         document.getElementById('sec1-img').src = resolvePath(sec1Img);
                     } else {
@@ -195,8 +198,6 @@
                     // Render Items
                     const sec1Container = document.getElementById('sec1-items');
                     sec1Metrics.forEach(m => {
-                        if(!m.label && !m.value) return; // Skip empty rows
-                        
                         let iconHtml = '';
                         if (m.icon_image && m.icon_image.trim() !== '') {
                             const iconSrc = resolvePath(m.icon_image);
@@ -211,8 +212,8 @@
                             <div class="d-flex align-items-center gap-3 py-3 w-100">
                                 ${iconHtml}
                                 <div>
-                                    <h3 class="fw-semibold text-crimson">${m.value}</h3>
-                                    <h4 class="fw-semibold text-dark-emphasis">${m.label}</h4>
+                                    <h3 class="fw-semibold text-crimson">${m.value || ''}</h3>
+                                    <h4 class="fw-semibold text-dark-emphasis">${m.label || ''}</h4>
                                 </div>
                             </div>
                         `);
@@ -222,13 +223,20 @@
                 // =====================================
                 // 3. SUCCESS STORIES CAROUSEL
                 // =====================================
-                if (project.success_stories && project.success_stories.length > 0) {
+                // ONLY keep stories that have at least a name, description, OR an image (filters out blank templates)
+                const validStories = project.success_stories ? project.success_stories.filter(s => 
+                    (s.name && s.name.trim() !== '') || 
+                    (s.description && s.description.trim() !== '') || 
+                    (s.image && s.image.trim() !== '')
+                ) : [];
+
+                if (validStories.length > 0) {
                     document.getElementById('success-stories-wrapper').classList.remove('d-none');
                     
                     const indicators = document.getElementById('story-indicators');
                     const inner = document.getElementById('story-inner');
 
-                    project.success_stories.forEach((story, index) => {
+                    validStories.forEach((story, index) => {
                         const activeClass = index === 0 ? 'active' : '';
                         
                         indicators.insertAdjacentHTML('beforeend', `
@@ -240,17 +248,17 @@
                             <div class="carousel-item ${activeClass}">
                                 <div class="story-card d-flex flex-column flex-md-row justify-content-center rounded-4 overflow-hidden mb-5 border border-light-subtle shadow-sm">
                                     <div class="story-image overflow-hidden align-items-center">
-                                        <img src="${storyImg}" alt="${story.name}" class="object-fit-cover w-100 h-100">
+                                        <img src="${storyImg}" alt="${story.name || 'Success Story'}" class="object-fit-cover w-100 h-100">
                                     </div>
                                     <div class="story-text story-text-container d-flex flex-column align-items-center justify-content-center p-5 h-100">
                                         <div class="w-100">
                                             <img src="./assets/icons/Vector.svg" alt="Quote start" class="img-fluid mb-2 opacity-75" style="max-width:32px;">
-                                            <p class="text-center m-3 fw-bold fs-5">${story.description}</p>
+                                            <p class="text-center m-3 fw-bold fs-5">${story.description || ''}</p>
                                             <span class="d-flex justify-content-end">
                                                 <img src="./assets/icons/Vector (1).svg" alt="Quote end" class="img-fluid mt-2 opacity-75" style="max-width:32px;">
                                             </span>
                                         </div>
-                                        <p class="text-center m-3 fs-4 text-crimson fw-semibold">${story.name}</p>
+                                        <p class="text-center m-3 fs-4 text-crimson fw-semibold">${story.name || ''}</p>
                                     </div>
                                 </div>
                             </div>
@@ -261,12 +269,15 @@
                 // =====================================
                 // 4. METRICS SECTION 2
                 // =====================================
-                const sec2Metrics = project.metrics.filter(m => m.section == '2');
+                const sec2MetricsRaw = project.metrics ? project.metrics.filter(m => m.section == '2') : [];
+                // ONLY keep metrics that have a label OR a value (filters out empty entries)
+                const sec2Metrics = sec2MetricsRaw.filter(m => (m.label && m.label.trim() !== '') || (m.value && m.value.trim() !== ''));
+
                 if (sec2Metrics.length > 0) {
                     document.getElementById('metrics-sec-2-wrapper').classList.remove('d-none');
                     document.getElementById('metrics-sec-2-wrapper').classList.add('d-flex');
                     
-                    const sec2Img = sec2Metrics.find(m => m.section_image && m.section_image !== '')?.section_image;
+                    const sec2Img = sec2MetricsRaw.find(m => m.section_image && m.section_image.trim() !== '')?.section_image;
                     if (sec2Img) {
                         document.getElementById('sec2-img').src = resolvePath(sec2Img);
                     } else {
@@ -275,8 +286,6 @@
 
                     const sec2Container = document.getElementById('sec2-items');
                     sec2Metrics.forEach(m => {
-                        if(!m.label && !m.value) return; 
-                        
                         let iconHtml = '';
                         if (m.icon_image && m.icon_image.trim() !== '') {
                             const iconSrc = resolvePath(m.icon_image);
@@ -291,8 +300,8 @@
                             <div class="d-flex align-items-center gap-3 py-3 w-100 flex-md-row-reverse flex-row">
                                 ${iconHtml}
                                 <div class="text-start text-md-end">
-                                    <h3 class="fw-semibold text-crimson">${m.label}</h3>
-                                    <h4 class="fw-semibold text-dark-emphasis">${m.value}</h4>
+                                    <h3 class="fw-semibold text-crimson">${m.label || ''}</h3>
+                                    <h4 class="fw-semibold text-dark-emphasis">${m.value || ''}</h4>
                                 </div>
                             </div>
                         `);
