@@ -192,7 +192,12 @@
                     if (sec1Img) {
                         document.getElementById('sec1-img').src = resolvePath(sec1Img);
                     } else {
-                        document.getElementById('sec1-img').parentElement.classList.add('d-none'); 
+                        // explicitly remove the d-md-block class to prevent bootstrap overriding the d-none on desktop
+                        const imgWrapper = document.getElementById('sec1-img').parentElement;
+                        imgWrapper.classList.remove('d-md-block');
+                        imgWrapper.classList.add('d-none'); 
+                        // Remove padding to center the content naturally
+                        document.getElementById('sec1-items').classList.remove('ps-md-5');
                     }
 
                     // Render Items
@@ -281,7 +286,12 @@
                     if (sec2Img) {
                         document.getElementById('sec2-img').src = resolvePath(sec2Img);
                     } else {
-                        document.getElementById('sec2-img').parentElement.classList.add('d-none'); 
+                        // explicitly remove the d-md-block class to prevent bootstrap overriding the d-none on desktop
+                        const imgWrapper2 = document.getElementById('sec2-img').parentElement;
+                        imgWrapper2.classList.remove('d-md-block');
+                        imgWrapper2.classList.add('d-none'); 
+                        // Remove padding to center the content naturally
+                        document.getElementById('sec2-items').classList.remove('pe-md-5');
                     }
 
                     const sec2Container = document.getElementById('sec2-items');
