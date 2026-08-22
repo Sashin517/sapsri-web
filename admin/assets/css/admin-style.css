@@ -908,6 +908,12 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
+.modal {
+  .modal-body, .modal-body * {
+    scrollbar-width: thin;
+  }
+}
+
 /* --- Responsive Queries --- */
 @media (max-width: 991px) {
   .sidebar {

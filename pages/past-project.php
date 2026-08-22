@@ -152,6 +152,7 @@
                 
                 // Find matching project
                 const project = projects.find(p => p.id == projectId);
+                console.log(project);
 
                 if (!project) {
                     document.getElementById('loading-container').innerHTML = `<h2 class="text-danger">Error: Project not found.</h2><a href="past-projects" class="btn btn-dark mt-3">Go Back</a>`;

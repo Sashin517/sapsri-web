@@ -140,13 +140,13 @@
 <!-- Top Header / Breadcrumb -->
 <div class="d-flex align-items-center justify-content-between mb-4 px-4 pt-4">
   <div class="d-flex align-items-center gap-2">
-    <button class="btn btn-sm btn-light border-0 p-2 rounded-circle" onclick="loadView('projects', 'Projects Management')">
+    <button class="btn btn-sm btn-light border-0 p-2 rounded-circle" onclick="loadView('projects', 'Projects')">
       <i data-lucide="arrow-left" style="width: 20px;"></i>
     </button>
     <span class="text-muted" style="font-size: 0.95rem;">Projects > </span> 
     <span class="fw-bold fs-4">Create New Project</span>
   </div>
-  <button class="btn btn-sm btn-light border-0 p-2 rounded-circle" onclick="loadView('projects', 'Projects Management')">
+  <button class="btn btn-sm btn-light border-0 p-2 rounded-circle" onclick="loadView('projects', 'Projects')">
     <i data-lucide="x" style="width: 20px;"></i>
   </button>
 </div>
@@ -162,7 +162,7 @@
           <input class="form-check-input" type="checkbox" id="projectPhaseToggle" checked>
           <label class="form-check-label fw-medium ms-2" for="projectPhaseToggle" id="phaseLabel">Ongoing</label>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary ms-auto d-flex gap-2 align-items-center">
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-auto d-flex gap-2 align-items-center" onclick="previewProject();">
           <i data-lucide="eye" style="width:16px;"></i> Preview
         </button>
       </div>

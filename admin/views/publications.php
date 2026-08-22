@@ -108,13 +108,13 @@
 <div class="modal fade" tabindex="-1" id="viewModalEl">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 rounded-4">
-            <div class="modal-body p-4 position-relative" style="scrollbar-width: thin;">
+            <div class="modal-body p-4 position-relative">
                 <button type="button" class="btn-close position-absolute shadow-none" style="top: 16px; right: 16px;" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="container-fluid px-0">
                     <div class="row">
                         <div class="col-12 col-md-auto order-1 order-md-0">
                             <div class="card publication-card rounded-4 bg-light-pink" style="min-width: 12rem;">
-                                <img src="" class="card-img-top rounded-top-4" alt="" style="height: 250px; object-fit: contain; background: #fff; padding: 5px;">
+                                <img src="" class="card-img-top rounded-top-4" alt="" style="height: 250px; object-fit: cover; background-color: #fff;">
                                 <div class="card-body">
                                     <h4 class="card-title fs-5">--</h4>
                                     <p class="card-text">--</p>
@@ -134,7 +134,7 @@
                         </div>
 
                         <div class="col w-100">
-                            <div class="form-floating mb-3 mt-2">
+                            <div class="form-floating mb-3 mt-3">
                                 <textarea class="form-control-plaintext" placeholder="Title" id="pubTitle" readonly style="height: auto; field-sizing: content;"></textarea>
                                 <label for="pubTitle">Title</label>
                             </div>

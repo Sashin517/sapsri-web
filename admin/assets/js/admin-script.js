@@ -161,11 +161,39 @@ function openDeleteModal(itemId, itemName, itemType, endpointUrl, callbackFuncti
 // MAIN SPA ROUTER & MODULE INITIALIZER
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-  const appContent = document.getElementById("app-content");
-  const pageTitle = document.getElementById("page-title");
-
   // --- SPA ROUTER FUNCTION ---
   async function loadView(viewName, title, params = {}) {
+    if ("objectUrls" in window && objectUrls.length > 0) {
+      objectUrls.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+
+      objectUrls.length = 0;
+    }
+
+    const appContentSaved = document.getElementById("app-content-saved");
+    let appContent = document.getElementById("app-content");
+    let pageTitle = document.getElementById("page-title");
+
+    if (params.restoreView) {
+      appContent.remove();
+      appContentSaved.classList.remove("d-none");
+      appContentSaved.id = "app-content";
+      return;
+    }
+
+    if (appContentSaved) appContentSaved.remove();
+
+    if (params.saveView) {
+      const clonedView = appContent.cloneNode(true);
+      appContent.id = "app-content-saved";
+      clonedView.id = "app-content";
+      appContent.classList.add("d-none");
+      mainContent.appendChild(clonedView);
+    }
+
+    appContent = document.getElementById("app-content");
+
     appContent.innerHTML =
       '<div class="d-flex justify-content-center mt-5"><div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div></div>';
 
@@ -186,6 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (viewName === "users") initUsersScript();
       else if (viewName === "create-project") initCreateProjectScript();
       else if (viewName === "edit-project") initEditProjectScript(params);
+      else if (viewName === "preview-project") initPreviewProjectScript(params.previewData);
       else if (viewName === "create-post") initCreatePostScript();
       else if (viewName === "edit-post") initEditPostScript(params);
       else if (viewName === "create-publication") initCreatePublicationScript();
@@ -1382,10 +1411,125 @@ document.addEventListener("DOMContentLoaded", () => {
         publishBtn.disabled = false;
       }
     });
+
+    window.previewProject = () => {
+      // Helper functions for safe extraction
+      const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el && el.value ? el.value.trim() : "";
+      };
+
+      const getFile = (id) => {
+        const el = document.getElementById(id);
+        return el && el.files && el.files[0] ? el.files[0] : null;
+      };
+
+      const project = {
+        // Basic Details
+        title: getVal("projectTitle") ? getVal("projectTitle") : "Untitled Project",
+        phase: document.getElementById("projectPhaseToggle")?.checked ? "ongoing" : "past",
+        description:
+          typeof quill !== "undefined" && quill?.root?.innerHTML !== "<p><br></p>" ? quill.root.innerHTML : "",
+        start_date: getVal("projectStartDate"),
+        end_date: getVal("projectEndDate"),
+        cover_image: getFile("coverInput"),
+
+        // Impact Areas
+        impact_areas: Array.from(document.getElementById("projectImpactArea")?.selectedOptions || [])
+          .filter((opt) => opt.value.trim() !== "")
+          .map((option) => ({
+            id: option.value,
+            name: option.text,
+          })),
+
+        // Metrics (Combines Sec 1 & Sec 2, filters out empty rows)
+        metrics: [
+          ...Array.from(document.querySelectorAll("#metricsContainerSec1 .metric-row")).map((row) => {
+            const inputs = row.querySelectorAll('input[type="text"]');
+
+            const sectionImage = getFile("sec1Input");
+            const icon = row.querySelector('input[type="file"]')?.files?.[0] || null;
+            const val = inputs[0]?.value?.trim();
+            const lbl = inputs[1]?.value?.trim();
+
+            // if (!sectionImage && !val && !lbl && !icon) return null; // Skip completely empty row
+
+            return {
+              section: "1",
+              section_image: sectionImage,
+              icon_image: icon,
+              value: val || "",
+              label: lbl || "",
+            };
+          }),
+          ...Array.from(document.querySelectorAll("#metricsContainerSec2 .metric-row")).map((row) => {
+            const inputs = row.querySelectorAll('input[type="text"]');
+
+            const sectionImage = getFile("sec2Input");
+            const icon = row.querySelector('input[type="file"]')?.files?.[0] || null;
+            const val = inputs[0]?.value?.trim();
+            const lbl = inputs[1]?.value?.trim();
+
+            // if (!sectionImage && !val && !lbl && !icon) return null; // Skip completely empty row
+
+            return {
+              section: "2",
+              section_image: sectionImage,
+              icon_image: icon,
+              value: val || "",
+              label: lbl || "",
+            };
+          }),
+        ].filter(Boolean),
+
+        // Success Stories (Filters out completely empty cards)
+        success_stories: Array.from(document.querySelectorAll("#storiesWrapper .section-card"))
+          .map((card) => {
+            const name = card.querySelector('input[type="text"]')?.value?.trim() || "";
+            const desc = card.querySelector("textarea")?.value?.trim() || "";
+            const img = card.querySelector('input[type="file"]')?.files?.[0] || null;
+
+            // if (!name && !desc && !img) return null; // Skip empty story card
+
+            return {
+              name: name,
+              image: img,
+              description: desc,
+            };
+          })
+          .filter(Boolean),
+
+        // Leads (Only adds lead if at least one field exists)
+        leads: (() => {
+          const name = getVal("leadName");
+          const role = getVal("leadRole");
+          const photo = getFile("leadInput");
+          const linkedin = getVal("leadLinkedin");
+
+          // if (!name && !role && !photo && !linkedin) return [];
+
+          return [{ name, role, photo, linkedin }];
+        })(),
+
+        // Media
+        media: Array.isArray(window.galleryFilesArray)
+          ? window.galleryFilesArray
+              .filter((item) => item && (item.file || item.tempPath))
+              .map((item) => ({
+                type: item.type === "video" ? "video" : "image",
+                url: item.type === "video" ? item.tempPath : item.file,
+                original_name: item.fileName || "",
+                thumbnail_url: item.thumbBlob || null,
+              }))
+          : [],
+      };
+
+      loadView("preview-project", "Projects", { saveView: true, previewData: project });
+    };
   }
 
   // ==========================================
-  // --- VIEW: Edit PROJECT LOGIC ---
+  // --- VIEW: EDIT PROJECT LOGIC ---
   // ==========================================
 
   function initEditProjectScript(params = {}) {
@@ -2194,6 +2338,321 @@ document.addEventListener("DOMContentLoaded", () => {
         if (statusBtn) statusBtn.disabled = false;
         if (saveBtn) saveBtn.disabled = false;
       }
+    });
+  }
+
+  // ==========================================
+  // --- VIEW: PREVIEW PROJECT LOGIC ---
+  // ==========================================
+
+  function initPreviewProjectScript(project = {}) {
+    window.objectUrls = [];
+
+    const handleImageFile = (file, keepUrl = false) => {
+      if (file instanceof File || file instanceof Blob) {
+        const imageUrl = URL.createObjectURL(file);
+
+        if (keepUrl) {
+          objectUrls.push(imageUrl);
+        } else {
+          setTimeout(() => URL.revokeObjectURL(imageUrl), 0);
+        }
+        return imageUrl;
+      } else {
+        return false;
+      }
+    };
+
+    console.log(project);
+    if (!project) {
+      document.getElementById("loading-container").innerHTML =
+        `<h2 class="text-danger">Error: Failed to create the project preview.</h2>`;
+      return;
+    }
+
+    // =====================================
+    // 1. POPULATE HEADER & BASIC INFO
+    // =====================================
+    document.getElementById("proj-title").innerText = project.title;
+
+    const coverImage = handleImageFile(project.cover_image);
+    document.getElementById("proj-cover").src = coverImage
+      ? coverImage
+      : "/project-sedna/assets/media/img/projects/cover-default.svg";
+
+    // Keep the exact structural spacing for description from the template
+    document.getElementById("proj-description").innerHTML =
+      project.description || '<p class="text-muted text-center">No description available.</p>';
+
+    // Tags / Impact Areas
+    if (project.impact_areas && project.impact_areas.length > 0) {
+      const tagsHtml = project.impact_areas
+        .map(
+          (area) =>
+            `<span class="bg-gold-yellow text-black rounded-5 py-2 px-3 text-nowrap fw-medium shadow-sm fs-6">${area.name}</span>`,
+        )
+        .join("");
+      document.getElementById("proj-tags").innerHTML = tagsHtml;
+    }
+
+    // =====================================
+    // 2. METRICS SECTION 1
+    // =====================================
+    const sec1MetricsRaw = project.metrics ? project.metrics.filter((m) => m.section == "1") : [];
+    // ONLY keep metrics that have a label OR a value (filters out empty entries)
+    const sec1Metrics = sec1MetricsRaw.filter(
+      (m) => (m.label && m.label.trim() !== "") || (m.value && m.value.trim() !== ""),
+    );
+
+    if (sec1Metrics.length > 0) {
+      document.getElementById("metrics-sec-1-wrapper").classList.remove("d-none");
+      document.getElementById("metrics-sec-1-wrapper").classList.add("d-flex");
+
+      // Set Section Image (fallback to first available if needed)
+      const sec1Img = sec1MetricsRaw.find((m) => m.section_image)?.section_image;
+      if (sec1Img) {
+        const sec1Image = handleImageFile(sec1Img);
+        document.getElementById("sec1-img").src = sec1Image
+          ? sec1Image
+          : "/project-sedna/assets/media/img/projects/cover-default.svg";
+      } else {
+        // explicitly remove the d-md-block class to prevent bootstrap overriding the d-none on desktop
+        const imgWrapper = document.getElementById("sec1-img").parentElement;
+        imgWrapper.classList.remove("d-md-block");
+        imgWrapper.classList.add("d-none");
+        // Remove padding to center the content naturally
+        document.getElementById("sec1-items").classList.remove("ps-md-5");
+      }
+
+      // Render Items
+      const sec1Container = document.getElementById("sec1-items");
+      sec1Metrics.forEach((m) => {
+        let iconHtml = "";
+        if (m.icon_image) {
+          const iconImage = handleImageFile(m.icon_image);
+          const iconSrc = iconImage ? iconImage : "/project-sedna/assets/media/img/projects/metrics-default.webp";
+          iconHtml = `
+          <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
+              <img src="${iconSrc}" alt="" class="img-fluid" style="width: 44px; height: 44px;">
+          </div>
+          `;
+        }
+
+        sec1Container.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="d-flex align-items-center gap-3 py-3 w-100">
+              ${iconHtml}
+              <div>
+                  <h3 class="fw-semibold text-crimson">${m.value || ""}</h3>
+                  <h4 class="fw-semibold text-dark-emphasis">${m.label || ""}</h4>
+              </div>
+          </div>
+          `,
+        );
+      });
+    }
+
+    // =====================================
+    // 3. SUCCESS STORIES CAROUSEL
+    // =====================================
+    // ONLY keep stories that have at least a name, description, OR an image (filters out blank templates)
+    const validStories = project.success_stories
+      ? project.success_stories.filter(
+          (s) => (s.name && s.name.trim() !== "") || (s.description && s.description.trim() !== "") || s.image,
+        )
+      : [];
+
+    if (validStories.length > 0) {
+      document.getElementById("success-stories-wrapper").classList.remove("d-none");
+
+      const indicators = document.getElementById("story-indicators");
+      const inner = document.getElementById("story-inner");
+
+      validStories.forEach((story, index) => {
+        const activeClass = index === 0 ? "active" : "";
+
+        indicators.insertAdjacentHTML(
+          "beforeend",
+          `
+          <button type="button" data-bs-target="#StoryCarousel" data-bs-slide-to="${index}" class="${activeClass}" aria-current="${activeClass === "active" ? "true" : "false"}" aria-label="Slide ${index + 1}"></button>
+          `,
+        );
+
+        const storyImage = handleImageFile(story.image);
+        const storyImgSrc = storyImage ? storyImage : "/project-sedna/assets/media/img/projects/cover-default.svg";
+        inner.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="carousel-item ${activeClass}">
+              <div class="story-card d-flex flex-column flex-md-row justify-content-center rounded-4 overflow-hidden mb-5 border border-light-subtle shadow-sm">
+                  <div class="story-image overflow-hidden align-items-center">
+                      <img src="${storyImgSrc}" alt="${story.name || "Success Story"}" class="object-fit-cover w-100 h-100">
+                  </div>
+                  <div class="story-text story-text-container d-flex flex-column align-items-center justify-content-center p-5 h-100">
+                      <div class="w-100">
+                          <img src="/project-sedna/assets/icons/Vector.svg" alt="Quote start" class="img-fluid mb-2 opacity-75" style="max-width:32px;">
+                          <p class="text-center m-3 fw-bold fs-5">${story.description || ""}</p>
+                          <span class="d-flex justify-content-end">
+                              <img src="/project-sedna/assets/icons/Vector (1).svg" alt="Quote end" class="img-fluid mt-2 opacity-75" style="max-width:32px;">
+                          </span>
+                      </div>
+                      <p class="text-center m-3 fs-4 text-crimson fw-semibold">${story.name || ""}</p>
+                  </div>
+              </div>
+          </div>
+          `,
+        );
+      });
+    }
+
+    // =====================================
+    // 4. METRICS SECTION 2
+    // =====================================
+    const sec2MetricsRaw = project.metrics ? project.metrics.filter((m) => m.section == "2") : [];
+    // ONLY keep metrics that have a label OR a value (filters out empty entries)
+    const sec2Metrics = sec2MetricsRaw.filter(
+      (m) => (m.label && m.label.trim() !== "") || (m.value && m.value.trim() !== ""),
+    );
+
+    if (sec2Metrics.length > 0) {
+      document.getElementById("metrics-sec-2-wrapper").classList.remove("d-none");
+      document.getElementById("metrics-sec-2-wrapper").classList.add("d-flex");
+
+      const sec2Img = sec2MetricsRaw.find((m) => m.section_image)?.section_image;
+      if (sec2Img) {
+        const sec2Image = handleImageFile(sec2Img);
+        document.getElementById("sec2-img").src = sec2Image
+          ? sec2Image
+          : "/project-sedna/assets/media/img/projects/metrics-default.webp";
+      } else {
+        // explicitly remove the d-md-block class to prevent bootstrap overriding the d-none on desktop
+        const imgWrapper2 = document.getElementById("sec2-img").parentElement;
+        imgWrapper2.classList.remove("d-md-block");
+        imgWrapper2.classList.add("d-none");
+        // Remove padding to center the content naturally
+        document.getElementById("sec2-items").classList.remove("pe-md-5");
+      }
+
+      const sec2Container = document.getElementById("sec2-items");
+      sec2Metrics.forEach((m) => {
+        let iconHtml = "";
+        if (m.icon_image) {
+          const iconImage = handleImageFile(m.icon_image);
+          const iconSrc = iconImage ? iconImage : "/project-sedna/assets/media/img/projects/metrics-default.webp";
+          iconHtml = `
+          <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
+              <img src="${iconSrc}" alt="" class="img-fluid" style="width: 44px; height: 44px; filter: invert(1);">
+          </div>
+          `;
+        }
+
+        sec2Container.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="d-flex align-items-center gap-3 py-3 w-100 flex-md-row-reverse flex-row">
+              ${iconHtml}
+              <div class="text-start text-md-end">
+                  <h3 class="fw-semibold text-crimson">${m.label || ""}</h3>
+                  <h4 class="fw-semibold text-dark-emphasis">${m.value || ""}</h4>
+              </div>
+          </div>
+          `,
+        );
+      });
+    }
+
+    // =====================================
+    // 5. PROJECT LEADS
+    // =====================================
+    if (project.leads && project.leads.length > 0) {
+      document.getElementById("leads-wrapper").classList.remove("d-none");
+      const leadsContainer = document.getElementById("leads-container");
+
+      project.leads.forEach((lead) => {
+        const avatarImage = handleImageFile("lead.photo");
+        const avatar = avatarImage ? avatarImage : "/project-sedna/assets/media/img/projects/avatar-default.svg";
+        const linkHtml = lead.linkedin
+          ? `<a href="${lead.linkedin}" target="_blank" class="social-link ms-3 fs-4 text-primary"><i class="bi bi-linkedin"></i></a>`
+          : "";
+
+        leadsContainer.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="col-lg-6">
+              <div class="card profile-card leads-card h-100">
+                  <div class="d-flex align-items-center">
+                      <img src="${avatar}" class="card-img-top rounded-circle me-3 border border-dark-subtle" alt="${lead.name}">
+                      <div class="flex-grow-1">
+                          <h5 class="card-title">${lead.name}</h5>
+                          <p class="card-text">${lead.role}</p>
+                      </div>
+                      ${linkHtml}
+                  </div>
+              </div>
+          </div>
+          `,
+        );
+      });
+    }
+
+    // =====================================
+    // 6. MEDIA GALLERY
+    // =====================================
+    if (project.media && project.media.length > 0) {
+      document.getElementById("gallery-wrapper").classList.remove("d-none");
+      const galleryContainer = document.getElementById("gallery-container");
+
+      project.media.forEach((media) => {
+        const isVideo = media.type === "video";
+        const dataType = isVideo ? "video" : "image";
+        const thumbImage = handleImageFile(media.thumbnail_url || media.url, true);
+        const thumbUrl = thumbImage ? thumbImage : "/project-sedna/assets/media/img/projects/cover-default.svg";
+        const targetMedia =
+          media.url instanceof File
+            ? handleImageFile(media.url, true)
+            : media.url && media.url.trim()
+              ? `/project-sedna/${media.url}`
+              : "/project-sedna/assets/media/img/projects/cover-default.svg";
+
+        const targetUrl = targetMedia ? targetMedia : "/project-sedna/assets/media/img/projects/cover-default.svg";
+        const overlayHtml = isVideo
+          ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; z-index: 5;">
+                <i class="bi bi-play-fill"></i>
+              </div>`
+          : "";
+
+        galleryContainer.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="col-md-4 rel-img">
+              <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="project-gallery" data-type="${dataType}">
+                  <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item" style="opacity: ${isVideo ? "0.85" : "1"};">
+                  ${overlayHtml}
+              </a>
+          </div>
+          `,
+        );
+        
+      });
+
+      // Initialize GLightbox
+      GLightbox({
+        selector: ".glightbox",
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true,
+      });
+    }
+
+    // Hide Loader, Show Content
+    document.getElementById("loading-container").classList.add("d-none");
+    document.getElementById("dynamic-project-container").classList.remove("d-none");
+
+    // Stop video playing when modal is closed
+    document.getElementById("imageModal")?.addEventListener("hidden.bs.modal", function () {
+      const video = this.querySelector("video");
+      if (video) video.pause();
     });
   }
 
@@ -3499,7 +3958,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const cardLink = modalEl.querySelector(".stretched-link");
       const cardDownloadBtn = modalEl.querySelector(".btn-download");
 
-      if (cardImg) cardImg.src = coverImage ? coverImage : "";
+      if (cardImg)
+        cardImg.src = coverImage ? coverImage : "/project-sedna/assets/media/img/publications/cover-default.svg";
       if (cardTitle) cardTitle.textContent = title ? title : "N/A";
       if (cardText) cardText.textContent = description ? description : "N/A";
       if (cardTime) cardTime.textContent = formattedDate ? formattedDate : "N/A";
