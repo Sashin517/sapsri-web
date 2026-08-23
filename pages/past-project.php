@@ -1,22 +1,61 @@
+<?php
+// Include the database connection to fetch SEO data before rendering HTML
+include_once '../includes/connection.php';
+Database::setUpConnection();
+
+$project_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Default Fallback SEO Data
+$seo_title = "Project Details - SAPSRI";
+$seo_desc = "Explore SAPSRI's development projects across Sri Lanka, focusing on climate resilience, agriculture, and community empowerment.";
+$seo_image = "https://sapsri.lk/project-sedna/assets/media/img/pdf-covers/annual-report-2024-2025.webp";
+
+// Fetch the specific project dynamically based on the URL ID
+if ($project_id > 0) {
+    $result = Database::search("SELECT title, full_description, cover_image FROM projects WHERE id = " . $project_id);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $proj = mysqli_fetch_assoc($result);
+        
+        if (!empty($proj['title'])) {
+            $seo_title = htmlspecialchars($proj['title']) . " - SAPSRI";
+        }
+        if (!empty($proj['full_description'])) {
+            // Strip HTML tags and limit to ~155 characters for the perfect Google Meta Description
+            $stripped_desc = trim(preg_replace('/\s+/', ' ', strip_tags($proj['full_description'])));
+            $seo_desc = htmlspecialchars(mb_substr($stripped_desc, 0, 155)) . '...';
+        }
+        if (!empty($proj['cover_image'])) {
+            // Clean the relative path and make it an absolute URL for social media sharing
+            $clean_img = ltrim($proj['cover_image'], './');
+            $clean_img = ltrim($clean_img, '/');
+            $seo_image = "https://sapsri.lk/project-sedna/" . $clean_img;
+        }
+    }
+}
+
+// Generate the exact URL being shared
+$current_url = "https://sapsri.lk" . $_SERVER['REQUEST_URI'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 1. Primary SEO Meta Tags -->
-    <title>Past Projects - SAPSRI</title>
-    <meta name="description" content="Review SAPSRI's completed projects and our historical impact on rural development and financial inclusion in Sri Lanka.">
     
-    <!-- 2. Canonical Link -->
-    <link rel="canonical" href="https://sapsri.lk/project-sedna/past-projects">
+    <!-- DYNAMIC SEO META TAGS (Populated by PHP above) -->
+    <title><?= $seo_title ?></title>
+    <meta name="description" content="<?= $seo_desc ?>">
+    
+    <!-- Canonical Link -->
+    <link rel="canonical" href="<?= $current_url ?>">
 
-    <!-- 3. Open Graph / Social Media Sharing Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://sapsri.lk/project-sedna/past-projects">
-    <meta property="og:title" content="Past Projects - SAPSRI">
-    <meta property="og:description" content="Review SAPSRI's completed projects and our historical impact on rural development and financial inclusion in Sri Lanka.">
-    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/page-hero/about-us-hero.jpg">
+    <!-- Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="<?= $current_url ?>">
+    <meta property="og:title" content="<?= $seo_title ?>">
+    <meta property="og:description" content="<?= $seo_desc ?>">
+    <meta property="og:image" content="<?= $seo_image ?>">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -25,11 +64,14 @@
     <link rel="stylesheet" href="./assets/css/current_project.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/project-style.css">    
+    
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/3e6ef2b5ef.js" crossorigin="anonymous"></script>
+    
     <!-- GLightbox CSS & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
     <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+    
     <!-- Favicon & App Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/project-sedna/assets/media/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/project-sedna/assets/media/img/favicons/favicon-32x32.png">

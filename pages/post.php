@@ -1,10 +1,48 @@
+<?php
+include_once '../includes/connection.php';
+Database::setUpConnection();
+
+$post_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$seo_title = "News & Updates - SAPSRI";
+$seo_desc = "Stay updated with the latest news, events, and community development initiatives from South Asia Partnership Sri Lanka.";
+$seo_image = "https://sapsri.lk/project-sedna/assets/media/img/page-hero/news-and-events.jpg";
+
+if ($post_id > 0) {
+    $result = Database::search("SELECT title, content, cover_image FROM posts WHERE id = " . $post_id);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $post = mysqli_fetch_assoc($result);
+        
+        if (!empty($post['title'])) {
+            $seo_title = htmlspecialchars($post['title']) . " - SAPSRI";
+        }
+        if (!empty($post['content'])) {
+            $stripped_desc = trim(preg_replace('/\s+/', ' ', strip_tags($post['content'])));
+            $seo_desc = htmlspecialchars(mb_substr($stripped_desc, 0, 155)) . '...';
+        }
+        if (!empty($post['cover_image'])) {
+            $clean_img = ltrim($post['cover_image'], './');
+            $clean_img = ltrim($clean_img, '/');
+            $seo_image = "https://sapsri.lk/project-sedna/" . $clean_img;
+        }
+    }
+}
+$current_url = "https://sapsri.lk" . $_SERVER['REQUEST_URI'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strengthening Rural Entrepreneurship - SAPSRI</title>
+    <title><?= $seo_title ?></title>
+    <meta name="description" content="<?= $seo_desc ?>">
+
+    <link rel="canonical" href="<?= $current_url ?>">
+    <meta property="og:url" content="<?= $current_url ?>">
+    <meta property="og:title" content="<?= $seo_title ?>">
+    <meta property="og:description" content="<?= $seo_desc ?>">
+    <meta property="og:image" content="<?= $seo_image ?>">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
