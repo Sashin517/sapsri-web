@@ -192,6 +192,10 @@ document.addEventListener("DOMContentLoaded", () => {
       mainContent.appendChild(clonedView);
     }
 
+    if (params.parentView) {
+      if (params.previewData) params.previewData.parentView = params.parentView;
+    }
+
     appContent = document.getElementById("app-content");
 
     appContent.innerHTML =
@@ -2455,7 +2459,7 @@ document.addEventListener("DOMContentLoaded", () => {
           : [],
       };
 
-      loadView("preview-project", "Projects", { saveView: true, previewData: project });
+      loadView("preview-project", "Projects", { saveView: true, previewData: project, parentView: "Edit Project" });
     };
   }
 
@@ -2465,6 +2469,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function initPreviewProjectScript(project = {}) {
     window.objectUrls = [];
+    console.log(project);
 
     const handleImageData = (data, keepUrl = false) => {
       return new Promise((resolve) => {
@@ -2495,7 +2500,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const handleVideoData = (data) => {
-      if(!data.trim()) {
+      if (!data.trim()) {
         return "#";
       }
       let isTempUrl = data.includes("temp");
@@ -2507,6 +2512,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `<h2 class="text-danger">Error: Failed to create the project preview.</h2>`;
       return;
     }
+
+    if(project.parentView) document.getElementById("parentView").textContent = `${project.parentView} > `;
 
     // =====================================
     // 1. POPULATE HEADER & BASIC INFO

@@ -316,7 +316,7 @@
             <i data-lucide="arrow-left" style="width: 20px;"></i>
         </button>
         <span class="text-muted" style="font-size: 0.95rem;">Projects > </span>
-        <span class="text-muted" style="font-size: 0.95rem;">Create New Project > </span>
+        <span class="text-muted" style="font-size: 0.95rem;" id="parentView">Create New Project > </span>
         <span class="fw-bold fs-4">Preview Project</span>
     </div>
     <button class="btn btn-sm btn-light border-0 p-2 rounded-circle" onclick="loadView('create-project', 'Projects', {restoreView: true})">
