@@ -18,24 +18,23 @@
     <meta property="og:description" content="South Asia Partnership Sri Lanka (SAPSRI) empowers vulnerable communities through climate resilience, sustainable agriculture, and financial inclusion.">
     <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/carousel/main-banner-image-biodiversity.webp">
     
-    <!-- OPTIMIZATION: Preload the LCP Hero Image -->
-    <link rel="preload" as="image" href="assets/media/img/carousel/main-banner-image-biodiversity.webp" fetchpriority="high">
+    <!-- LCP Image Preload -->
+    <link rel="preload" as="image" href="/project-sedna/assets/media/img/carousel/main-banner-image-biodiversity.webp" fetchpriority="high">
 
-    <!-- OPTIMIZATION: Use minified bootstrap CSS -->
-    <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="./vendor/swiper/swiper-bundle.min.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- Load Minified Bootstrap via reliable CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     
-    <!-- OPTIMIZATION: Defer FontAwesome so it doesn't block rendering -->
+    <!-- Using absolute paths for your local styles to avoid .htaccess conflicts -->
+    <link rel="stylesheet" href="/project-sedna/vendor/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/project-sedna/assets/css/style.css">
+    
+    <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous" defer></script>
     
     <!-- Favicon & App Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/project-sedna/assets/media/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/project-sedna/assets/media/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/project-sedna/assets/media/img/favicons/favicon-16x16.png">
-    
-    <!-- OPTIMIZATION: Commented out to prevent 404 error. Uncomment once site.webmanifest is uploaded to the server -->
-    <!-- <link rel="manifest" href="/project-sedna/assets/media/img/favicons/site.webmanifest"> -->
     <link rel="icon" href="/project-sedna/favicon.ico">
 </head>
 
