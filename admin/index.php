@@ -105,7 +105,9 @@ $adminRole = $_SESSION['admin_role_name'] ?? 'User';
       <div class="d-flex align-items-center gap-3">
         <div class="search-bar">
           <i data-lucide="search"></i>
-          <input type="text" class="search-input" placeholder="Search...">
+          <input id="adminSearchInput" type="text" class="search-input" placeholder="Search..." autocomplete="off">
+          <div id="searchDropdown" class="dropdown-menu w-100 shadow-sm mt-1" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 300px; overflow-y: auto;">
+          </div>
         </div>
 
         <button class="notification-btn border-0 shadow-sm">

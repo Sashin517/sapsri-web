@@ -199,6 +199,31 @@ body {
 .search-bar {
   position: relative;
   width: 350px;
+
+  .dropdown-menu {
+    padding: 0;
+  }
+
+  .search-dropdown-item {
+    display: block;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+
+  .search-dropdown-item:hover,
+  .search-dropdown-item:focus {
+    background-color: #f8f9fa;
+    outline: none;
+  }
+
+  /* Style for the highlighted text */
+  .search-dropdown-item mark {
+    background-color: rgba(13, 110, 253, 0.15); /* Light blue highlight */
+    color: #0a58ca;
+    font-weight: 600;
+    padding: 0;
+    border-radius: 2px;
+  }
 }
 
 .search-bar svg {
@@ -909,7 +934,8 @@ body {
 }
 
 .modal {
-  .modal-body, .modal-body * {
+  .modal-body,
+  .modal-body * {
     scrollbar-width: thin;
   }
 }

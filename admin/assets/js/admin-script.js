@@ -62,6 +62,65 @@ function handleQuickAction(action) {
     toggleMobileMenu();
   }
 }
+
+// Logic: Handle admin search results
+function handleAdminSearch(viewName) {
+  const navLinks = document.querySelectorAll(".spa-link");
+  navLinks.forEach((l) => l.classList.remove("active-primary"));
+
+  switch (viewName) {
+    case "dashboard":
+      document.querySelector("[data-view='dashboard']").classList.add("active-primary");
+      loadView(viewName, "Dashboard");
+      break;
+
+    case "projects":
+      document.querySelector("[data-view='projects']").classList.add("active-primary");
+      loadView(viewName, "Projects");
+      break;
+
+    case "create-project":
+      document.querySelector("[data-view='projects']").classList.add("active-primary");
+      loadView(viewName, "Projects");
+      break;
+
+    case "posts":
+      document.querySelector("[data-view='posts']").classList.add("active-primary");
+      loadView(viewName, "Posts");
+      break;
+
+    case "create-post":
+      document.querySelector("[data-view='posts']").classList.add("active-primary");
+      loadView(viewName, "Posts");
+      break;
+
+    case "publications":
+      document.querySelector("[data-view='publications']").classList.add("active-primary");
+      loadView(viewName, "Publications");
+      break;
+
+    case "create-publication":
+      document.querySelector("[data-view='publications']").classList.add("active-primary");
+      loadView(viewName, "Publications");
+      break;
+
+    case "users":
+      document.querySelector("[data-view='users']").classList.add("active-primary");
+      loadView(viewName, "Users");
+      break;
+
+    default:
+      document.querySelector("[data-view='dashboard']").classList.add("active-primary");
+      loadView("dashboard", "Dashboard");
+      showAlert("error", "An unexpected action occurred.");
+      break;
+  }
+
+  if (window.innerWidth <= 991) {
+    toggleMobileMenu();
+  }
+}
+
 // ==========================================
 // UNIVERSAL ALERT MODAL LOGIC
 // ==========================================
@@ -2513,7 +2572,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if(project.parentView) document.getElementById("parentView").textContent = `${project.parentView} > `;
+    if (project.parentView) document.getElementById("parentView").textContent = `${project.parentView} > `;
 
     // =====================================
     // 1. POPULATE HEADER & BASIC INFO
@@ -5265,6 +5324,164 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  function initAdminSearch() {
+    // Define the views and their matching keywords
+    window.viewDefinitions = [
+      {
+        title: "Dashboard",
+        name: "dashboard",
+        keywords: [
+          "Active Projects", 
+          "Publications", 
+          "Active Users", 
+          "Number of Posts", 
+          "Recent Web Content", 
+          "Quick Actions",
+          "Create New Project",
+          "Create New Post",
+          "Add New Publication"
+        ],
+      },
+      {
+        title: "Projects",
+        name: "projects",
+        keywords: [
+          "Manage Projects", 
+          "All Projects", 
+          "Create New Project", 
+          "Title", 
+          "Phase",
+          "Status",
+          "Lead",
+          "Created Date",
+          "Actions",
+          "Ongoing",
+          "Past",
+          "Published",
+          "Draft",
+          "Archived",
+          "Search Title"
+        ],
+      },
+      {
+        title: "Posts",
+        name: "posts",
+        keywords: [
+          "Manage News & Posts", 
+          "All Posts", 
+          "Create New Post", 
+          "Post Title", 
+          "Author",
+          "Status",
+          "Published Date",
+          "Actions",
+          "Published",
+          "Draft",
+          "Archived",
+          "Search Title"
+        ],
+      },
+      {
+        title: "Publications",
+        name: "publications",
+        keywords: [
+          "Manage Publications", 
+          "All Publications", 
+          "Upload Publication", 
+          "Title", 
+          "Category",
+          "Status",
+          "Uploaded By",
+          "Actions",
+          "Published",
+          "Draft",
+          "Archived",
+          "Search Title or Category"
+        ],
+      },
+      {
+        title: "User Management",
+        name: "users",
+        keywords: [
+          "Manage Users", 
+          "Create New Role", 
+          "Users", 
+          "Incoming Acceptance", 
+          "Roles",
+          "Name",
+          "Email",
+          "Role",
+          "Status",
+          "Actions",
+          "Active",
+          "Request Date",
+          "Assign Role & Action",
+          "Role Name",
+          "Description"
+        ],
+      },
+    ];
+
+    const searchInput = document.getElementById("adminSearchInput");
+    const searchDropdown = document.getElementById("searchDropdown");
+
+    searchInput.addEventListener("input", function (e) {
+      const searchTerm = e.target.value.trim().toLowerCase();
+
+      // Hide dropdown if input is empty
+      if (searchTerm.length === 0) {
+        searchDropdown.style.display = "none";
+        searchDropdown.innerHTML = "";
+        return;
+      }
+
+      // Filter the view configurations
+      const results = viewDefinitions.filter((view) => {
+        const matchesName = view.title.toLowerCase().includes(searchTerm);
+        const matchesKeyword = view.keywords.some((kw) => kw.toLowerCase().includes(searchTerm));
+        return matchesName || matchesKeyword;
+      });
+
+      // Render the dropdown content
+      if (results.length > 0) {
+        const html = results
+          .map((view) => {
+            // Regex to wrap matched parts with a <mark> tag, ignoring case
+            const regex = new RegExp(`(${searchTerm})`, "gi");
+            const highlightedName = view.title.replace(regex, "<mark>$1</mark>");
+
+            // If a keyword matched (but the title didn't), show the matched keyword below the title
+            let keywordHint = "";
+            const matchedKeyword = view.keywords.find((kw) => kw.toLowerCase().includes(searchTerm));
+            if (matchedKeyword && !view.title.toLowerCase().includes(searchTerm)) {
+              const highlightedKeyword = matchedKeyword.replace(regex, "<mark>$1</mark>");
+              keywordHint = `<small class="text-muted d-block mt-1" style="font-size: 0.8em;">Matches: ${highlightedKeyword}</small>`;
+            }
+
+            return `<div onclick="handleAdminSearch('${view.name}')" class="search-dropdown-item border-bottom p-2 text-decoration-none">
+                        <div class="text-dark fw-medium">${highlightedName}</div>
+                        ${keywordHint}
+                    </div>`;
+          })
+          .join("");
+
+        searchDropdown.innerHTML = html;
+        searchDropdown.style.display = "block";
+      } else {
+        searchDropdown.innerHTML = '<div class="p-3 text-muted text-center"><small>No views found</small></div>';
+        searchDropdown.style.display = "block";
+      }
+    });
+
+    // Close dropdown when clicking outside the search component
+    document.addEventListener("click", function (e) {
+      if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+        searchDropdown.style.display = "none";
+      }
+    });
+  }
+  initAdminSearch();
 }); // END DOMContentLoaded
 
 // ==========================================
