@@ -2062,6 +2062,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Helper: Add server gallery items
     function renderServerMediaItem(media) {
+      console.log(media);
       const container = document.getElementById("galleryPreviewContainer");
       const elementId = `server_media_${media.id}`;
       const isVideo = media.media_type === "video";
@@ -2070,7 +2071,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const colHTML = `
             <div class="col-xl-3 col-lg-4 col-md-6" id="${elementId}" data-db-id="${media.id}">
                 <div class="position-relative" style="height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000;">
-                    <img src="${displaySrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${isVideo ? 0.7 : 1};">
+                    <img src="${displaySrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: ${isVideo ? 0.7 : 1};" data-video-url="${isVideo ? media.media_url : "none"}">
                     ${isVideo ? `<div class="video-play-overlay"><i data-lucide="play" style="width:20px; fill:#fff;"></i></div>` : ""}
                     <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 8px; right: 8px; border-radius: 50%; z-index: 10;" onclick="removeGalleryItem('${elementId}', '${media.id}')">
                         <i data-lucide="x" style="width: 14px;"></i>
@@ -2339,31 +2340,168 @@ document.addEventListener("DOMContentLoaded", () => {
         if (saveBtn) saveBtn.disabled = false;
       }
     });
+
+    window.previewProject = () => {
+      // Helper functions for safe extraction
+      const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el && el.value ? el.value.trim() : "";
+      };
+
+      const getFile = (id) => {
+        const el = document.getElementById(id);
+        return el && el.files && el.files[0] ? el.files[0] : null;
+      };
+
+      const getSrc = (id) => {
+        const el = document.getElementById(id);
+        return el && el.src ? el.src : null;
+      };
+
+      const project = {
+        // Basic Details
+        title: getVal("projectTitle") ? getVal("projectTitle") : "Untitled Project",
+        phase: document.getElementById("projectPhaseToggle")?.checked ? "ongoing" : "past",
+        description:
+          typeof quill !== "undefined" && quill?.root?.innerHTML !== "<p><br></p>" ? quill.root.innerHTML : "",
+        start_date: getVal("projectStartDate"),
+        end_date: getVal("projectEndDate"),
+        cover_image: getSrc("coverPreviewImg"),
+
+        // Impact Areas
+        impact_areas: Array.from(document.getElementById("projectImpactArea")?.selectedOptions || [])
+          .filter((opt) => opt.value.trim() !== "")
+          .map((option) => ({
+            id: option.value,
+            name: option.text,
+          })),
+
+        // Metrics (Combines Sec 1 & Sec 2, filters out empty rows)
+        metrics: [
+          ...Array.from(document.querySelectorAll("#metricsContainerSec1 .metric-row")).map((row) => {
+            const inputs = row.querySelectorAll('input[type="text"]');
+
+            const sectionImage = getSrc("sec1PreviewImg");
+            // const icon = row.querySelector('input[type="file"]')?.files?.[0] || null;
+            const icon = row.querySelector("img")?.src || null;
+            const val = inputs[0]?.value?.trim();
+            const lbl = inputs[1]?.value?.trim();
+
+            // if (!sectionImage && !val && !lbl && !icon) return null; // Skip completely empty row
+
+            return {
+              section: "1",
+              section_image: sectionImage,
+              icon_image: icon,
+              value: val || "",
+              label: lbl || "",
+            };
+          }),
+          ...Array.from(document.querySelectorAll("#metricsContainerSec2 .metric-row")).map((row) => {
+            const inputs = row.querySelectorAll('input[type="text"]');
+
+            const sectionImage = getSrc("sec2PreviewImg");
+            const icon = row.querySelector("img")?.src || null;
+            const val = inputs[0]?.value?.trim();
+            const lbl = inputs[1]?.value?.trim();
+
+            // if (!sectionImage && !val && !lbl && !icon) return null; // Skip completely empty row
+
+            return {
+              section: "2",
+              section_image: sectionImage,
+              icon_image: icon,
+              value: val || "",
+              label: lbl || "",
+            };
+          }),
+        ].filter(Boolean),
+
+        // Success Stories (Filters out completely empty cards)
+        success_stories: Array.from(document.querySelectorAll("#storiesWrapper .section-card"))
+          .map((card) => {
+            const name = card.querySelector('input[type="text"]')?.value?.trim() || "";
+            const desc = card.querySelector("textarea")?.value?.trim() || "";
+            const img = card.querySelector("img")?.src || null;
+
+            // if (!name && !desc && !img) return null; // Skip empty story card
+
+            return {
+              name: name,
+              image: img,
+              description: desc,
+            };
+          })
+          .filter(Boolean),
+
+        // Leads (Only adds lead if at least one field exists)
+        leads: (() => {
+          const name = getVal("leadName");
+          const role = getVal("leadRole");
+          const photo = getSrc("leadPreviewImg");
+          const linkedin = getVal("leadLinkedin");
+
+          // if (!name && !role && !photo && !linkedin) return [];
+
+          return [{ name, role, photo, linkedin }];
+        })(),
+
+        media: document.getElementById("galleryPreviewContainer")?.querySelectorAll("img")
+          ? Array.from(document.getElementById("galleryPreviewContainer").querySelectorAll("img")).map((img) => ({
+              type: img.dataset.videoUrl === "none" ? "image" : "video",
+              url: img.dataset.videoUrl === "none" ? img.src : img.dataset.videoUrl,
+              thumbnail_url: img.src,
+            }))
+          : [],
+      };
+
+      loadView("preview-project", "Projects", { saveView: true, previewData: project });
+    };
   }
 
   // ==========================================
   // --- VIEW: PREVIEW PROJECT LOGIC ---
   // ==========================================
 
-  function initPreviewProjectScript(project = {}) {
+  async function initPreviewProjectScript(project = {}) {
     window.objectUrls = [];
 
-    const handleImageFile = (file, keepUrl = false) => {
-      if (file instanceof File || file instanceof Blob) {
-        const imageUrl = URL.createObjectURL(file);
+    const handleImageData = (data, keepUrl = false) => {
+      return new Promise((resolve) => {
+        if (data instanceof File || data instanceof Blob) {
+          const imageUrl = URL.createObjectURL(data);
 
-        if (keepUrl) {
-          objectUrls.push(imageUrl);
+          if (keepUrl) {
+            objectUrls.push(imageUrl);
+          } else {
+            setTimeout(() => URL.revokeObjectURL(imageUrl), 0);
+          }
+          resolve(imageUrl);
         } else {
-          setTimeout(() => URL.revokeObjectURL(imageUrl), 0);
+          if (!data) resolve(false);
+          const imageSrc = data.trim();
+          const image = new Image();
+          image.onload = () => {
+            resolve(imageSrc);
+          };
+
+          image.onerror = () => {
+            resolve(false);
+          };
+
+          image.src = imageSrc;
         }
-        return imageUrl;
-      } else {
-        return false;
-      }
+      });
     };
 
-    console.log(project);
+    const handleVideoData = (data) => {
+      if(!data.trim()) {
+        return "#";
+      }
+      let isTempUrl = data.includes("temp");
+      return isTempUrl ? `/project-sedna/${data}` : data;
+    };
+
     if (!project) {
       document.getElementById("loading-container").innerHTML =
         `<h2 class="text-danger">Error: Failed to create the project preview.</h2>`;
@@ -2375,7 +2513,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
     document.getElementById("proj-title").innerText = project.title;
 
-    const coverImage = handleImageFile(project.cover_image);
+    const coverImage = await handleImageData(project.cover_image);
     document.getElementById("proj-cover").src = coverImage
       ? coverImage
       : "/project-sedna/assets/media/img/projects/cover-default.svg";
@@ -2411,7 +2549,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set Section Image (fallback to first available if needed)
       const sec1Img = sec1MetricsRaw.find((m) => m.section_image)?.section_image;
       if (sec1Img) {
-        const sec1Image = handleImageFile(sec1Img);
+        const sec1Image = await handleImageData(sec1Img);
         document.getElementById("sec1-img").src = sec1Image
           ? sec1Image
           : "/project-sedna/assets/media/img/projects/cover-default.svg";
@@ -2426,10 +2564,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Render Items
       const sec1Container = document.getElementById("sec1-items");
-      sec1Metrics.forEach((m) => {
+      sec1Metrics.forEach(async (m) => {
         let iconHtml = "";
         if (m.icon_image) {
-          const iconImage = handleImageFile(m.icon_image);
+          const iconImage = await handleImageData(m.icon_image);
           const iconSrc = iconImage ? iconImage : "/project-sedna/assets/media/img/projects/metrics-default.webp";
           iconHtml = `
           <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
@@ -2469,7 +2607,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const indicators = document.getElementById("story-indicators");
       const inner = document.getElementById("story-inner");
 
-      validStories.forEach((story, index) => {
+      validStories.forEach(async (story, index) => {
         const activeClass = index === 0 ? "active" : "";
 
         indicators.insertAdjacentHTML(
@@ -2479,7 +2617,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `,
         );
 
-        const storyImage = handleImageFile(story.image);
+        const storyImage = await handleImageData(story.image);
         const storyImgSrc = storyImage ? storyImage : "/project-sedna/assets/media/img/projects/cover-default.svg";
         inner.insertAdjacentHTML(
           "beforeend",
@@ -2521,7 +2659,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const sec2Img = sec2MetricsRaw.find((m) => m.section_image)?.section_image;
       if (sec2Img) {
-        const sec2Image = handleImageFile(sec2Img);
+        const sec2Image = await handleImageData(sec2Img);
         document.getElementById("sec2-img").src = sec2Image
           ? sec2Image
           : "/project-sedna/assets/media/img/projects/metrics-default.webp";
@@ -2535,10 +2673,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const sec2Container = document.getElementById("sec2-items");
-      sec2Metrics.forEach((m) => {
+      sec2Metrics.forEach(async (m) => {
         let iconHtml = "";
         if (m.icon_image) {
-          const iconImage = handleImageFile(m.icon_image);
+          const iconImage = await handleImageData(m.icon_image);
           const iconSrc = iconImage ? iconImage : "/project-sedna/assets/media/img/projects/metrics-default.webp";
           iconHtml = `
           <div class="d-flex justify-content-center align-items-center bg-dark rounded-circle flex-shrink-0 metric-icon-wrapper shadow-sm">
@@ -2569,8 +2707,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("leads-wrapper").classList.remove("d-none");
       const leadsContainer = document.getElementById("leads-container");
 
-      project.leads.forEach((lead) => {
-        const avatarImage = handleImageFile("lead.photo");
+      project.leads.forEach(async (lead) => {
+        const avatarImage = await handleImageData(lead.photo);
         const avatar = avatarImage ? avatarImage : "/project-sedna/assets/media/img/projects/avatar-default.svg";
         const linkHtml = lead.linkedin
           ? `<a href="${lead.linkedin}" target="_blank" class="social-link ms-3 fs-4 text-primary"><i class="bi bi-linkedin"></i></a>`
@@ -2603,40 +2741,69 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("gallery-wrapper").classList.remove("d-none");
       const galleryContainer = document.getElementById("gallery-container");
 
-      project.media.forEach((media) => {
+      // project.media.forEach(async (media) => {
+      //   const isVideo = media.type === "video";
+      //   const dataType = isVideo ? "video" : "image";
+      //   const thumbImage = await handleImageData(media.thumbnail_url || media.url, true);
+      //   const thumbUrl = thumbImage ? thumbImage : "/project-sedna/assets/media/img/projects/cover-default.svg";
+      //   // const targetMedia =
+      //   //   media.url instanceof File
+      //   //     ? await handleImageData(media.url, true)
+      //   //     : media.url && media.url.trim()
+      //   //       ? `/project-sedna/${media.url}`
+      //   //       : "/project-sedna/assets/media/img/projects/cover-default.svg";
+      //   const targetMedia = isVideo ? `/project-sedna/${media.url}` : await handleImageData(media.url, true);
+
+      //   const targetUrl = targetMedia ? targetMedia : "/project-sedna/assets/media/img/projects/cover-default.svg";
+      //   const overlayHtml = isVideo
+      //     ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; z-index: 5;">
+      //           <i class="bi bi-play-fill"></i>
+      //         </div>`
+      //     : "";
+
+      //   galleryContainer.insertAdjacentHTML(
+      //     "beforeend",
+      //     `
+      //     <div class="col-md-4 rel-img">
+      //         <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="project-gallery" data-type="${dataType}">
+      //             <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item" style="opacity: ${isVideo ? "0.85" : "1"};">
+      //             ${overlayHtml}
+      //         </a>
+      //     </div>
+      //     `,
+      //   );
+      // });
+
+      // Initialize GLightbox
+
+      for (const media of project.media) {
         const isVideo = media.type === "video";
         const dataType = isVideo ? "video" : "image";
-        const thumbImage = handleImageFile(media.thumbnail_url || media.url, true);
+        const thumbImage = await handleImageData(media.thumbnail_url || media.url, true);
         const thumbUrl = thumbImage ? thumbImage : "/project-sedna/assets/media/img/projects/cover-default.svg";
-        const targetMedia =
-          media.url instanceof File
-            ? handleImageFile(media.url, true)
-            : media.url && media.url.trim()
-              ? `/project-sedna/${media.url}`
-              : "/project-sedna/assets/media/img/projects/cover-default.svg";
 
+        const targetMedia = isVideo ? handleVideoData(media.url) : await handleImageData(media.url, true);
         const targetUrl = targetMedia ? targetMedia : "/project-sedna/assets/media/img/projects/cover-default.svg";
+
         const overlayHtml = isVideo
           ? `<div class="position-absolute top-50 start-50 translate-middle text-white fs-1 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; z-index: 5;">
-                <i class="bi bi-play-fill"></i>
-              </div>`
+            <i class="bi bi-play-fill"></i>
+          </div>`
           : "";
 
         galleryContainer.insertAdjacentHTML(
           "beforeend",
           `
-          <div class="col-md-4 rel-img">
-              <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="project-gallery" data-type="${dataType}">
-                  <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item" style="opacity: ${isVideo ? "0.85" : "1"};">
-                  ${overlayHtml}
-              </a>
-          </div>
-          `,
+      <div class="col-md-4 rel-img">
+          <a href="${targetUrl}" class="glightbox d-block position-relative h-100 w-100" data-gallery="project-gallery" data-type="${dataType}">
+              <img src="${thumbUrl}" class="img-fluid rounded shadow-sm gallery-img object-fit-cover h-100 w-100 hover-zoom" alt="Gallery item" style="opacity: ${isVideo ? "0.85" : "1"};">
+              ${overlayHtml}
+          </a>
+      </div>
+      `,
         );
-        
-      });
+      }
 
-      // Initialize GLightbox
       GLightbox({
         selector: ".glightbox",
         touchNavigation: true,

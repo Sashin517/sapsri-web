@@ -165,7 +165,7 @@
           <input class="form-check-input" type="checkbox" id="projectPhaseToggle" checked>
           <label class="form-check-label fw-medium ms-2" for="projectPhaseToggle" id="phaseLabel">Ongoing</label>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary ms-auto d-flex gap-2 align-items-center">
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-auto d-flex gap-2 align-items-center" onclick="previewProject();">
           <i data-lucide="eye" style="width:16px;"></i> Preview
         </button>
       </div>
