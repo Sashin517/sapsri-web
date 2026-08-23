@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAPSRI | Publications</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>Policies and Publications - SAPSRI</title>
+    <meta name="description" content="Access SAPSRI's organisational policies, annual reports, and case studies detailing our impact on community development in Sri Lanka.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/publications">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/publications">
+    <meta property="og:title" content="Policies and Publications - SAPSRI">
+    <meta property="og:description" content="Access SAPSRI's organisational policies, annual reports, and case studies detailing our impact on community development in Sri Lanka.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/page-hero/publications-hero.jpg">
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <!-- font awesome v7 -->

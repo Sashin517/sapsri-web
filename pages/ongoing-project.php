@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details - SAPSRI</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>Ongoing Projects - SAPSRI</title>
+    <meta name="description" content="Explore SAPSRI's active development projects across Sri Lanka, focusing on climate resilience, agriculture, and community empowerment.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/ongoing-projects">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/ongoing-projects">
+    <meta property="og:title" content="Ongoing Projects - SAPSRI">
+    <meta property="og:description" content="Explore SAPSRI's active development projects across Sri Lanka, focusing on climate resilience, agriculture, and community empowerment.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/ongoing-projects/smed1.jpeg">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

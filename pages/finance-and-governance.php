@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our People - Sapsri</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>Finance & Governance - SAPSRI</title>
+    <meta name="description" content="Empowering local communities in Sri Lanka through sustainable micro enterprise development, inclusive growth, and access to finance.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/finance-and-governance">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/finance-and-governance">
+    <meta property="og:title" content="Finance & Governance - SAPSRI">
+    <meta property="og:description" content="Empowering local communities in Sri Lanka through sustainable micro enterprise development, inclusive growth, and access to finance.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/impact-images/Governence.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">

@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAPSRI</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>News & Events - SAPSRI</title>
+    <meta name="description" content="Stay updated with the latest news, events, and community development initiatives from South Asia Partnership Sri Lanka (SAPSRI).">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/news">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/news">
+    <meta property="og:title" content="News & Events - SAPSRI">
+    <meta property="og:description" content="Stay updated with the latest news, events, and community development initiatives from South Asia Partnership Sri Lanka (SAPSRI).">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/page-hero/news-and-events.jpg">
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <!-- font awesome v7 -->

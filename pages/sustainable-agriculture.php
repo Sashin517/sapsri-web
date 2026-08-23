@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our People - Sapsri</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>Sustainable Agriculture & Food Security - SAPSRI</title>
+    <meta name="description" content="Promoting climate-smart, bio-intensive agricultural practices to improve food security and uplift farming communities in Sri Lanka's Dry Zone.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/sustainable-agriculture">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/sustainable-agriculture">
+    <meta property="og:title" content="Sustainable Agriculture & Food Security - SAPSRI">
+    <meta property="og:description" content="Promoting climate-smart, bio-intensive agricultural practices to improve food security and uplift farming communities in Sri Lanka's Dry Zone.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/impact-areas/STA/sta-banner-img-1.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

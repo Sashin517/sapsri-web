@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our People - Sapsri</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>Our People - SAPSRI</title>
+    <meta name="description" content="Meet the dedicated Governing Council and Staff Members who lead South Asia Partnership Sri Lanka with vision and commitment.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/people">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/people">
+    <meta property="og:title" content="Our People - SAPSRI">
+    <meta property="og:description" content="Meet the dedicated Governing Council and Staff Members who lead South Asia Partnership Sri Lanka with vision and commitment.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/people/banners/ppl-banner-img-1.jpeg">
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">

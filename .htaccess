@@ -1,10 +1,47 @@
 Options -Indexes
 AddType application/javascript .mjs
 
+# =========================================================
+# 1. SECURITY & SEO HEADERS
+# =========================================================
+<IfModule mod_headers.c>
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Protect against Clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # SEO: Block search engines from indexing backend/logic directories
+    SetEnvIf Request_URI "^/project-sedna/(admin|actions|includes|config)/" NOINDEX_DIR
+    Header set X-Robots-Tag "noindex, nofollow" env=NOINDEX_DIR
+</IfModule>
+
+# =========================================================
+# 2. BROWSER CACHING (CORE WEB VITALS)
+# =========================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Cache Images & Icons for 1 year
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # Cache CSS and JS for 1 month
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+</IfModule>
+
+# =========================================================
+# 3. URL ROUTING & REWRITES
+# =========================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # 1. Base URL for this folder
+    # Base URL for this folder
     RewriteBase /project-sedna/
 
     # ---------------------------------------------------------

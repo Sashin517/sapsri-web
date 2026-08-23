@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAPSRI | About Us</title>
+    <!-- 1. Primary SEO Meta Tags -->
+    <title>About Us - SAPSRI</title>
+    <meta name="description" content="Learn about SAPSRI's history, mission, and strategic priorities in building inclusive and vibrant communities for sustainable development in Sri Lanka.">
+    
+    <!-- 2. Canonical Link -->
+    <link rel="canonical" href="https://sapsri.lk/project-sedna/about-us">
+
+    <!-- 3. Open Graph / Social Media Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sapsri.lk/project-sedna/about-us">
+    <meta property="og:title" content="About Us - SAPSRI">
+    <meta property="og:description" content="Learn about SAPSRI's history, mission, and strategic priorities in building inclusive and vibrant communities for sustainable development in Sri Lanka.">
+    <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/page-hero/about-us-hero.jpg">
     <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <!-- font awesome v7 -->
