@@ -17,16 +17,25 @@
     <meta property="og:title" content="SAPSRI | Empowering Communities for Sustainable Development">
     <meta property="og:description" content="South Asia Partnership Sri Lanka (SAPSRI) empowers vulnerable communities through climate resilience, sustainable agriculture, and financial inclusion.">
     <meta property="og:image" content="https://sapsri.lk/project-sedna/assets/media/img/carousel/main-banner-image-biodiversity.webp">
-    <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.css">
+    
+    <!-- OPTIMIZATION: Preload the LCP Hero Image -->
+    <link rel="preload" as="image" href="assets/media/img/carousel/main-banner-image-biodiversity.webp" fetchpriority="high">
+
+    <!-- OPTIMIZATION: Use minified bootstrap CSS -->
+    <link rel="stylesheet" href="./vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="./vendor/swiper/swiper-bundle.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <!-- font awesome v7 -->
-    <script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous"></script>
+    
+    <!-- OPTIMIZATION: Defer FontAwesome so it doesn't block rendering -->
+    <script src="https://kit.fontawesome.com/6e09983e4e.js" crossorigin="anonymous" defer></script>
+    
     <!-- Favicon & App Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/project-sedna/assets/media/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/project-sedna/assets/media/img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/project-sedna/assets/media/img/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/project-sedna/assets/media/img/favicons/site.webmanifest">
+    
+    <!-- OPTIMIZATION: Commented out to prevent 404 error. Uncomment once site.webmanifest is uploaded to the server -->
+    <!-- <link rel="manifest" href="/project-sedna/assets/media/img/favicons/site.webmanifest"> -->
     <link rel="icon" href="/project-sedna/favicon.ico">
 </head>
 
@@ -63,52 +72,44 @@
 
                 <div class="carousel-inner">
 
+                    <!-- Slide 1: The LCP Candidate -->
                     <div class="carousel-item responsive-hero-height active align-items-center">
+                        <!--  OPTIMIZATION: Add fetchpriority="high" -->
                         <img src="assets/media/img/carousel/main-banner-image-biodiversity.webp"
                             class="object-fit-cover w-100 h-100"
-                            alt="">
+                            fetchpriority="high"
+                            alt="Safeguarding Sri Lanka's unique biodiversity">
 
                         <div class="carousel-caption">
-                            <!-- <h5>Harvesting Hope</h5> -->
                             <h2>Safeguarding Sri Lanka's unique biodiversity</h2>
-                            <!-- <p>Empowering women through sustainable agriculture in Sri Lanka's hill country.</p> -->
                         </div>
                     </div>
 
+                    <!-- Slide 2: Below the fold / Not immediately visible -->
                     <div class="carousel-item responsive-hero-height align-items-center">
+                        <!--  OPTIMIZATION: Add loading="lazy" -->
                         <img src="assets/media/img/carousel/main-banner-image-food-systems.webp"
                             class="object-fit-cover w-100 h-100"
-                            alt="">
+                            loading="lazy"
+                            alt="Building climate resilient food systems">
 
                         <div class="carousel-caption">
-                            <!-- <h2>Crafting Livelihoods</h2> -->
                             <h2>Building climate resilient food systems</h2>
-                            <!-- <p>Supporting rural artisans and traditional crafts for economic resilience.</p> -->
                         </div>
                     </div>
 
+                    <!-- Slide 3: Below the fold / Not immediately visible -->
                     <div class="carousel-item responsive-hero-height align-items-center">
+                        <!--  OPTIMIZATION: Add loading="lazy" -->
                         <img src="assets/media/img/carousel/main-banner-image-financial-inclusion.webp"
                             class="object-fit-cover w-100 h-100"
-                            alt="">
+                            loading="lazy"
+                            alt="Enhancing financial inclusion">
 
                         <div class="carousel-caption">
-                            <!-- <h2>Future by the Shore</h2> -->
                             <h2>Enhancing financial inclusion</h2>
-                            <!-- <p>Building brighter futures for children in coastal communities.</p> -->
                         </div>
                     </div>
-
-                    <!-- <div class="carousel-item responsive-hero-height align-items-center">
-                        <img src="assets/media/img/carousel/Main Banner_food system ii.jpg"
-                            class="object-fit-cover w-100 h-100"
-                            alt="Two young boys from a coastal village sitting on a fishing net, smiling and relaxed.">
-
-                        <div class="carousel-caption">
-                            <h2>Enhancing financial inclusion</h2>
-                            <p>Building brighter futures for children in coastal communities.</p>
-                        </div>
-                    </div> -->
 
                 </div>
 
@@ -619,10 +620,10 @@
         }
         getPostsData();
     </script> -->
-    <script src="./assets/js/translation.js"></script>
-    <script src="./vendor/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="./vendor/swiper/swiper-bundle.min.js"></script>
-    <script src="./assets/js/script.js"></script>
+    <!-- OPTIMIZATION: Added the 'defer' attribute to all script tags -->
+    <script src="./assets/js/translation.js" defer></script>
+    <script src="./vendor/bootstrap/bootstrap.bundle.min.js" defer></script>
+    <script src="./vendor/swiper/swiper-bundle.min.js" defer></script>
+    <script src="./assets/js/script.js" defer></script>
 </body>
-
 </html>
