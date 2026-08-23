@@ -16,6 +16,13 @@
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/3e6ef2b5ef.js" crossorigin="anonymous"></script>
 
+    <!-- Favicon & App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/project-sedna/assets/media/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/project-sedna/assets/media/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/project-sedna/assets/media/img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/project-sedna/assets/media/img/favicons/site.webmanifest">
+    <link rel="icon" href="/project-sedna/favicon.ico">
+
 
     <style>
         /* Define custom color variables */

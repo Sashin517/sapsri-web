@@ -12,13 +12,18 @@
     <!-- Global and specific style sheets -->
     <link rel="stylesheet" href="./assets/css/current_project.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./assets/css/project-style.css">
-    
+    <link rel="stylesheet" href="./assets/css/project-style.css">    
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/3e6ef2b5ef.js" crossorigin="anonymous"></script>
     <!-- GLightbox CSS & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
     <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+    <!-- Favicon & App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/project-sedna/assets/media/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/project-sedna/assets/media/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/project-sedna/assets/media/img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/project-sedna/assets/media/img/favicons/site.webmanifest">
+    <link rel="icon" href="/project-sedna/favicon.ico">
 </head>
 
 <body>
