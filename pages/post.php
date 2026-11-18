@@ -289,7 +289,8 @@ $current_url = "https://sapsri.lk" . $_SERVER['REQUEST_URI'];
                 });
                 
                 // Map the author name directly from the JSON output
-                document.querySelector('.post-meta').innerText = `Posted on ${formattedDate} by ${post.author_name}`;
+                //document.querySelector('.post-meta').innerText = `Posted on ${formattedDate} by ${post.author_name}`;
+                document.querySelector('.post-meta').innerText = `Posted on ${formattedDate}`; //changed back to only show date
                 document.querySelector('.post-banner').src = imgUrl;
                 document.querySelector('.post-content .row .col-lg-8').innerHTML = post.content;
                 
